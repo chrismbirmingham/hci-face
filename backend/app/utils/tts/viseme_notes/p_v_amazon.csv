@@ -1,0 +1,42 @@
+IPA,X-SAMPA,Description,Example,Viseme,Type
+b,b,voiced bilabial plosive,bed,p,Consonant
+d,d,voiced alveolar plosive,dig,t,Consonant
+d͡ʒ,dZ,voiced postalveolar affricate,jump,S,Consonant
+ð,D,voiced dental fricative,then,T,Consonant
+f,f,voiceless labiodental fricative,five,f,Consonant
+ɡ,g,voiced velar plosive,game,k,Consonant
+h,h,voiceless glottal fricative,house,k,Consonant
+j,j,palatal approximant,yes,i,Consonant
+k,k,voiceless velar plosive,cat,k,Consonant
+l,l,alveolar lateral approximant,lay,t,Consonant
+m,m,bilabial nasal,mouse,p,Consonant
+n,n,alveolar nasal,nap,t,Consonant
+ŋ,N,velar nasal,thing,k,Consonant
+p,p,voiceless bilabial plosive,speak,p,Consonant
+ɹ,r\,alveolar approximant,red,r,Consonant
+s,s,voiceless alveolar fricative,seem,s,Consonant
+ʃ,S,voiceless postalveolar fricative,ship,S,Consonant
+t,t,voiceless alveolar plosive,trap,t,Consonant
+t͡ʃ,tS,voiceless postalveolar affricate,chart,S,Consonant
+θ,T,voiceless dental fricative,thin,T,Consonant
+v,v,voiced labiodental fricative,vest,f,Consonant
+w,w,labial-velar approximant,west,u,Consonant
+z,z,voiced alveolar fricative,zero,s,Consonant
+ʒ,Z,voiced postalveolar fricative,vision,S,Consonant
+ə,@,mid-central vowel,arena,@,Vowel
+ɚ,@`,mid-central r-colored vowel,reader,@,Vowel
+æ,{,near open-front unrounded vowel,trap,a,Vowel
+aɪ,aI,diphthong,price,a,Vowel
+aʊ,aU,diphthong,mouth,a,Vowel
+ɑ,A,long open-back unrounded vowel,father,a,Vowel
+eɪ,eI,diphthong,face,e,Vowel
+ɝ,3`,open mid-central unrounded r-colored vowel,nurse,E,Vowel
+ɛ,E,open mid-front unrounded vowel,dress,E,Vowel
+i,i,long close front unrounded vowel,fleece,i,Vowel
+ɪ,I,near-close near-front unrounded vowel,kit,i,Vowel
+oʊ,oU,diphthong,goat,o,Vowel
+ɔ,O,long open mid-back rounded vowel,thought,O,Vowel
+ɔɪ,OI,diphthong,choice,O,Vowel
+u,u,long close-back rounded vowel,goose,u,Vowel
+ʊ,U,near-close near-back rounded vowel,foot,u,Vowel
+ʌ,V,open-mid-back unrounded vowel,strut,E,Vowel

@@ -1,0 +1,45 @@
+IPA,Alternative IPA,X-SAMPA,Description,Example,Viseme,Graphemes,Other Examples,Arpabet 1-letter,Arpabet 2-letter,Type
+b,,b,voiced bilabial plosive,bed,p,"b, bb","bug, bubble, buy",b,B,Consonant
+d,,d,voiced alveolar plosive,dig,t,"d, dd, ed","dad, add, milled, die",d,D,Consonant
+d͡ʒ,dʒ,dZ,voiced postalveolar affricate,jump,S,"j, ge, g, dge, di, gg","jam, wage, giraffe, edge, soldier, exaggerate, jive",J,JH,Consonant
+ð,,D,voiced dental fricative,then,T,th,"leather, thy",D,DH,Consonant
+f,,f,voiceless labiodental fricative,five,f,"f, ff, ph, gh, lf, ft","fat, cliff, phone, enough, half, often, fight",f,F,Consonant
+ɡ,g,g,voiced velar plosive,game,k,"g, gg, gh,gu,gue","gun, egg, ghost, guest, prologue, guy",g,G,Consonant
+h,,h,voiceless glottal fricative,house,k,"h, wh","hop, who, high",h,HH,Consonant
+j,,j,palatal approximant,yes,i,"y, i, j","you, onion, hallelujah , yacht",y,Y,Consonant
+k,,k,voiceless velar plosive,cat,k,"k, c, ch, cc, lk, qu ,q(u), ck, x","kit, cat, chris, accent, folk, bouquet, queen, rack, box, kite",k,K,Consonant
+l,,l,alveolar lateral approximant,lay,t,"l, ll","live, well, lie",l,L,Consonant
+m,,m,bilabial nasal,mouse,p,"m, mm, mb, mn, lm","man, summer, comb, column, palm, my",m,M,Consonant
+n,,n,alveolar nasal,nap,t,"n, nn,kn, gn, pn, mn","net, funny, know, gnat, pneumonic, mnemonic, nigh",n,N,Consonant
+ŋ,,N,velar nasal,thing,k,"ng, n, ngue","ring, pink, tongue, sing",G,NG,Consonant
+p,,p,voiceless bilabial plosive,speak,p,"p, pp","pin, dippy, pie",p,P,Consonant
+ɹ,r,r\,alveolar approximant,red,r,"r, rr, wr, rh","run, carrot, wrench, rhyme, rye",r,R,Consonant
+s,,s,voiceless alveolar fricative,seem,s,"s, ss, c, sc, ps, st, ce, se","sit, less, circle, scene, psycho, listen, pace, course, sigh",s,S,Consonant
+ʃ,,S,voiceless postalveolar fricative,ship,S,"sh, ce, s, ci, si, ch, sci, ti","sham, ocean, sure, special, pension, machine, conscience, station, shy",S,SH,Consonant
+t,,t,voiceless alveolar plosive,trap,t,"t, tt, th, ed","tip, matter, thomas, ripped, tie",t,T,Consonant
+t͡ʃ,tʃ,tS,voiceless postalveolar affricate,chart,S,"ch, tch, tu, te","chip, watch, future, righteous, China",C,CH,Consonant
+θ,,T,voiceless dental fricative,thin,T,th ,"thongs, thigh",T,TH,Consonant
+v,,v,voiced labiodental fricative,vest,f,"v, f, ph, ve","vine, of, stephen, five, vie",v,V,Consonant
+w,,w,labial-velar approximant,west,u,"w, wh, u, o","wit, why, quick, choir, wise",w,W,Consonant
+z,,z,voiced alveolar fricative,zero,s,"z, zz, s, ss, x, ze, se","zed, buzz, his, scissors, xylophone, craze, zoo",z,Z,Consonant
+ʒ,,Z,voiced postalveolar fricative,vision,S,"s, si, z","treasure, division, azure, pleasure",Z,ZH,Consonant
+ɪ,,I,near-close near-front unrounded vowel,kit,i,"i, e, o, u, ui, y, ie","it, england, women, busy, guild, gym, sieve, bit, fit, pick, difficult",I,IH,Short Vowel
+ɛ,e,E,open mid-front unrounded vowel,dress,E,"e, ea, u, ie, ai, a, eo, ei, ae","end, bread, bury, friend, said, many, leopard, heifer, aesthetic, bet, pet sent, attention",E,EH,Short Vowel
+æ,,{,near open-front unrounded vowel,trap,a,"a, ai, au","cat, plaid, laugh, bat, pat, flat, family",@,AE,Short Vowel
+ʌ,,V,open-mid-back unrounded vowel,strut,E,"u, o, oo, ou","lug, monkey, blood, double, butt, cut, jump, cover",A,AH,Short Vowel
+ʊ,,U,near-close near-back rounded vowel,foot,u,"o, oo, u,ou","wolf, look, bush, would, put, book, cushion",U,UH,Short Vowel
+ɑ,,A,open-back unrounded vowel,father,a,a,"arm , balm, bot, pot, dog, hospital",a,AA,Short Vowel
+ə,,@,mid-central vowel,arena,@,"a, er, i, ar, our, ur","about, ladder, pencil, dollar, honour, augur , comma, about, system, complete",x,AX,Short Vowel
+i:,i,i,long close front unrounded vowel,fleece,i,"e, ee, ea, y, ey, oe, ie, i, ei, eo, ay","be, bee, meat, lady, key, phoenix, grief, ski, deceive, people, quay, beat, week, feet, media",i,IY,Long Vowel
+ɑ:,ɑ,A,long open-back unrounded vowel,father,a,"a, o","start, art, palm, spa, lot, stop, hard, park, article",a ,AA ,Long Vowel
+ɔ:,ɔ,O,long open mid-back rounded vowel,thought,O,"aw, a, or, oor, ore, oar, our, augh, ar, ough, au","paw, ball, fork, poor, fore, board, four, taught, war, bought, sauce, caught, story, fork, walk, august",c,AO,Long Vowel
+ɜ:,ɝ,3,long open mid-central unrounded vowel,nurse,E,"ir, er, ur, ear, or, our, yr","bird, term, burn, pearl, word, journey, myrtle, bird, foreword, heard, surface",R,ER,Long Vowel
+u:,u,u,long close-back rounded vowel,goose,u,"o, oo, ew, ue, u_e, oe, ough, ui, oew, ou","who, loon, dew, blue, flute, shoe, through, fruit, manoeuvre, group, boot, group, beautiful",u,UW,Long Vowel
+eɪ,,eI,diphthong,face,e,"a, ai, eigh, aigh, ay, er, et, ei, au, a_e, ea, ey","bay, maid, weigh, straight, pay, foyer, filet, eight, gauge, mate, break, they, bait, place, late, dangerous",e,EY,Diphthong Vowel
+oʊ,o,oU,diphthong,goat,o,"o, oa, o_e, oe, ow, ough, eau, oo, ew","open, moat, bone, toe, sow, dough, beau, brooch, sew, boat, home, phone, global",o,OW,Diphthong Vowel
+aʊ,aʊ,aU,diphthong,mouth,a,"ow, ou, ough","now, shout, bough, bout, mouse, brown, accountant",W,AW,Diphthong Vowel
+ɪə,ɪə,I@,diphthong,near,I,"ear, eer, ere, ier","ear, steer, here, tier, clear, fear, career",,,Diphthong Vowel
+eə,eə,E@,diphthong,square,E,"air, are, ear, ere, eir, ayer","chair, dare, pear, where, their, prayer, care, wear, declare",,,Diphthong Vowel
+ɔɪ,ɔɪ,OI,diphthong,choice,O,"oi, oy, uoy","join, boy, buoy, boy, toy, enjoyable",O,OY,Diphthong Vowel
+aɪ,,aI,diphthong,price,a,"i, y, igh, ie, uy, ye, ai, is, eigh, i_e","spider, sky, night, pie, guy, stye, aisle, island, height, kite, bite, find, bite, tiger",Y,AY,Diphthong Vowel
+ʊə,ʊə,U@,diphthong,cure,u,"ure, our","cure, tourist, tour, pure, mature",,,Diphthong Vowel

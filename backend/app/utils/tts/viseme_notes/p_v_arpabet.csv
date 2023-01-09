@@ -1,0 +1,51 @@
+Arpabet 1-letter,Arpabet 2-letter,IPA,Examples,Type
+a,AA,ɑ~ɒ,"balm, bot (with father–bother merger) ",Vowel
+@,AE,æ,bat,Vowel
+A,AH,ʌ,butt,Vowel
+c,AO,ɔ,"caught, story ",Vowel
+W,AW,aʊ,bout,Vowel
+x,AX,ə,comma,Vowel
+—,AXR,ɚ,"letter, forward ",Vowel
+Y,AY,aɪ,bite,Vowel
+E,EH,ɛ,bet,Vowel
+R,ER,ɝ,"bird, foreword ",Vowel
+e,EY,eɪ,bait,Vowel
+I,IH,ɪ,bit,Vowel
+X,IX,ɨ,"roses, rabbit ",Vowel
+i,IY,i,beat,Vowel
+o,OW,oʊ,boat,Vowel
+O,OY,ɔɪ,boy,Vowel
+U,UH,ʊ,book,Vowel
+u,UW,u,boot,Vowel
+—,UX,ʉ,dude,Vowel
+b,B,b,buy,Consonant
+C,CH,tʃ,China,Consonant
+d,D,d,die,Consonant
+D,DH,ð,thy,Consonant
+F,DX,ɾ,butter,Consonant
+L,EL,l̩,bottle,Consonant
+M,EM,m̩,rhythm,Consonant
+N,EN,n̩,button,Consonant
+f,F,f,fight,Consonant
+g,G,ɡ,guy,Consonant
+h,HH,h,high,Consonant
+J,JH,dʒ,jive,Consonant
+k,K,k,kite,Consonant
+l,L,l,lie,Consonant
+m,M,m,my,Consonant
+n,N,n,nigh,Consonant
+G,NG,ŋ,sing,Consonant
+—,NX,ɾ̃,winner,Consonant
+p,P,p,pie,Consonant
+Q,Q,ʔ,uh-oh,Consonant
+r,R,ɹ,rye,Consonant
+s,S,s,sigh,Consonant
+S,SH,ʃ,shy,Consonant
+t,T,t,tie,Consonant
+T,TH,θ,thigh,Consonant
+v,V,v,vie,Consonant
+w,W,w,wise,Consonant
+H,WH,ʍ,why (without wine–whine merger),Consonant
+y,Y,j,yacht,Consonant
+z,Z,z,zoo,Consonant
+Z,ZH,ʒ,pleasure,Consonant
