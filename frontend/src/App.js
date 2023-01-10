@@ -141,7 +141,7 @@ const App = ({ classes }) => {
   function browUpdater (AU) { updateBrowAU({ ...AU })}
   function eyeUpdater (AU) { updateEyeAU({ ...eyeAU, ...AU })}
 
-  const handleSubmit = (event) => {
+  const handleFormSubmit = (event) => {
     event.preventDefault();
 
     var auToUpdate = getAUs(viseme)
@@ -181,8 +181,7 @@ const App = ({ classes }) => {
     setTranscribedData(oldData => [...oldData, <br></br>, received])
     const bot_res = await get_bot_response(received)
 
-    setTranscribedData(oldData => [...oldData, <br></br>,bot_res])
-    do_tts(bot_res)
+    setTextToSay(bot_res)
 
     setBeginConversation(false)
   }
@@ -201,6 +200,7 @@ const App = ({ classes }) => {
     const text = e
     const speaker_id = speakerVoice
     const style_wav = ""
+    setTranscribedData(oldData => [...oldData, <br></br>, text])
 
     if (text) {
         fetch(`//localhost:8000/api/tts?text=${encodeURIComponent(text)}&speaker_id=${encodeURIComponent(speaker_id)}&style_wav=${encodeURIComponent(style_wav)}`, { cache: 'no-cache' })
@@ -255,13 +255,15 @@ const App = ({ classes }) => {
             width={320} />
         </div>      
       </div>
-
-          <br></br>
+      <p>{textToSay}</p>
+      <button id="sayit" onClick={() => do_tts(textToSay)}>* * * * * Say it!* * * * *</button>
+      <br></br>
+      <br></br>
       <button id="toggle" onClick={() => setFormToggle(!showForm)}>Show/Hide Form Input:</button>
 
       <div id="formcontent" hidden={showForm}>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleFormSubmit}>
         <label>Enter the text you would like the robot to say:
             <input 
               size={100}
@@ -283,8 +285,8 @@ const App = ({ classes }) => {
           <br></br>
           <label>Choose robot voice:
           <select value={speakerVoice} 
-          multiple={true}
-          onChange={(event) => {setSpeakerVoice(event.target.value)}}>
+            multiple={true}
+            onChange={(event) => {setSpeakerVoice(event.target.value)}}>
             <option value="p267">British Male m</option>
             <option value="p330">British Male s</option>
             <option value="p312">British Male f</option>
