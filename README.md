@@ -113,9 +113,11 @@ These modules are imported into the app/api.py and can be replaced with private/
 - [ ] BUGFIX forms causing resets if adjusted *
 - [ ] organize consistent styles and colors *
 - [ ] Create additional face visual presents *
+    - Such as QT default, cordial replica, and human mask
+- [ ] Pre-Process audio for speech segments on client side
 
 ### Back End
-
+- [ ] Test ChatGPT for classification
 - [ ] Multi-Speaker input 
 - [ ] finish face control api  
 
@@ -126,9 +128,12 @@ These modules are imported into the app/api.py and can be replaced with private/
 - [ ] Philosophy Teacher
 - [ ] Meditation Leader
 - [ ] Basic Q&A
+- [ ] Deploy backend to the cloud
 
 ### General
 - [ ] Improve Documentation
-    - [ ] Customizing the bot * 
-
+    - [ ] How to Customizing the bot appearance * 
+    - [ ] How to contribute
+    - [ ] How to customize responses
+    - [ ] How to add a new API service
 
