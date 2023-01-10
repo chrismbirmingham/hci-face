@@ -68,9 +68,9 @@ const App = ({ classes }) => {
   const [expression, setExpression] = useState("");
   const [showForm, setFormToggle] = useState(false);
   const [textToSay, setTextToSay] = useState("Don't put words in my mouth like that.");
-  const [mouthAU, updateMouthAU] = useReducer((mouthAU, updates) => ({ ...initialMouthAU, ...updates }),initialMouthAU);
-  const [eyeAU, updateEyeAU] = useReducer((eyeAU, updates) => ({ ...initialEyeAU, ...updates }),initialEyeAU);
-  const [browAU, updateBrowAU] = useReducer((browAU, updates) => ({ ...initialBrowAU, ...updates }),initialBrowAU);
+  const [mouthAU, updateMouthAU] = useReducer((mouthAU, updates) => ({ ...mouthAU, ...updates }),initialMouthAU);
+  const [eyeAU, updateEyeAU] = useReducer((eyeAU, updates) => ({ ...eyeAU, ...updates }),initialEyeAU);
+  const [browAU, updateBrowAU] = useReducer((browAU, updates) => ({ ...browAU, ...updates }),initialBrowAU);
   
   
   // TODO set up eyes/brows for individual control

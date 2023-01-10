@@ -110,7 +110,7 @@ These modules are imported into the app/api.py and can be replaced with private/
         - [ ] [Add Complex Emotion Expression](http://www.erasmatazz.com/library/design-diaries/design-diary-siboot/september-2014/moods-and-facial-expression.html)
     - [ ] Add idle behaviors  
         - Bored, Focused, Breathing, Thinking
-- [ ] BUGFIX forms causing resets if adjusted *
+- [X] BUGFIX forms causing resets if adjusted *
 - [ ] organize consistent styles and colors *
 - [ ] Create additional face visual presents *
     - Such as QT default, cordial replica, and human mask
