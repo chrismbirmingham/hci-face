@@ -105,9 +105,9 @@ These modules are imported into the app/api.py and can be replaced with private/
 ### Front End 
 
 - [ ] Different visuals presets  
-    - [ ] Fine tune emotions   
-        - [ ] basics: Joy, Sadness, Fear, Disgust, Anger, Surprise  *
-        - [ ] [Add Complex Emotion Expression](http://www.erasmatazz.com/library/design-diaries/design-diary-siboot/september-2014/moods-and-facial-expression.html)
+    - [X] Fine tune emotions   
+        - [X] basics: Joy, Sadness, Fear, Disgust, Anger, Surprise  *
+        - [X] [Add Complex Emotion Expression](http://www.erasmatazz.com/library/design-diaries/design-diary-siboot/september-2014/moods-and-facial-expression.html)
     - [ ] Add idle behaviors  
         - Bored, Focused, Breathing, Thinking
 - [X] BUGFIX forms causing resets if adjusted *
