@@ -8,6 +8,7 @@ import getAUs from './animation/processVisemes';
 import getExpresionAUs from './animation/proccessExpressions';
 
 import {EyeForm, BrowForm, MouthForm} from './control/Form';
+import DoBehavior from './animation/proccessBehaviors';
 
 const stt_socket = new W3CWebSocket('ws://localhost:8000/api/stt');
 
@@ -225,6 +226,8 @@ const App = ({ classes }) => {
     do_tts(BOT_START)
   }
 
+  DoBehavior("focused", mouthUpdater, browUpdater, eyeUpdater, getExpresionAUs)
+
 
 
   return (
@@ -274,6 +277,7 @@ const App = ({ classes }) => {
           </label>
           <br></br>
           <br></br>
+          <p>Possible expressions: anger, joy, sad, fear, disgust, surprise, neutral; or any hypthenated combo</p>
           <label>Enter expression to show:
             <input 
               type="text" 

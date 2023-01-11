@@ -108,8 +108,10 @@ These modules are imported into the app/api.py and can be replaced with private/
     - [X] Fine tune emotions   
         - [X] basics: Joy, Sadness, Fear, Disgust, Anger, Surprise  *
         - [X] [Add Complex Emotion Expression](http://www.erasmatazz.com/library/design-diaries/design-diary-siboot/september-2014/moods-and-facial-expression.html)
-    - [ ] Add idle behaviors  
-        - Bored, Focused, Breathing, Thinking
+    - [X] Create idle behaviors  
+        - Bored, Focused, random
+    - [ ] Additional idle behaviors
+        - Breathing, Thinking
 - [X] BUGFIX forms causing resets if adjusted *
 - [ ] organize consistent styles and colors *
 - [ ] Create additional face visual presents *
