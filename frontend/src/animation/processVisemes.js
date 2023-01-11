@@ -1,7 +1,24 @@
 
 // text -> X-SAMPA -> Viseme -> FACS
 export default function getAUs(vizeme){
-    const au = {}
+    const au = {
+        au10: 0,
+        au12: 0,
+        au13: 0,
+        au14: 0,
+        au15: 0,
+        au16: 0,
+        au17: 0,
+        au18: 0,
+        au20: 0,
+        au22: 0,
+        au23: 0,
+        au24: 0,
+        au25: 0,
+        au26: 0,
+        au27: 0,
+        au28: 0
+    };
     switch(vizeme) {
         case "IDLE":
         break;

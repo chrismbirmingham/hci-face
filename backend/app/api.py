@@ -61,6 +61,8 @@ async def read_root() -> dict:
 
 @app.get('/api/visemes')
 async def viseme_stream(request: Request):
+    # WARNING if you have multiple face tabs open, it will split the 
+    # visemes sent to each one
     async def event_generator():
         global VIZEME_QUEUE
         while True:
@@ -74,7 +76,7 @@ async def viseme_stream(request: Request):
             # Checks for new messages and return them to client if any
             if len(VIZEME_QUEUE) >0:
                 msg = VIZEME_QUEUE.pop(0)
-                # print(msg, VISEME_DELAY)
+                print(msg, VISEME_DELAY)
                 response = {
                         "event": "viseme",
                         "id": "message_id",
@@ -143,6 +145,7 @@ def text_to_speech(text: str, speaker_id: str = "", style_wav: str = ""):
     global VISEME_DELAY
     out, speaking_time = tts.synthesize_wav(text, speaker_id, style_wav)
     viseme_set = vg.get_visemes(text)
+    print(speaking_time, len(viseme_set))
     viseme_length = (speaking_time) / (len(viseme_set)+1)
     VISEME_DELAY = viseme_length
     VIZEME_QUEUE += viseme_set

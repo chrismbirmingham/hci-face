@@ -81,7 +81,7 @@ These modules are imported into the app/api.py and can be replaced with private/
 
 [Emotion Expression](http://www.erasmatazz.com/library/design-diaries/design-diary-siboot/september-2014/moods-and-facial-expression.html)
 
-[Viseme Expression](https://melindaozel.com/viseme-cheat-sheet/)
+[Viseme Cheat Sheet](https://melindaozel.com/viseme-cheat-sheet/) and [Lip Synchronization](https://wolfpaulus.com/lipsynchronization/)
 
 ### Back End
 
@@ -105,26 +105,24 @@ These modules are imported into the app/api.py and can be replaced with private/
 ### Front End 
 
 - [ ] Different visuals presets  
-    - [X] Fine tune emotions   
-        - [X] basics: Joy, Sadness, Fear, Disgust, Anger, Surprise  *
-        - [X] [Add Complex Emotion Expression](http://www.erasmatazz.com/library/design-diaries/design-diary-siboot/september-2014/moods-and-facial-expression.html)
-    - [X] Create idle behaviors  
-        - Bored, Focused, random
     - [ ] Additional idle behaviors
         - Breathing, Thinking
-- [X] BUGFIX forms causing resets if adjusted *
 - [ ] organize consistent styles and colors *
 - [ ] Create additional face visual presents *
     - Such as QT default, cordial replica, and human mask
 - [ ] Pre-Process audio for speech segments on client side
+- [ ] Improve accuracy of lip synch
 
 ### Back End
 - [ ] Test ChatGPT for classification
 - [ ] Multi-Speaker input 
+- [ ] [Add Amazon Polly Support](https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/python/example_code/polly/polly_wrapper.py)
 - [ ] finish face control api  
+- [ ] Long term interaction recording
 
 
 ### Long Term Goals
+- [ ] Interaction Lab greeter
 - [ ] meeting note taker  
 - [ ] Timer work encouragement  
 - [ ] Philosophy Teacher
