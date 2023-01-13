@@ -39,7 +39,7 @@ VIZEME_QUEUE = []
 VISEME_DELAY = .01  # second
 RETRY_TIMEOUT = 15000  # milisecond
 
-app = FastAPI()
+app = FastAPI(debug=False)
 
 
 origins = [
@@ -76,7 +76,7 @@ async def viseme_stream(request: Request):
             # Checks for new messages and return them to client if any
             if len(VIZEME_QUEUE) >0:
                 msg = VIZEME_QUEUE.pop(0)
-                print(msg, VISEME_DELAY)
+                # print(msg, VISEME_DELAY)
                 response = {
                         "event": "viseme",
                         "id": "message_id",
@@ -145,7 +145,7 @@ def text_to_speech(text: str, speaker_id: str = "", style_wav: str = ""):
     global VISEME_DELAY
     out, speaking_time = tts.synthesize_wav(text, speaker_id, style_wav)
     viseme_set = vg.get_visemes(text)
-    print(speaking_time, len(viseme_set))
+    # print(speaking_time, len(viseme_set))
     viseme_length = (speaking_time) / (len(viseme_set)+1)
     VISEME_DELAY = viseme_length
     VIZEME_QUEUE += viseme_set
@@ -156,7 +156,7 @@ def text_to_speech(text: str, speaker_id: str = "", style_wav: str = ""):
 @app.get("/api/bot_response")
 def generate_response(text: str, reset_conversation: bool):
     """Generates a bot response"""
-    expresions = ["neutral", "happy", "sad", "angry", "disgusted", "surprised", "fearful"]
+    expresions = ["neutral", "happy", "sad", "angry", "disgusted", "surprise", "fear"]
     e = random.choice(expresions)
     FACE_CONTROL_QUEUE["expression"].append(e)
     out_text = bot.get_bot_response(text, reset_conversation)
