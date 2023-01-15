@@ -103,7 +103,6 @@ These modules are imported into the app/api.py and can be replaced with private/
 
 
 ### Front End 
-
 - [ ] Pre-Process audio for speech segments on client side ***
 - [ ] Different visuals presets  
     - [ ] Additional idle behaviors
