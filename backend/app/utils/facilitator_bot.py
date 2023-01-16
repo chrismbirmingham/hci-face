@@ -1,6 +1,11 @@
-from facilitator_logic import StatementClassification, DirectorFacilitator, RoleModelFacilitator
-from chatgpt import ChatGPT
-from zero_shot import ChatLLM, ClassifyLLM
+if __name__ == "__main__":
+    from chatbot.facilitator_logic import StatementClassification, DirectorFacilitator, RoleModelFacilitator
+    from chatbot.chatgpt import ChatGPT
+    from chatbot.zero_shot import ChatLLM, ClassifyLLM
+else:
+    from .chatbot.facilitator_logic import StatementClassification, DirectorFacilitator, RoleModelFacilitator
+    from .chatbot.chatgpt import ChatGPT
+    from .chatbot.zero_shot import ChatLLM, ClassifyLLM
 
 
 class FacilitatorChat():
@@ -22,23 +27,43 @@ class FacilitatorChat():
             self.facilitator = DirectorFacilitator()
         
 
-    def get_bot_response(self, input):
+    def get_bot_response(self, input, speaker="Human", reset_conversation=False):
+        bot_response = self.bot.get_bot_response(input, speaker=speaker, reset_conversation=reset_conversation)
+
         if self.backend == "gpt":
             self.sc.classify_gpt(self.bot, input)
+
         if self.backend == "llm":
             self.sc.classify_llm(self.classifier, input)
-        tree_response = self.facilitator.decision_tree(self.sc)
-        bot_response = self.bot.get_bot_response(input)
-        print(tree_response, "\nOR\n", bot_response)
-        return tree_response, bot_response
 
-test_input = "That is a great idea. You should try it!"
+        tree_response = self.facilitator.decision_tree(self.sc)
+
+        return tree_response, bot_response
+        
+
 
 if __name__ == "__main__":
-    bot = FacilitatorChat()
+    bot = FacilitatorChat(backend="llm")
+
     print(bot.facilitator_prompt)
     print("What would you like to start your conversation with?")
     while True:
-        i = input("Human: ")
-        response = bot.get_bot_response(i)
-        print(response)
+        speaker = input("Speaker: ")
+
+        if speaker == "debug":
+            print(bot.bot.conversation)
+            continue
+
+        user_input = input("Says: ")
+
+        tree_response, bot_response = bot.get_bot_response(user_input, speaker=speaker)
+        print(f"Tree: {tree_response}\nBot: {bot_response}")
+
+        keep = input("keep response? (n/y tree or bot)")
+        if "n" in keep:
+            bot.bot.conversation.pop(-1)
+        if "tree" in keep:
+            if bot.backend == "gpt":
+                bot.bot.conversation[-1] = "AI: " + tree_response
+            if bot.backend == "llm":
+                bot.bot.conversation[-1] = ("AI:", tree_response)

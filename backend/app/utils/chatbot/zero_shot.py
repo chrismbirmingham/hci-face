@@ -108,13 +108,13 @@ class ChatLLM():
         self.end_sequence = "Human:"
         return
 
-    def get_bot_response(self, user_input, reset_conversation=False):
+    def get_bot_response(self, user_input, speaker="Human", reset_conversation=False):
         if reset_conversation:
             self.conversation = [("AI:", self.bot_default)]
             return self.bot_default
 
 
-        self.conversation.append(("Human:", user_input))
+        self.conversation.append((f"{speaker}:", user_input))
         # self.conversation.append(("AI:", ""))
 
         input_prompt = self.prompt + "\n\n" + "\n".join(f"{p[0]}\n{p[1]}\n" for p in self.conversation)
@@ -180,6 +180,12 @@ if __name__ == "__main__":
     print(bot_default)
     bot = ChatLLM()
     while True:
-        i = input("Human: ")
-        response = bot.get_bot_response(i)
-        print("AI: ", response)
+        speaker = input("Speaker: ")
+        if speaker == "debug":
+            print(bot.conversation)
+        user_input = input("Says: ")
+        response = bot.get_bot_response(user_input, speaker=speaker)
+        print(response)
+        keep = input("keep response? (y/n)")
+        if keep == "n":
+            bot.conversation.pop(-1)

@@ -52,11 +52,8 @@ class StatementClassification():
         responses = chatgpt.answer_question_on_input(input, self.joined_questions)
         # assert len(responses) == len(self.classification_questions), "Did not get answers to requested questions"
         print(responses)
-        if "response" in responses:
-            self.response = True
-
-        if "disclosure" in responses:
-            self.disclosure = True
+        self.response = "response" in responses
+        self.disclosure = "disclosure" in responses
 
         for d in ["experience", "opinion", "suggestion", "emotion"]:
             if d in responses:

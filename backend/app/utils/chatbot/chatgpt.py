@@ -13,11 +13,11 @@ class ChatGPT():
         self.conversation = [prompt]
         pass
 
-    def get_bot_response(self, user_input, reset_conversation=False):
+    def get_bot_response(self, user_input, speaker="Human", reset_conversation=False):
         if reset_conversation: 
             self.conversation = [self.prompt]
 
-        self.conversation.append("Human: " + user_input)
+        self.conversation.append(f"{speaker}: {user_input}")
         self.conversation.append("AI: ")
 
         input_prompt = "\n".join(self.conversation)
@@ -25,7 +25,7 @@ class ChatGPT():
         response = self._queryAPI(input_prompt)["choices"][0]["text"]
         response = response.replace("\n",'')
 
-        self.conversation.append(response)
+        self.conversation[-1] += response
         return response
 
     def _queryAPI(self, prompt, stop=[" Human:", " AI:"], temp=.9, mt=150):
@@ -55,6 +55,12 @@ if __name__ == "__main__":
     print("What would you like to start your conversation with?")
     bot = ChatGPT()
     while True:
-        i = input("Human: ")
-        response = bot.get_bot_response(i)
+        speaker = input("Speaker: ")
+        if speaker == "debug":
+            print(bot.conversation)
+        user_input = input("Says: ")
+        response = bot.get_bot_response(user_input, speaker=speaker)
         print(response)
+        keep = input("keep response? (y/n)")
+        if keep == "n":
+            bot.conversation.pop(-1)
