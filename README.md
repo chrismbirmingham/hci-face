@@ -108,13 +108,13 @@ These modules are imported into the app/api.py and can be replaced with private/
     - [ ] Additional idle behaviors
         - Breathing, Thinking
 - [ ] organize consistent styles and colors *
-- [ ] Create additional face visual presents *
+- [X] Create additional face visual presents *
     - Such as QT default, cordial replica, and human mask
 - [ ] Improve accuracy of lip synch *
 
 ### Back End
-- [ ] Test ChatGPT for classification
-- [ ] Multi-Speaker input 
+- [X] Test ChatGPT for classification
+- [X] Multi-Speaker input 
 - [ ] [Add Amazon Polly Support](https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/python/example_code/polly/polly_wrapper.py)
 - [ ] finish face control api (AU control) 
 - [ ] Long term interaction recording

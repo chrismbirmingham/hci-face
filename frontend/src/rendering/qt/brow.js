@@ -13,19 +13,19 @@ function AdjustMUnits (position, browAU)
 
 
     [cx, cy] = [position.x, position.y];
-    [ix, iy, mx, my, ox, oy] = [5*flip,.8, 0,1.3, -15*flip,1.5];
-    // console.log([cx, cy, ox, oy, mx, my, ix, iy])
-    my += my + au1_inner_brow_raiser*.25
-    iy += iy + au1_inner_brow_raiser*.5
+    [ix, iy, mx, my, ox, oy] = [5*flip, 4,   -3*flip, 7,   -11*flip, 4];
 
-    my += my + au2_outer_brow_raiser*.5
-    mx += mx - au2_outer_brow_raiser*.5*flip
-    oy += oy + au2_outer_brow_raiser
+    my = my + au1_inner_brow_raiser*.25
+    iy = iy + au1_inner_brow_raiser*.5
 
-    mx += mx + au4_brow_lowerer*flip
-    my += my - au4_brow_lowerer
-    ix += ix + au4_brow_lowerer*flip
-    iy += iy - au4_brow_lowerer*1.4
+    my = my + au2_outer_brow_raiser*.5
+    mx = mx - au2_outer_brow_raiser*.5*flip
+    oy = oy + au2_outer_brow_raiser
+
+    mx = mx + au4_brow_lowerer*flip
+    my = my - au4_brow_lowerer
+    ix = ix + au4_brow_lowerer*flip
+    iy = iy - au4_brow_lowerer*1.4
 
     return [cx, cy, ox, oy, mx, my, ix, iy]
 }
@@ -39,12 +39,12 @@ function Linify(bunits)
     cx+mx, cy-my,
     cx+ix, cy-iy,
     
-    "L",cx+ix*1.1, cy-iy-2,
-    // "M", cx+ox, cy-oy,
-    "Q", 
-    cx+mx, cy-my-4,
-    cx+ox, cy-oy-1,
-    "Z"
+    // "L",cx+ix*1.1, cy-iy-2,
+    // // "M", cx+ox, cy-oy,
+    // "Q", 
+    // cx+mx, cy-my-4,
+    // cx+ox, cy-oy-1,
+    // "Z"
     ];
 
 
@@ -63,7 +63,7 @@ function Brow({position, browAU}) {
         )
   
     return (
-          <animated.path d={animationProps.brow} stroke="#000" fill="#000" fillOpacity=".7" strokeWidth="0.3" strokeLinecap="round"/>
+          <animated.path d={animationProps.brow} stroke="#BBB" fillOpacity=".0" strokeWidth="3" strokeLinecap="round"/>
     );
 }
 

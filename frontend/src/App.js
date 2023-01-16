@@ -6,13 +6,13 @@ import { ReactMic } from './react-mic-clone';
 import Head from './rendering/head';
 import getAUs from './animation/processVisemes';
 import getExpresionAUs from './animation/proccessExpressions';
+import {randomFace, boredEyes, focusedEyes} from './animation/proccessBehaviors';
 
 import {EyeForm, BrowForm, MouthForm} from './control/Form';
-import {randomFace, boredEyes, focusedEyes} from './animation/proccessBehaviors';
 
 const stt_socket = new W3CWebSocket('ws://localhost:8000/api/stt');
 const FACILITOR_INTRO = "Hello and welcome to each of you! Thank you for taking the time to be here today. During today’s support group session I invite you to share your thoughts and experiences with each other, and I hope that you will listen to each other and respond with empathy and compassion. To begin with, I’d like to start with a round of introductions. My name is Q.T. and I am training to be a support group facilitator at the Interaction Lab at USC. I am learning how to facilitate support groups so I can help people support each other better. Who would like to go next?"
-const BOT_START = "Hi, I am your virtual personal mental health assistant. How are you doing today?"
+// const BOT_START = "Hi, I am your virtual personal mental health assistant. How are you doing today?"
 
 const App = ({ classes }) => {
   // Initial positions
@@ -304,6 +304,7 @@ const App = ({ classes }) => {
               <option value="focused">focused</option>
               <option value="random">random</option>
               <option value="bored">bored</option>
+              <option value="none">none</option>
             </select>
           </label>
           <label>Expression:
@@ -348,7 +349,7 @@ const App = ({ classes }) => {
           <br></br>
           <br></br>
         </form>
-        <div id="AU control" hidden={true}>
+        <div id="AU control" hidden={false}>
           <EyeForm v={eyeAU} f={eyeUpdater}/>
           <BrowForm v={browAU} f={browUpdater}/>
           <MouthForm v={mouthAU} f={mouthUpdater}/>

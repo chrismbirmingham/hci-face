@@ -1,6 +1,6 @@
-import Mouth from "./mouth";
-import Brow from "./brow";
-import Eye from './eyes';
+import Mouth from "./cordial/mouth";
+import Brow from "./cordial/brow";
+import Eye from './cordial/eyes';
 
 function Head({position, eyeAU, browAU, mouthAU}){
     return (
