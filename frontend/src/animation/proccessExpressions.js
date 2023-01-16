@@ -1,6 +1,6 @@
 
 // text -> X-SAMPA -> Viseme -> FACS
-export default function getExpresionAUs(expression){
+export default function getExpresionAUs(expression, intensity = .5){
 
     const MouthAU = {
         au10: 0,
@@ -21,23 +21,23 @@ export default function getExpresionAUs(expression){
         au28: 0
     };
     const BrowAU = {
-    au1: 0,
-    au2: 0,
-    au4: 0,
+        au1: 0,
+        au2: 0,
+        au4: 0,
     };  
     const EyeAU = {
-    au5: 0,
-    au6: 0,
-    au7: 0,
-    au41: 0,
-    au42: 0,
-    au43: 0,
-    au44: 0,
-    au45: 0,
-    au61: 0,
-    au62: 0,
-    au63: 0,
-    au64: 0,
+        au5: 0,
+        au6: 0,
+        au7: 0,
+        au41: 0,
+        au42: 0,
+        au43: 0,
+        au44: 0,
+        au45: 0,
+        au61: 0,
+        au62: 0,
+        au63: 0,
+        au64: 0,
     };  
     var d = 1;
     if (expression.includes("-")){
@@ -45,80 +45,80 @@ export default function getExpresionAUs(expression){
     }
 
     if (expression.includes("neutral")){
-        MouthAU.au12 = MouthAU.au12 + 0.2/d
-        MouthAU.au26 = MouthAU.au26 + 0.2/d
-        EyeAU.au44 = EyeAU.au44 +  0.6/d
+        MouthAU.au12 = MouthAU.au12 + (0.2/d) * intensity
+        MouthAU.au26 = MouthAU.au26 + (0.2/d) * intensity
+        EyeAU.au44 = EyeAU.au44 + ( 0.6/d) * intensity
     };
 
     if (expression.includes("joy") || expression.includes("happy")){ 
-        EyeAU.au6 = EyeAU.au6 + 0.25/d
-        EyeAU.au44 = EyeAU.au44 + 0.6/d
-        BrowAU.au1 = BrowAU.au1 + 0.15/d
-        MouthAU.au10 = MouthAU.au10 + 0.5/d
-        MouthAU.au12 = MouthAU.au12 + 1/d
-        MouthAU.au14 = MouthAU.au14 + 1/d
-        MouthAU.au16 = MouthAU.au16 + 0.3/d
-        MouthAU.au27 = MouthAU.au28 + 0.27/d
-        MouthAU.au28 = MouthAU.au28 + 0.27/d
+        EyeAU.au6 = EyeAU.au6 + (0.25/d) * intensity
+        EyeAU.au44 = EyeAU.au44 + (0.6/d) * intensity
+        BrowAU.au1 = BrowAU.au1 + (0.15/d) * intensity
+        MouthAU.au10 = MouthAU.au10 + (0.5/d) * intensity
+        MouthAU.au12 = MouthAU.au12 + (1/d) * intensity
+        MouthAU.au14 = MouthAU.au14 + (1/d) * intensity
+        MouthAU.au16 = MouthAU.au16 + (0.3/d) * intensity
+        MouthAU.au27 = MouthAU.au28 + (0.27/d) * intensity
+        MouthAU.au28 = MouthAU.au28 + (0.27/d) * intensity
     };
 
     if (expression.includes("sad")){ 
-        BrowAU.au1 = BrowAU.au1 + .5/d
-        BrowAU.au4 = BrowAU.au4 + 1/d
-        EyeAU.au44 = EyeAU.au44 + .9/d
-        EyeAU.au45 = EyeAU.au45 + .3/d
-        EyeAU.au64 = EyeAU.au64 + 1/d
-        MouthAU.au12 = MouthAU.au12 + .2/d
-        MouthAU.au14 = MouthAU.au14 + .24/d
-        MouthAU.au15 = MouthAU.au15 + 1/d
-        MouthAU.au16 = MouthAU.au16 + .2/d
-        MouthAU.au25 = MouthAU.au25 + .15/d
-        MouthAU.au26 = MouthAU.au26 + .27/d
-        MouthAU.au28 = MouthAU.au28 + .33/d
+        BrowAU.au1 = BrowAU.au1 + (.5/d) * intensity
+        BrowAU.au4 = BrowAU.au4 + (1/d) * intensity
+        EyeAU.au44 = EyeAU.au44 + (.9/d) * intensity
+        EyeAU.au45 = EyeAU.au45 + (.3/d) * intensity
+        EyeAU.au64 = EyeAU.au64 + (1/d) * intensity
+        MouthAU.au12 = MouthAU.au12 + (.2/d) * intensity
+        MouthAU.au14 = MouthAU.au14 + (.24/d) * intensity
+        MouthAU.au15 = MouthAU.au15 + (1/d) * intensity
+        MouthAU.au16 = MouthAU.au16 + (.2/d) * intensity
+        MouthAU.au25 = MouthAU.au25 + (.15/d) * intensity
+        MouthAU.au26 = MouthAU.au26 + (.27/d) * intensity
+        MouthAU.au28 = MouthAU.au28 + (.33/d) * intensity
     };
         
     if (expression.includes("surprise")){ 
-        BrowAU.au1 = BrowAU.au1 + 1/d
-        BrowAU.au2 = BrowAU.au2 + 1/d
-        MouthAU.au10 = MouthAU.au10 + .54/d
-        MouthAU.au12 = MouthAU.au12 + .2/d
-        MouthAU.au26 = MouthAU.au26 + 1/d
+        BrowAU.au1 = BrowAU.au1 + (1/d) * intensity
+        BrowAU.au2 = BrowAU.au2 + (1/d) * intensity
+        MouthAU.au10 = MouthAU.au10 + (.54/d) * intensity
+        MouthAU.au12 = MouthAU.au12 + (.2/d) * intensity
+        MouthAU.au26 = MouthAU.au26 + (1/d) * intensity
     };
 
     if (expression.includes("fear")){ 
-        BrowAU.au1 = BrowAU.au1 + 1/d
-        BrowAU.au2 = BrowAU.au2 + .5/d
-        BrowAU.au4 = BrowAU.au4 + .5/d
-        EyeAU.au5 = EyeAU.au5 + .36/d
-        EyeAU.au6 = EyeAU.au6 + 1/d
-        MouthAU.au20 = MouthAU.au20 + 1/d
-        MouthAU.au22 = MouthAU.au22 + .21/d
-        MouthAU.au25 = MouthAU.au25 + .4/d
-        MouthAU.au26 = MouthAU.au26 + 1/d
+        BrowAU.au1 = BrowAU.au1 + (1/d) * intensity
+        BrowAU.au2 = BrowAU.au2 + (.5/d) * intensity
+        BrowAU.au4 = BrowAU.au4 + (.5/d) * intensity
+        EyeAU.au5 = EyeAU.au5 + (.36/d) * intensity
+        EyeAU.au6 = EyeAU.au6 + (1/d) * intensity
+        MouthAU.au20 = MouthAU.au20 + (1/d) * intensity
+        MouthAU.au22 = MouthAU.au22 + (.21/d) * intensity
+        MouthAU.au25 = MouthAU.au25 + (.4/d) * intensity
+        MouthAU.au26 = MouthAU.au26 + (1/d) * intensity
     };
 
     if (expression.includes("anger")){ 
-        BrowAU.au2 = BrowAU.au2 + 1/d
-        BrowAU.au4 = BrowAU.au4 + 1/d
-        EyeAU.au5 = EyeAU.au5 + .36/d
-        EyeAU.au7 = EyeAU.au7 + .57/d
-        EyeAU.au42 = EyeAU.au42 + 1/d
-        MouthAU.au10 = MouthAU.au10 + .24/d
-        MouthAU.au12 = MouthAU.au12 + .2/d
-        MouthAU.au15 = MouthAU.au15 + 1/d
-        MouthAU.au18 = MouthAU.au18 + .2/d
-        MouthAU.au24 = MouthAU.au24 + .6/d
-        MouthAU.au26 = MouthAU.au26 + 1/d
+        BrowAU.au2 = BrowAU.au2 + (1/d) * intensity
+        BrowAU.au4 = BrowAU.au4 + (1/d) * intensity
+        EyeAU.au5 = EyeAU.au5 + (.36/d) * intensity
+        EyeAU.au7 = EyeAU.au7 + (.57/d) * intensity
+        EyeAU.au42 = EyeAU.au42 + (1/d) * intensity
+        MouthAU.au10 = MouthAU.au10 + (.24/d) * intensity
+        MouthAU.au12 = MouthAU.au12 + (.2/d) * intensity
+        MouthAU.au15 = MouthAU.au15 + (1/d) * intensity
+        MouthAU.au18 = MouthAU.au18 + (.2/d) * intensity
+        MouthAU.au24 = MouthAU.au24 + (.6/d) * intensity
+        MouthAU.au26 = MouthAU.au26 + (1/d) * intensity
     };
 
     if (expression.includes("disgust")){ 
-        EyeAU.au43 = EyeAU.au43 + 1/d
-        BrowAU.au4 = BrowAU.au4 + 1/d
-        MouthAU.au12 = MouthAU.au12 + .2/d
-        MouthAU.au13 = MouthAU.au13 + .9/d
-        MouthAU.au15 = MouthAU.au15 + 1/d
-        MouthAU.au20 = MouthAU.au20 + .4/d
-        MouthAU.au24 = MouthAU.au24 + 1/d
+        EyeAU.au43 = EyeAU.au43 + (1/d) * intensity
+        BrowAU.au4 = BrowAU.au4 + (1/d) * intensity
+        MouthAU.au12 = MouthAU.au12 + (.2/d) * intensity
+        MouthAU.au13 = MouthAU.au13 + (.9/d) * intensity
+        MouthAU.au15 = MouthAU.au15 + (1/d) * intensity
+        MouthAU.au20 = MouthAU.au20 + (.4/d) * intensity
+        MouthAU.au24 = MouthAU.au24 + (1/d) * intensity
     };
     return [MouthAU, EyeAU, BrowAU]
 }
