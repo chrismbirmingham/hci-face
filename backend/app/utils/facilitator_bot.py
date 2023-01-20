@@ -8,6 +8,8 @@ else:
     from .chatbot.zero_shot import ChatLLM, ClassifyLLM
 
 
+
+
 class FacilitatorChat():
     def __init__(self, backend="gpt", facilitor_style="role model") -> None:
         self.facilitator_prompt = "The following is a conversation with an AI assistant that can have meaningful conversations with users. The assistant is helpful, empathic, and friendly. Its objective is to make the user feel better by feeling heard. With each response, the AI assistant prompts the user to continue the conversation naturally."
@@ -43,7 +45,7 @@ class FacilitatorChat():
 
 
 if __name__ == "__main__":
-    bot = FacilitatorChat(backend="llm")
+    bot = FacilitatorChat(backend="gpt")
 
     print(bot.facilitator_prompt)
     print("What would you like to start your conversation with?")

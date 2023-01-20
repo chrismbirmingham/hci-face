@@ -43,8 +43,8 @@ class ChatGPT():
         return response
 
     def answer_question_on_input(self, input, question):
-        prompt = f"{input}\n\n{question}\n\n\n"
-        stop = ["\n"]
+        prompt = f"{input}\n\n{question}\nAnswer each of these questions as separate sentences.\n\n"
+        stop = ["\n\n"]
         response = self._queryAPI(prompt, stop=stop, temp=0, mt=80)
         answer_sentence = response["choices"][0]["text"]
         return answer_sentence
