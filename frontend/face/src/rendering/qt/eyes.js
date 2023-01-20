@@ -115,8 +115,8 @@ function Eye({position, eyeAU}) {
 
     [px, py] = moveEye(lr * erx, ud * -1 * ery, pr, erx, ery)
 
-    // let ed = bezelCirclePath(ex,ey, erx)
-    // let bd = bezelCirclePath(ex,ey, erx+3)
+    let ed = bezelCirclePath(ex,ey, erx)
+    let bd = bezelCirclePath(ex,ey, erx+3)
 
     let pd = circlePath(ex+px, ey+py, pr)// Pupil
     let sd = circlePath(ex+px-pr*.1, ey+py-pr*.3, sr*1.2) // Pupil shine
@@ -126,8 +126,8 @@ function Eye({position, eyeAU}) {
     let uld = upperLidPath(ex+px, ey+py, erx, ery, ulc)
 
     const animationProps = useSpring({
-        // border: bd,
-        // eyeball: ed,
+        border: bd,
+        eyeball: ed,
         pupil: pd,
         sparkle: sd,
         lowerLid: lld,
@@ -140,8 +140,8 @@ function Eye({position, eyeAU}) {
             {/* <animated.path className="eyeball" d={animationProps.eyeball} stroke="#000" fill="#FFF" fillOpacity="0.95" strokeWidth=".15" strokeLinecap="round"/> */}
             <animated.path className="pupil" d={animationProps.pupil} stroke="#777" fill="#111" fillOpacity="0.95" strokeWidth="1" strokeLinecap="round"/>
             <animated.path className="sparkle" d={animationProps.sparkle} stroke="#000" fill="#CCC" fillOpacity="1" strokeWidth="0" strokeLinecap="round"/>
-            <animated.path className="lowerLid" d={animationProps.lowerLid} stroke="#000" fill="#D7E4F5" fillOpacity=".995" strokeWidth="0" strokeLinecap="round"/>
-            <animated.path className="upperLid" d={animationProps.upperLid} stroke="#000" fill="#D7E4F5" fillOpacity=".995" strokeWidth="0" strokeLinecap="round"/>
+            <animated.path className="lowerLid" d={animationProps.lowerLid} stroke="#000" fill={position.faceColor} fillOpacity=".995" strokeWidth="0" strokeLinecap="round"/>
+            <animated.path className="upperLid" d={animationProps.upperLid} stroke="#000" fill={position.faceColor} fillOpacity=".995" strokeWidth="0" strokeLinecap="round"/>
             {/* <animated.path className="border" d={animationProps.border} stroke="#D7E4F5" fill="#FFF" fillOpacity="0" strokeWidth="5" strokeLinecap="round"/> */}
         </g>
     )

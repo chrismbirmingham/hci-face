@@ -77,12 +77,12 @@ function randomFace(count, reset_count, eyeUpdater, browUpdater, mouthUpdater, g
         const randomElement1 = faces[Math.floor(Math.random() * faces.length)];
         const randomElement2 = faces[Math.floor(Math.random() * faces.length)];
         expression = randomElement1 + "-" + randomElement2
-        console.log(expression)
+        // console.log(expression)
         var [MouthAU, EyeAU, BrowAU] = getExpresionAUs(expression)
         mouthUpdater(MouthAU)
         browUpdater(BrowAU)
         eyeUpdater(EyeAU)
-        console.log(expression);
+        // console.log(expression);
     }
     return count
 }

@@ -273,9 +273,9 @@ function Mouth({position, mouthAU}) {
   
     return (
         <g>
-          <animated.path d={animationProps.mouth} stroke="#000" fill="#FFF" fillOpacity=".3" strokeWidth="0" strokeLinecap="round"/>
-          <animated.path d={animationProps.upperlip} stroke="#000" fill="#000" fillOpacity="0.1" strokeWidth=".01" strokeLinecap="round"/>
-          <animated.path d={animationProps.lowerlip} stroke="#000" fill="#000" fillOpacity="0.1" strokeWidth=".01" strokeLinecap="round"/>
+          <animated.path d={animationProps.mouth} stroke="#000" fill="#000" fillOpacity=".8" strokeWidth="0" strokeLinecap="round"/>
+          <animated.path d={animationProps.upperlip} stroke="#000" fill="#000" fillOpacity="0.4" strokeWidth=".5" strokeLinecap="round"/>
+          <animated.path d={animationProps.lowerlip} stroke="#000" fill="#000" fillOpacity="0.4" strokeWidth=".5" strokeLinecap="round"/>
           {/* <animated.path d={animationProps.chin} stroke="#000" fill="#002" fillOpacity=".1" strokeWidth="0" strokeLinecap="round"/> */}
           <animated.path d={animationProps.nose} stroke="#000" fill="#00F" fillOpacity=".0" strokeWidth=".5" strokeLinecap="round"/>
         </g>

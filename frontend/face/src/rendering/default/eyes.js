@@ -142,7 +142,7 @@ function Eye({position, eyeAU}) {
             <animated.path className="sparkle" d={animationProps.sparkle} stroke="#000" fill="#FFF" fillOpacity="1" strokeWidth="0" strokeLinecap="round"/>
             <animated.path className="lowerLid" d={animationProps.lowerLid} stroke="#000" fill="#D7E4F5" fillOpacity=".995" strokeWidth="0.3" strokeLinecap="round"/>
             <animated.path className="upperLid" d={animationProps.upperLid} stroke="#000" fill="#D7E4F5" fillOpacity=".995" strokeWidth="0.3" strokeLinecap="round"/>
-            <animated.path className="border" d={animationProps.border} stroke="#D7E4F5" fill="#FFF" fillOpacity="0" strokeWidth="5" strokeLinecap="round"/>
+            <animated.path className="border" d={animationProps.border} stroke={position.faceColor} fill="#FFF" fillOpacity="0" strokeWidth="5" strokeLinecap="round"/>
         </g>
     )
 }

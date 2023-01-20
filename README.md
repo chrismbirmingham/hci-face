@@ -135,4 +135,5 @@ These modules are imported into the app/api.py and can be replaced with private/
     - [ ] How to contribute
     - [ ] How to customize responses
     - [ ] How to add a new API service
+    - [ ] Organize dependency requirements
 
