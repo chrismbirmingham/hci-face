@@ -14,17 +14,23 @@ HCI-FACE utilizes freely available, open source elements to power all the intera
 ---
 ## Getting Started
 
+### Prerequisites
+
+You will need to have nodejs (>=16 - (Option 2 or 3 in these instructions)[https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04]) and a package manager installed.
+
 ### Front End
 
-To get started you will need to install the front end:
+To get started you will need to install the face and WoZ front ends. Run the following command in frontend/face and frontend/WoZ folders:
 
 ```npm install```
 
-Then to run the front end:
+Then to launch each webpage (in a development environment), run the following command in frontend/face and frontend/WoZ folders:
 
 ```npm start```
 
-And the browser should automattically start.
+The browser should launch with each page automatically, but you may need to past the address into the url bar.
+
+For further details see the README in the face and WoZ folders.
 
 ### Back End
 
@@ -40,11 +46,15 @@ cd backend
 pip install -r requirements.txt
 ```
 
+If you have trouble installing pyaudio, I recommend following (these directions)[https://people.csail.mit.edu/hubert/pyaudio/].
+
 This may take a while, depending on your internet connection.  
 
 Any huggingface models you choose to use should be installed automatically on first use.
 
-If you wish to use chatGPT (enabled by default) you will need to add your API key to your environment
+If you wish to use chatGPT (enabled by default) you will need to add your API key to your environment.
+
+For further details see the README in the backend folder.
 
 
 ---
@@ -108,13 +118,11 @@ These modules are imported into the app/api.py and can be replaced with private/
     - [ ] Additional idle behaviors
         - Breathing, Thinking
 - [ ] organize consistent styles and colors *
-- [X] Create additional face visual presents *
+- [ ] Create additional face visual presents *
     - Such as QT default, cordial replica, and human mask
 - [ ] Improve accuracy of lip synch *
 
 ### Back End
-- [X] Test ChatGPT for classification
-- [X] Multi-Speaker input 
 - [ ] [Add Amazon Polly Support](https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/python/example_code/polly/polly_wrapper.py)
 - [ ] finish face control api (AU control) 
 - [ ] Long term interaction recording
@@ -123,6 +131,7 @@ These modules are imported into the app/api.py and can be replaced with private/
 ### Long Term Goals
 - [ ] Interaction Lab greeter
 - [ ] meeting note taker  
+    - [ ] Fully automatic speaker detection and labeling.
 - [ ] Timer work encouragement  
 - [ ] Philosophy Teacher
 - [ ] Meditation Leader
