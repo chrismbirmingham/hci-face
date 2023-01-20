@@ -86,7 +86,7 @@ function Head({face, position, eyeAU, browAU, mouthAU}){
           </div> 
       )
     }
-    // return (
+    // return ( // Head with QT wrapper draw around it
     //     <div id="head">
     //         <svg
     //           viewBox="-50 -30 100 59"
