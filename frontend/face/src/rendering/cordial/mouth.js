@@ -27,19 +27,19 @@ function AdjustMouth (position, mouthAU)
     var au28_lip_suck = mouthAU.au28*scale;
 
     // SET BASELINES
-    [cx, cy] = [position.x, position.y]; // location of the mouth - all coordinates relative to center
-    const w=.6;
+    [cx, cy] = [position.x, position.y-3]; // location of the mouth - all coordinates relative to center
+    const w=.9;
 
     [rx, ry] = [25*w, 1]; // lip right corner x and y
     [lx, ly] = [-25*w, 1]; // lip left corner x and y
 
-    [tx, ty] = [0, 1]; // lip top x and y
+    [tx, ty] = [0, 1.5]; // lip top x and y
     [rtx, rty] = [12.5*w, 2.5]; // right side top line control point
     [ltx, lty] = [-12.5*w, 2.5]; // left side top line control point
 
-    [bx, by] = [0, 0.5];  // lip bottom x and y
-    [rbx, rby] = [12.5*w, 1.5]; // right side bottom line control point
-    [lbx, lby] = [-12.5*w, 1.5]; // left side bottom line control point
+    [bx, by] = [0, -2];  // lip bottom x and y
+    [rbx, rby] = [12.5*w, -1.5]; // right side bottom line control point
+    [lbx, lby] = [-12.5*w, -1.5]; // left side bottom line control point
     chiny = -20
     nosey = 12
 
@@ -193,6 +193,7 @@ function LinifyMouth(mouthPoints)
     "Q", 
     cx+rbx, cy-rby,
     cx+rx, cy-ry,
+    "Z"
     ]
 
 
@@ -226,27 +227,32 @@ function LinifyNose(nosePoints)
 {
     [cx, cy, rx, nosey] = nosePoints
 
-    let i = 3
+    let i = 3.5
 
     var dis = [
+        "M",cx, cy-nosey-i,
+        "L", cx+i, cy-nosey+i, 
+        "L", cx-i, cy-nosey+i, 
+        "L", cx, cy-nosey-i, 
+
     //nose
-    "M", cx-i*1.5, cy-(nosey+i*1.8),
-    "C", 
-    cx-i*2, cy-(nosey-i*.25),
-    cx-i*1.8, cy-(nosey-i*.1),
-    cx-i, cy-nosey,
+    // "M", cx-i*1.5, cy-(nosey+i*1.8),
+    // "C", 
+    // cx-i*2, cy-(nosey-i*.25),
+    // cx-i*1.8, cy-(nosey-i*.1),
+    // cx-i, cy-nosey,
 
-    "M", cx-i, cy-nosey,
-    "C", 
-    cx+i*.3, cy-(nosey-nosey*.1),
-    cx-i*.3, cy-(nosey-nosey*.1),
-    cx+i, cy-nosey,
+    // "M", cx-i, cy-nosey,
+    // "C", 
+    // cx+i*.3, cy-(nosey-nosey*.1),
+    // cx-i*.3, cy-(nosey-nosey*.1),
+    // cx+i, cy-nosey,
 
-    "M", cx+i*1.5, cy-(nosey+i*1.8),
-    "C", 
-    cx+i*2, cy-(nosey-i*.25),
-    cx+i*1.8, cy-(nosey-i*.1),
-    cx+i, cy-nosey,
+    // "M", cx+i*1.5, cy-(nosey+i*1.8),
+    // "C", 
+    // cx+i*2, cy-(nosey-i*.25),
+    // cx+i*1.8, cy-(nosey-i*.1),
+    // cx+i, cy-nosey,
     ];
 
 
@@ -273,11 +279,11 @@ function Mouth({position, mouthAU}) {
   
     return (
         <g>
-          <animated.path d={animationProps.mouth} stroke="#000" fill="#FFF" fillOpacity=".3" strokeWidth="0" strokeLinecap="round"/>
-          <animated.path d={animationProps.upperlip} stroke="#000" fill="#000" fillOpacity="0.1" strokeWidth=".01" strokeLinecap="round"/>
-          <animated.path d={animationProps.lowerlip} stroke="#000" fill="#000" fillOpacity="0.1" strokeWidth=".01" strokeLinecap="round"/>
+          <animated.path d={animationProps.mouth} stroke="#000" fill="#FFF" fillOpacity=".3" strokeWidth="2" strokeLinecap="round"/>
+          {/* <animated.path d={animationProps.upperlip} stroke="#000" fill="#000" fillOpacity="0.1" strokeWidth=".01" strokeLinecap="round"/>
+          <animated.path d={animationProps.lowerlip} stroke="#000" fill="#000" fillOpacity="0.1" strokeWidth=".01" strokeLinecap="round"/> */}
           {/* <animated.path d={animationProps.chin} stroke="#000" fill="#002" fillOpacity=".1" strokeWidth="0" strokeLinecap="round"/> */}
-          <animated.path d={animationProps.nose} stroke="#000" fill="#00F" fillOpacity=".0" strokeWidth=".5" strokeLinecap="round"/>
+          {/* <animated.path d={animationProps.nose} stroke="pink" fill="pink" fillOpacity=".9" strokeWidth=".5" strokeLinecap="round"/> */}
         </g>
     );
 }
