@@ -13,11 +13,10 @@ const App = ({ classes }) => {
   const [beginConversation, setBeginConversation] = useState(true);
   const [textToSay, setTextToSay] = useState("This is an example of what I sound like when I am talking.");
   const [botResponse, setBotResponse] = useState("This is the bot response");
-  const [treeResponse, setTreeResponse] = useState("This is the tree response");
   const [isRecording, setIsRecording] = useState(false);
   const [showForm, setFormToggle] = useState(false);
   const [speakerVoice, setSpeakerVoice] = useState("p270");
-  const [participantSpeaker, setParticipantSpeaker] = useState("Human");
+  const [participantSpeaker, setParticipantSpeaker] = useState("");
   const [transcribedData, setTranscribedData] = useState([""]);
   
   const [viseme, setViseme] = useState("");
@@ -42,9 +41,7 @@ const App = ({ classes }) => {
   async function process_stt(received) {
     setTranscribedData(oldData => [participantSpeaker+":"+received,  <br></br>, ...oldData ])
     const raw_res = await get_bot_response(received)
-    const respArray = raw_res.split("&&&")
-    setTreeResponse(respArray[0])
-    setBotResponse(respArray[1])
+    setBotResponse(raw_res)
     setBeginConversation(false)
   }
   async function get_bot_response(human_input) {
@@ -82,19 +79,11 @@ const App = ({ classes }) => {
     return false
   }
 
-  function get_preset(name) {
-    const text = name
-    if (text) {
-      return fetch(`//localhost:8000/api/facilitator_buttons?text=${encodeURIComponent(text)}`, { cache: 'no-cache' })
-      .then(response => response.text())
-      .then(message => {console.log(message); do_tts(message)})
-    }
-  }
 
   function set_face(name, type){
     const name_text = name
     const type_text = type
-    return fetch(`//localhost:8000/api/facilitator_face?text=${encodeURIComponent(name_text)}&update_type=${encodeURIComponent(type_text)}`, { cache: 'no-cache' })
+    return fetch(`//localhost:8000/api/face?text=${encodeURIComponent(name_text)}&update_type=${encodeURIComponent(type_text)}`, { cache: 'no-cache' })
       .then(response => response.text())
       .then(message => {console.log(message)})
     }
@@ -136,56 +125,20 @@ const App = ({ classes }) => {
         </div>      
       </div>
 
-      <div id="walkthrough">
-      <h2>Study Walkthrough:</h2>
-      
-        1- Start by reviewing consent and providing link to survey. Ask participants to complete first question set.
-        <br></br>
-        2- <button onClick={() => get_preset("f_qt-intro")}>QT introduction</button>--
-        <button onClick={() => get_preset("f_survey-prompt")}>survey prompt</button>--
-        <button onClick={() => get_preset("f_survey-return")}>survey return</button>
-        <br></br>
-        <br></br>
-        3- <button onClick={() => get_preset("f_group-intro")}>group introductions</button>--
-        <button onClick={() => get_preset("f_invitation")}>invitation to start</button>--
-        <button onClick={() => get_preset("f_closing")}>closing</button>--
-        <button onClick={() => get_preset("f_transition")}>End section</button>--
-        <button onClick={() => get_preset("f_survey-prompt")}>survey-prompt</button>--
-        <button onClick={() => get_preset("f_survey-return")}>survey-return</button>
-        <br></br>
-        <br></br>
-        4- <button onClick={() => get_preset("f_invitation")}>invitation</button>--
-        <button onClick={() => get_preset("f_closing")}>closing</button>--
-        <button onClick={() => get_preset("f_transition")}>End section</button>--
-        <button onClick={() => get_preset("f_survey-prompt")}>survey-prompt</button>--
-        <button onClick={() => get_preset("f_survey-return")}>survey-return</button>
-        <br></br>
-        5- Ask participants to complete the final survey questions
-        <br></br>
-        6- Lead participants through group discussion
-      </div>
-
       <div id="controls">
         <h2>Interactive Controls:</h2>
         
         <div onChange={(e) => setParticipantSpeaker(e.target.value)}>
           The speaker is:-------- 
-          <label> <input type="radio" value="Libby" name="speaker" text="Libby" /> Libby</label>
+          <label> <input type="radio" value="Libby" name="speaker" /> Libby</label>
           <label> <input type="radio" value="Chris" name="speaker" /> Chris</label>
           <label> <input type="radio" value="Lynn" name="speaker" /> Lynn</label>
-          <label> <input type="radio" value="Human" name="speaker" /> Default</label>
+          <label> <input type="radio" value="Human" name="speaker" /> Human</label>
           <label> <input type="radio" value="" name="speaker" /> None</label>
         </div>
         <br></br>
         <button onClick={() => do_tts(participantSpeaker+". "+botResponse)}>Say Bot Response: {botResponse}</button>
         <br></br><br></br>
-        <button onClick={() => do_tts(participantSpeaker+". "+treeResponse)}>Say Tree Response: {treeResponse}</button>
-        <h3>Director</h3>
-        <button onClick={() => get_preset("d_disclosure")}>disclosure</button>--
-        <button onClick={() => get_preset("d_response")}>response</button>
-        <h3>Role Model</h3>
-        <button onClick={() => get_preset("r_disclosure")}>disclosure</button>--
-        <button onClick={() => do_tts(participantSpeaker+". "+treeResponse)}>response: {treeResponse}</button>
         <h4>Utility Responses</h4>
         <button onClick={() => do_tts("Yes.")}>Say Yes</button>---
         <button onClick={() => do_tts("No.")}>Say No</button>---
@@ -220,18 +173,6 @@ const App = ({ classes }) => {
             </select>
           </label>
           <label> Voice:
-          {/* # 267!,307 - English male, medium
-          # 330!,232 - English male, slow
-          # 312!,251 - English male, fast
-          # 287,254 - English male, fast and deep
-          # 303 - English female, slow
-          # 306 - English female, medium
-          # 308 - English female, slow
-          # 295!,270 - American female, slow
-          # 317! - American male, slow
-          # 230! - American male, fast
-          # 345 - south african female, slow
-          # 313,233 - ? male, fast */}
             <select value={speakerVoice} 
               multiple={false}
               onChange={(e) => setSpeakerVoice(e.target.value)}>
@@ -243,9 +184,9 @@ const App = ({ classes }) => {
               <option value="p308">British Female s2</option>
               <option value="p306">British Female m</option>
               <option value="p295">America Female s</option>
-              <option value="p270">America Female s2!!!</option>
+              <option value="p270">America Female s2**</option>
               <option value="p317">America Male s</option>
-              <option value="p230">America Male f!!!</option>
+              <option value="p230">America Male f**</option>
               <option value="p313">Male f</option>
             </select>
           </label>
