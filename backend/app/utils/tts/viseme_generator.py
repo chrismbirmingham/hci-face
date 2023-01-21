@@ -5,7 +5,8 @@ import os
 
 
 class VisemeGenerator:
-    def __init__(self, convertion_table) -> None:
+    def __init__(self, convertion_table, log=False) -> None:
+        self.log = log
         self.path = Path(__file__).parent  
         conversion_table_path = os.path.join(self.path, convertion_table)
 
@@ -21,7 +22,7 @@ class VisemeGenerator:
             if not len(d):
                 d = self.joint_df[self.joint_df['Alternative IPA'] == ipa]
                 if not len(d):
-                    print(f"Viseme for: {ipa} NOT FOUND")
+                    if self.log: print(f"Viseme for: {ipa} NOT FOUND")
             viseme = d["SimpleViseme"].values[0]
         except:
             viseme = "IDLE"
@@ -34,16 +35,16 @@ class VisemeGenerator:
                 o.append(l)
             else:
                 o[-1] = o[-1] + "ː" # note this is a special character, not a colon
-        print(o)
+        if self.log: print(o)
         return o
 
 
     def get_visemes(self, text, return_phonemes = False):
         if type(text) == str:
             text = [text]
-        print(f"String to process: {text}")
+        if self.log: print(f"String to process: {text}")
         phonemized = self.backend.phonemize(text, strip=False)[0]
-        print(f"Phonemes: {phonemized}")
+        if self.log: print(f"Phonemes: {phonemized}")
         s = self.process_phoneme_string(phonemized) + [' ']
         v = []
         for p in s:
