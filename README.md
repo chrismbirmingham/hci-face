@@ -114,19 +114,18 @@ These modules are imported into the app/api.py and can be replaced with private/
 
 ### Front End 
 - [ ] Pre-Process audio for speech segments on client side ***
+    - Move websocket handling code on the backend to the microphone frontend
 - [ ] Different visuals presets  
     - [ ] Additional idle behaviors
         - Breathing, Thinking
 - [ ] organize consistent styles and colors *
-- [ ] Create additional face visual presents *
-    - Such as QT default, cordial replica, and human mask
 - [ ] Improve accuracy of lip synch *
-- [ ] Export faces from AU for custom expressions
-- [ ] Seperate left and right control
+- [ ] Export faces from AU form for custom expressions
+- [ ] Seperate left and right control for facial expressions
 
 ### Back End
 - [ ] [Add Amazon Polly Support](https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/python/example_code/polly/polly_wrapper.py)
-- [ ] finish face control api (AU control) 
+- [ ] finish face control api (AU control and lr control) 
 - [ ] Long term interaction recording
 
 
@@ -141,7 +140,7 @@ These modules are imported into the app/api.py and can be replaced with private/
 - [ ] Deploy backend to the cloud
 
 ### General
-- [ ] Improve Documentation (start a read the docs)
+- [ ] Improve Documentation (start a read the docs) *
     - [ ] How to Customizing the bot appearance * 
     - [ ] How to contribute
     - [ ] How to customize responses
