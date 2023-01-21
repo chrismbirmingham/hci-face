@@ -1,19 +1,18 @@
 from fastapi import FastAPI, WebSocket, Request
-from fastapi.middleware.cors import CORSMiddleware
+# from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, PlainTextResponse
 from sse_starlette.sse import EventSourceResponse
 from dotenv import load_dotenv
 import asyncio
-import random
-from app import FacilitatorChat
-from app.utils.chatbot.facilitator_logic import RoleModelFacilitator, DirectorFacilitator, FacilitatorPresets
 from app.utils.stt.whisper_stt import Transcriber
 from app.utils.stt.websocket_processor import WebSocketAudioProcessor
 from app.utils.tts.coqui_tts import Speak
-# from app.utils.chatbot.zero_shot import ChatLLM, ClassifyLLM
-# from app.utils.chatbot.chatgpt import ChatGPT
+from app.utils.chatbot.zero_shot import ChatLLM, ClassifyLLM
+from app.utils.chatbot.chatgpt import ChatGPT
 from app.utils.tts.viseme_generator import VisemeGenerator
 
+print("Starting Setup")
 
 # First bytes are needed because the opus header gets messed up when passing audio data by a websocket
 common_hallucinations = ["        you",
@@ -31,11 +30,8 @@ vg = VisemeGenerator("phoneme-viseme_map.csv")
 tts = Speak()
 stt = Transcriber(model_size="small")
 wsap = WebSocketAudioProcessor(queue_length=5, rms_multiplier=1.2)
-bot = FacilitatorChat(backend="gpt")
-rmf = RoleModelFacilitator()
-df = DirectorFacilitator()
-presets = FacilitatorPresets()
-print("Setup Complete")
+bot = ChatGPT()
+print("Backend Setup Complete")
 FACE_CONTROL_QUEUE = {
     "expression":[],
     "behavior":[],
@@ -49,7 +45,7 @@ GESTURE_QUEUE = []
 VISEME_DELAY = .01  # second
 RETRY_TIMEOUT = 15000  # milisecond
 
-app = FastAPI(debug=False)
+app = FastAPI(debug=True)
 
 
 origins = [
@@ -69,6 +65,8 @@ app.add_middleware(
         allow_methods=["*"],
         allow_headers=["*"]
 )
+print("API Setup Complete")
+
 
 @app.get("/", tags=["root"])
 async def read_root() -> dict:
@@ -162,9 +160,9 @@ async def websocket_endpoint(websocket: WebSocket):
 def text_to_speech(text: str, speaker_id: str = "", style_wav: str = ""):
     """Synthesizes wav bytes from text, with a given speaker ID"""
     if bot.backend == "gpt":
-        bot.bot.conversation[-1] = "AI: " + text
+        bot.conversation[-1] = "AI: " + text
     if bot.backend == "llm":
-        bot.bot.conversation[-1] = ("AI:", text)
+        bot.conversation[-1] = ("AI:", text)
     global VIZEME_QUEUE
     global VISEME_DELAY
     out, speaking_time = tts.synthesize_wav(text, speaker_id, style_wav)
@@ -180,32 +178,16 @@ def text_to_speech(text: str, speaker_id: str = "", style_wav: str = ""):
 def generate_response(text: str, speaker: str, reset_conversation: bool):
     """Generates a bot response"""
     print(f"Front is asking for bot response to {text} from {speaker}")
-    tree_response, bot_response = bot.get_bot_response(text, speaker, reset_conversation)
-    joined_response = f"{tree_response}&&&{bot_response}"
-    bot.bot.conversation.pop(-1)
-    if bot.sc.emotion in ["joy", "sad", "surprise"]:
-        FACE_CONTROL_QUEUE["expression"].append(bot.sc.emotion)
-    else: 
-        FACE_CONTROL_QUEUE["expression"].append("neutral")
-    return PlainTextResponse(joined_response)
-
-@app.get("/api/facilitator_buttons")
-def return_response(text: str):
-    """Returns an existing bot response"""
-    mode, query = text.split("_")
-    if mode == "f": to_say = presets.responses[query]
-    if mode == "d":
-        if query == "disclosure":
-            to_say = random.choice(df.disclosure_elicitation)
-        if query == "response":
-            to_say = random.choice(df.response_elicitation)
-    if mode == "r":
-        if query == "disclosure":
-            emotion = random.choice(["isolation","anxiety","fear","grief"])
-            to_say = random.choice(rmf.disclosures[emotion])
-    return PlainTextResponse(to_say)
+    bot_response = bot.get_bot_response(text, speaker, reset_conversation)
+    print(f"{bot_response}")
+    bot.conversation.pop(-1)
+    # if bot.sc.emotion in ["joy", "sad", "surprise"]:
+    #     FACE_CONTROL_QUEUE["expression"].append(bot.sc.emotion)
+    # else: 
+    FACE_CONTROL_QUEUE["expression"].append("neutral")
+    return PlainTextResponse(bot_response)
     
-@app.get("/api/facilitator_face")
+@app.get("/api/face")
 def update_face(text: str, update_type: str):
     """Returns an existing bot response"""
     if update_type == "expression":
