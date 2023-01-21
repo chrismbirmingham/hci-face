@@ -18,10 +18,13 @@ if __name__ == "__main__":
     
     gesture_pub.publish("QT/hi")
     while True:
-        r = requests.get("http://192.168.1.136:8000/api/gestureControl")
-        gesture = r.text
-        if gesture is not "":
-            gesture_pub.publish(gesture)
+        try:
+            r = requests.get("http://192.168.1.136:8000/api/gestureControl")
+            gesture = r.text
+            if gesture is not "":
+                gesture_pub.publish(gesture)
+        except Exception as e:
+            print(e)
         time.sleep(.1)
     try:
         rospy.spin()

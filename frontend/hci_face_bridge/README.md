@@ -9,7 +9,7 @@ To set up this bridge, clone the repository to the nuc.
 
 The hci_face_bridge package will need to be copied to the pi. 
 ```
-scp -r hci_face_bridge qtrobot@192.168.100.1:/home/qtrobot/catkin_ws/hci_face_bridge
+scp -r hci-face/frontend/hci_face_bridge qtrobot@192.168.100.1:/home/qtrobot/catkin_ws/src/hci_face_bridge
 ```
 
 You should then ssh into the pi:
@@ -25,7 +25,7 @@ cd catkin_ws
 
 Then you must copy the autostart script to the pi's autostart folder:
 ```
-scp hci_face_bridge/start_HCI_FACE.sh /home/qtrobot/robot/autostart/
+cp hci_face_bridge/start_HCI_FACE.sh /home/qtrobot/robot/autostart/
 ```
 
 And build the hci_face_bridge package:
