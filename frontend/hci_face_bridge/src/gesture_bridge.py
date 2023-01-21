@@ -17,12 +17,12 @@ if __name__ == "__main__":
     rospy.sleep(3.0)
     
     gesture_pub.publish("QT/hi")
-#    while True:
-#        r = requests.get("http://192.168.1.136:8000/api/gestureControl")
-#        gesture = r.text
-#        if gesture is not "":
-#            gesture_pub.publish(gesture)
-#        time.sleep(.1)
+    while True:
+        r = requests.get("http://192.168.1.136:8000/api/gestureControl")
+        gesture = r.text
+        if gesture is not "":
+            gesture_pub.publish(gesture)
+        time.sleep(.1)
     try:
         rospy.spin()
     except KeyboardInterrupt:
