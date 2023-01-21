@@ -12,7 +12,7 @@ if __name__ == "__main__":
     rospy.loginfo("gesture_bridge started!")
 
     gesture_pub = rospy.Publisher('/qt_robot/gesture/say', String, queue_size=10)
-
+    gesture_pub.publish("QT/hi")
     while True:
         r = requests.get("http://192.168.1.136:8000/api/gestureControl")
         gesture = r.text
