@@ -16,8 +16,10 @@ const App = ({ classes }) => {
   const [treeResponse, setTreeResponse] = useState("This is the tree response");
   const [isRecording, setIsRecording] = useState(false);
   const [showForm, setFormToggle] = useState(false);
+  const [showWalkthrough, setWalkthroughToggle] = useState(false);
+  const [condition, setCondition] = useState(false);
   const [speakerVoice, setSpeakerVoice] = useState("p270");
-  const [participantSpeaker, setParticipantSpeaker] = useState("Human");
+  const [participantSpeaker, setParticipantSpeaker] = useState("");
   const [transcribedData, setTranscribedData] = useState([""]);
   
   const [viseme, setViseme] = useState("");
@@ -135,69 +137,77 @@ const App = ({ classes }) => {
             width={320} />
         </div>      
       </div>
-
-      <div id="walkthrough">
+      <button id="toggle" onClick={() => setWalkthroughToggle(!showWalkthrough)}>Show/Hide Walkthrough</button>
+      <div id="walkthrough" hidden={showWalkthrough}>
       <h2>Study Walkthrough:</h2>
       
-        1- Start by reviewing consent and providing link to survey. Ask participants to complete first question set.
-        <br></br>
-        2- <button onClick={() => get_preset("f_qt-intro")}>QT introduction</button>--
-        <button onClick={() => get_preset("f_survey-prompt")}>survey prompt</button>--
-        <button onClick={() => get_preset("f_survey-return")}>survey return</button>
+        1- Start by reviewing consent <br></br>
+        ---  Next provide link to survey:    https://usc.qualtrics.com/jfe/form/SV_diE2Ow6GQPlSCP4 <br></br>
+        ---  WoZ prompt participants to complete first question set. (4 pages)
         <br></br>
         <br></br>
-        3- <button onClick={() => get_preset("f_group-intro")}>group introductions</button>--
-        <button onClick={() => get_preset("f_invitation")}>invitation to start</button>--
-        <button onClick={() => get_preset("f_closing")}>closing</button>--
+        2- <button style={{backgroundColor:"green"}} onClick={() => get_preset("f_qt-intro")}>QT introduction</button>--
+        <button style={{backgroundColor:"grey"}} onClick={() => get_preset("f_survey-prompt")}>survey prompt</button>--
+        <button style={{backgroundColor:"grey"}} onClick={() => get_preset("f_survey-return")}>survey return</button>
+        <br></br>
+        <br></br>
+        3- <button style={{backgroundColor:"green"}} onClick={() => get_preset("f_group-intro")}>group introductions</button>--(let them respond)--
+        <button style={{backgroundColor:"green"}} onClick={() => get_preset("f_invitation")}>invitation to start</button>--
+        <button style={{backgroundColor:"orange"}} onClick={() => get_preset("f_closing")}>closing</button>--
         <button onClick={() => get_preset("f_transition")}>End section</button>--
-        <button onClick={() => get_preset("f_survey-prompt")}>survey-prompt</button>--
-        <button onClick={() => get_preset("f_survey-return")}>survey-return</button>
+        <button style={{backgroundColor:"grey"}} onClick={() => get_preset("f_survey-prompt")}>survey-prompt</button>--
+        <button style={{backgroundColor:"grey"}} onClick={() => get_preset("f_survey-return")}>survey-return</button>
         <br></br>
         <br></br>
-        4- <button onClick={() => get_preset("f_invitation")}>invitation</button>--
-        <button onClick={() => get_preset("f_closing")}>closing</button>--
+        4- <button style={{backgroundColor:"green"}} onClick={() => get_preset("f_invitation")}>invitation</button>--
+        <button style={{backgroundColor:"orange"}} onClick={() => get_preset("f_closing")}>closing</button>--
         <button onClick={() => get_preset("f_transition")}>End section</button>--
-        <button onClick={() => get_preset("f_survey-prompt")}>survey-prompt</button>--
-        <button onClick={() => get_preset("f_survey-return")}>survey-return</button>
+        <button style={{backgroundColor:"grey"}} onClick={() => get_preset("f_survey-prompt")}>survey-prompt</button>--
+        <button style={{backgroundColor:"grey"}} onClick={() => get_preset("f_survey-return")}>survey-return</button>
         <br></br>
-        5- Ask participants to complete the final survey questions
         <br></br>
-        6- Lead participants through group discussion
+        5- Ask participants to complete the final survey questions (3 pages)
+        <br></br>
+        6- Lead participants through group discussion<br></br>
+        <br></br>What did you like and dislike about interacting with QT? 
+        <br></br>What did you learn as part of the group today?
+        <br></br>Do you think that QT understood you? 
+        <br></br>What differences did you notice between round 1 and round 2 of the support group?
+        <br></br>How did the support group today affect your stress level? 
       </div>
 
       <div id="controls">
         <h2>Interactive Controls:</h2>
         
-        <div onChange={(e) => setParticipantSpeaker(e.target.value)}>
-          The speaker is:-------- 
+        <div onChange={(e) => setParticipantSpeaker(e.target.value)}>The speaker is:-------- 
           <label> <input type="radio" value="Libby" name="speaker" text="Libby" /> Libby</label>
           <label> <input type="radio" value="Chris" name="speaker" /> Chris</label>
           <label> <input type="radio" value="Lynn" name="speaker" /> Lynn</label>
           <label> <input type="radio" value="Human" name="speaker" /> Default</label>
           <label> <input type="radio" value="" name="speaker" /> None</label>
-        </div>
+        </div><br></br>
+        <button style={{backgroundColor:"red"}} onClick={() => do_tts(botResponse)}>Say Bot Response: {botResponse}</button>
+        <br></br><br></br>{/* <button onClick={() => do_tts(participantSpeaker+". "+treeResponse)}>Say Tree Response: {treeResponse}</button> */}
+        
+        <button id="condition" onClick={() => setCondition(!condition)}>Switch Conditions:</button>
+        <div hidden={condition}><h3>Director</h3>
+          <button onClick={() => get_preset("d_disclosure")}>Request Disclosure</button>--
+          <button onClick={() => get_preset("d_response")}>Request Response</button></div>
+        <div hidden={!condition}><h3>Role Model</h3>
+          <button onClick={() => get_preset("r_disclosure")}>Make Disclosure</button>--
+          <button onClick={() => do_tts(participantSpeaker+". "+treeResponse)}>Say Response: {treeResponse}</button></div>
         <br></br>
-        <button onClick={() => do_tts(participantSpeaker+". "+botResponse)}>Say Bot Response: {botResponse}</button>
+        {/* <h4>Utility Responses</h4> */}
+          <button style={{backgroundColor:"green"}} onClick={() => do_tts("Yes.")}>Yes</button>---
+          <button style={{backgroundColor:"red"}} onClick={() => do_tts("No.")}>No</button>---
+          <button onClick={() => do_tts("Thank you "+participantSpeaker)}>Thank You</button>---
+          <button style={{backgroundColor:"orange"}} onClick={() => do_tts(participantSpeaker+" can you repeat that? I didn't hear you.")}>Please repeat</button>---
+          <button onClick={() => do_tts("I am unsure how to answer that, sorry.")}>Unsure</button>
         <br></br><br></br>
-        <button onClick={() => do_tts(participantSpeaker+". "+treeResponse)}>Say Tree Response: {treeResponse}</button>
-        <h3>Director</h3>
-        <button onClick={() => get_preset("d_disclosure")}>disclosure</button>--
-        <button onClick={() => get_preset("d_response")}>response</button>
-        <h3>Role Model</h3>
-        <button onClick={() => get_preset("r_disclosure")}>disclosure</button>--
-        <button onClick={() => do_tts(participantSpeaker+". "+treeResponse)}>response: {treeResponse}</button>
-        <h4>Utility Responses</h4>
-        <button onClick={() => do_tts("Yes.")}>Say Yes</button>---
-        <button onClick={() => do_tts("No.")}>Say No</button>---
-        <button onClick={() => do_tts("Thank you "+participantSpeaker)}>Say Thank You</button>---
-        <button onClick={() => do_tts(participantSpeaker+" can you repeat that? I didn't hear you.")}>Please repeat</button>---
-        <button onClick={() => do_tts("I am unsure how to answer that, sorry.")}>Say Unsure</button>
-        <br></br>
-        <br></br>
       </div>
 
       <button id="toggle" onClick={() => setFormToggle(!showForm)}>Show/Hide Form Input:</button>
-      <div id="formcontent" hidden={showForm}>
+      <div id="formcontent" hidden={!showForm}>
           <br></br>
           <label>Behavior:
           <select value={behavior} 
@@ -249,8 +259,7 @@ const App = ({ classes }) => {
               <option value="p313">Male f</option>
             </select>
           </label>
-          <br></br>          
-          <br></br>
+          <br></br><br></br>
           <div hidden={true}>
           <label>OR Enter viseme to show:
             <input 
@@ -260,9 +269,7 @@ const App = ({ classes }) => {
             />
           </label>
           </div>
-          <br></br>
-          <br></br>
-        <label>Enter the text you would like the robot to say:
+          <label>Enter the text you would like the robot to say:
             <textarea 
               cols={100}
               rows={4}
@@ -271,14 +278,11 @@ const App = ({ classes }) => {
               onChange={(e) => setTextToSay(e.target.value)}
             />
           </label>
-          <br></br>
-          <button onClick={() => do_tts(textToSay)}>Say Text From Form: {textToSay}</button>
-          <br></br>
-
+          <br></br><button onClick={() => do_tts(textToSay)}>Say Text From Form: {textToSay}</button><br></br>
       </div>
 
       <div id="transcription">
-        <h3>Transcribed Data:</h3>
+        <h2>Transcribed Data:</h2>
         <p>{transcribedData}</p>
       </div>
     </div>

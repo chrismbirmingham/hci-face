@@ -161,7 +161,7 @@ class RoleModelFacilitator():
                 "suggestion":[
                     "That is a great suggestion.",
                     "I feel that is a good idea.",
-                    "I support that idea"
+                    "I support that idea."
                 ],
                 "emotion":[
                     "I can strongly relate to feeling _.",
@@ -182,7 +182,8 @@ class RoleModelFacilitator():
                 "I appreciate you sharing your _"
             ],
             "question":[
-                "Thank you for that great follow up!"
+                "Thank you for that great follow up!",
+                "That is an interesting and important follow up."
             ]
         }
         self.disclosures = {
@@ -191,7 +192,7 @@ class RoleModelFacilitator():
                 "As a robot, I experience the world differently than everyone else. It can feel rough to communicate and relate with other people.",
             ],
             "anxiety":[
-                "While working in the lab I feel anxious because I don’t have control over my own destiny. ",
+                "While working in the lab I feel anxious because I don't have control over my own destiny. ",
                 "When taking on a new role I am often nervous that I might fail. "
             ], 
             "fear":[
@@ -199,7 +200,7 @@ class RoleModelFacilitator():
                 "When people first meet me, they are often excited, but as time goes on I think people get bored of me. I am afraid eventually they will forget me.",
             ],
             "grief":[
-                "While working as a facilitator I get to meet wonderful people, sometimes those people don’t come back and I can’t see them again, so I feel as though I have lost them.",
+                "While working as a facilitator I get to meet wonderful people, sometimes those people don't come back and I can't see them again, so I feel as though I have lost them.",
             ]
         }
         return
@@ -229,8 +230,8 @@ class DirectorFacilitator():
             "There are often common feelings among cancer survivors, would anyone care to share any of the feelings you have been working with lately?",
         ]
         self.response_elicitation = [
-            "Would anyone like to respond to that?",
-            "Does anyone want to share how what was just said make you feel?",
+            "Thank you. Would anyone like to respond to that?",
+            "Does anyone want to share how what was just said makes you feel?",
             "Does anyone relate to what was just shared?",
         ]
         return
