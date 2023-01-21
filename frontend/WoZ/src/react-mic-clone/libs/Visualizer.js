@@ -1,6 +1,6 @@
 import AudioContext from './AudioContext';
 
-
+// eslint-disable-next-line
 let drawVisual;
 
 const Visualizer = {
@@ -76,7 +76,7 @@ const Visualizer = {
 
       for(let i = 0; i < bufferLength; i++) {
         barHeight = dataArray[i];
-
+        // eslint-disable-next-line
         const rgb = self.hexToRgb(strokeColor);
 
         // canvasCtx.fillStyle = `rgb(${barHeight+100},${rgb.g},${rgb.b})`;
@@ -91,6 +91,7 @@ const Visualizer = {
   },
 
   visualizeFrequencyCircles(canvasCtx, canvas, width, height, backgroundColor, strokeColor) {
+    // eslint-disable-next-line
     const self = this;
     let analyser = AudioContext.getAnalyser();
     analyser.fftSize = 32;

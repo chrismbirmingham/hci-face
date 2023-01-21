@@ -52,6 +52,7 @@ export default class ReactMic extends Component {
       echoCancellation,
       autoGainControl,
       noiseSuppression,
+      // eslint-disable-next-line
       channelCount,
       mimeType
     } = this.props
