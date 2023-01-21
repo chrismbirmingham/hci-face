@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+import sys
 import rospy
 from std_msgs.msg import String
 import requests
@@ -11,16 +13,21 @@ if __name__ == "__main__":
     rospy.init_node("gesture_bridge")
     rospy.loginfo("gesture_bridge started!")
 
-    gesture_pub = rospy.Publisher('/qt_robot/gesture/say', String, queue_size=10)
+    gesture_pub = rospy.Publisher('/qt_robot/gesture/play', String, queue_size=10)
+    rospy.sleep(3.0)
+    
     gesture_pub.publish("QT/hi")
-    while True:
-        r = requests.get("http://192.168.1.136:8000/api/gestureControl")
-        gesture = r.text
-        if gesture is not "":
-            gesture_pub.publish(gesture)
-        time.sleep(.1)
-    rospy.spin()
-
+#    while True:
+#        r = requests.get("http://192.168.1.136:8000/api/gestureControl")
+#        gesture = r.text
+#        if gesture is not "":
+#            gesture_pub.publish(gesture)
+#        time.sleep(.1)
+    try:
+        rospy.spin()
+    except KeyboardInterrupt:
+        pass
+    rospy.loginfo("finished")
 
 # rostopic pub /qt_robot/gesture/show std_msgs/String "data: 'QT/hi'"
 # QT/
