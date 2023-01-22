@@ -15,9 +15,9 @@ if __name__ == "__main__":
 
     gesture_pub = rospy.Publisher('/qt_robot/gesture/play', String, queue_size=10)
     rospy.sleep(3.0)
-    
+    rate = rospy.Rate(5)
     gesture_pub.publish("QT/hi")
-    while True:
+    while not rospy.is_shutdown():
         try:
             r = requests.get("http://192.168.1.136:8000/api/gestureControl")
             gesture = r.text
@@ -25,11 +25,7 @@ if __name__ == "__main__":
                 gesture_pub.publish(gesture)
         except requests.exceptions.ConnectionError as e:
             print(e)
-        time.sleep(.1)
-    try:
-        rospy.spin()
-    except KeyboardInterrupt:
-        pass
+        rate.sleep()
     rospy.loginfo("finished")
 
 # rostopic pub /qt_robot/gesture/show std_msgs/String "data: 'QT/hi'"
