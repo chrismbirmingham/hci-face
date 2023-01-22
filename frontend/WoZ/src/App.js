@@ -2,24 +2,26 @@ import './App.css';
 import React, { useState } from "react";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import { ReactMic } from './react-mic-clone';
-
+import CountdownTimer from './timer';
 
 const stt_socket = new W3CWebSocket('ws://localhost:8000/api/stt');
 
 const App = ({ classes }) => {
-
-
   // Variables with state
   const [beginConversation, setBeginConversation] = useState(true);
   const [textToSay, setTextToSay] = useState("This is an example of what I sound like when I am talking.");
   const [botResponse, setBotResponse] = useState("This is the bot response");
   const [treeResponse, setTreeResponse] = useState("This is the tree response");
+
   const [isRecording, setIsRecording] = useState(false);
   const [showForm, setFormToggle] = useState(false);
   const [showWalkthrough, setWalkthroughToggle] = useState(false);
   const [condition, setCondition] = useState(false);
+
   const [speakerVoice, setSpeakerVoice] = useState("p270");
   const [participantSpeaker, setParticipantSpeaker] = useState("");
+  const [latestSpeech, setLatestSpeech] = useState("");
+  const [classifications, setClassifications] = useState("");
   const [transcribedData, setTranscribedData] = useState([""]);
   
   const [viseme, setViseme] = useState("");
@@ -42,18 +44,21 @@ const App = ({ classes }) => {
 
   /////// Process STT input and get bot response ///////
   async function process_stt(received) {
-    setTranscribedData(oldData => [participantSpeaker+":"+received,  <br></br>, ...oldData ])
-    const raw_res = await get_bot_response(received)
-    const respArray = raw_res.split("&&&")
-    setTreeResponse(respArray[0])
-    setBotResponse(respArray[1])
-    setBeginConversation(false)
+    setTranscribedData(oldData => [participantSpeaker+":"+received,  <br></br>, ...oldData ]);
+    setLatestSpeech(received);
+    setClassifications("");
+    const raw_res = await get_bot_response(received);
+    const respArray = raw_res.split("&&&");
+    setTreeResponse(respArray[0]);
+    setBotResponse(respArray[1]);
+    setClassifications(respArray[2]);
+    setBeginConversation(false);
   }
   async function get_bot_response(human_input) {
     const text = human_input
     const speaker = participantSpeaker
     if (text) {
-      return fetch(`//localhost:8000/api/bot_response?text=${encodeURIComponent(text)}&speaker=${encodeURIComponent(speaker)}&reset_conversation=${encodeURIComponent(beginConversation)}`, { cache: 'no-cache' })
+      return fetch(`//localhost:8000/api/bot_response?text=${encodeURIComponent(text)}&speaker=${encodeURIComponent(speaker)}&reset_conversation=${encodeURIComponent(beginConversation)}&director_condition=${encodeURIComponent(!condition)}`, { cache: 'no-cache' })
       .then(response => response.text())
       .then(message => {console.log(message); return message})
     }
@@ -133,10 +138,12 @@ const App = ({ classes }) => {
             className="sound-wave"
             strokeColor="#fff"
             backgroundColor="#000" 
-            height={100}
+            height={60}
             width={320} />
         </div>      
       </div>
+      <CountdownTimer/>
+      <br></br>
       <button id="toggle" onClick={() => setWalkthroughToggle(!showWalkthrough)}>Show/Hide Walkthrough</button>
       <div id="walkthrough" hidden={showWalkthrough}>
       <h2>Study Walkthrough:</h2>
@@ -146,22 +153,24 @@ const App = ({ classes }) => {
         ---  WoZ prompt participants to complete first question set. (4 pages)
         <br></br>
         <br></br>
-        2- <button style={{backgroundColor:"green"}} onClick={() => get_preset("f_qt-intro")}>QT introduction</button>--
+        2- <button onClick={() => get_preset("f_qt-intro")}>QT introduction</button>--
         <button style={{backgroundColor:"grey"}} onClick={() => get_preset("f_survey-prompt")}>survey prompt</button>--
         <button style={{backgroundColor:"grey"}} onClick={() => get_preset("f_survey-return")}>survey return</button>
         <br></br>
         <br></br>
-        3- <button style={{backgroundColor:"green"}} onClick={() => get_preset("f_group-intro")}>group introductions</button>--(let them respond)--
+        3- <button onClick={() => get_preset("f_group-intro")}>group introductions</button>--(let them respond)--
         <button style={{backgroundColor:"green"}} onClick={() => get_preset("f_invitation")}>invitation to start</button>--
         <button style={{backgroundColor:"orange"}} onClick={() => get_preset("f_closing")}>closing</button>--
-        <button onClick={() => get_preset("f_transition")}>End section</button>--
+        <button style={{backgroundColor:"red"}} onClick={() => get_preset("f_transition")}>End section</button>--
         <button style={{backgroundColor:"grey"}} onClick={() => get_preset("f_survey-prompt")}>survey-prompt</button>--
         <button style={{backgroundColor:"grey"}} onClick={() => get_preset("f_survey-return")}>survey-return</button>
         <br></br>
         <br></br>
-        4- <button style={{backgroundColor:"green"}} onClick={() => get_preset("f_invitation")}>invitation</button>--
+        4- 
+        <button id="condition" onClick={() => setCondition(!condition)}>Switch Conditions:</button>--
+        <button style={{backgroundColor:"green"}} onClick={() => get_preset("f_invitation")}>invitation</button>--
         <button style={{backgroundColor:"orange"}} onClick={() => get_preset("f_closing")}>closing</button>--
-        <button onClick={() => get_preset("f_transition")}>End section</button>--
+        <button style={{backgroundColor:"red"}} onClick={() => get_preset("f_transition")}>End section</button>--
         <button style={{backgroundColor:"grey"}} onClick={() => get_preset("f_survey-prompt")}>survey-prompt</button>--
         <button style={{backgroundColor:"grey"}} onClick={() => get_preset("f_survey-return")}>survey-return</button>
         <br></br>
@@ -177,34 +186,45 @@ const App = ({ classes }) => {
       </div>
 
       <div id="controls">
-        <h2>Interactive Controls:</h2>
+        <h3 style={{backgroundColor:"grey"}}>Interactive Controls:</h3>
         
-        <div onChange={(e) => setParticipantSpeaker(e.target.value)}>The speaker is:-------- 
+        <div onChange={(e) => setParticipantSpeaker(e.target.value)}>The current speaker:
           <label> <input type="radio" value="Libby" name="speaker" text="Libby" /> Libby</label>
           <label> <input type="radio" value="Chris" name="speaker" /> Chris</label>
           <label> <input type="radio" value="Lynn" name="speaker" /> Lynn</label>
           <label> <input type="radio" value="Human" name="speaker" /> Default</label>
           <label> <input type="radio" value="" name="speaker" /> None</label>
-        </div><br></br>
-        <button style={{backgroundColor:"red"}} onClick={() => do_tts(botResponse)}>Say Bot Response: {botResponse}</button>
-        <br></br><br></br>{/* <button onClick={() => do_tts(participantSpeaker+". "+treeResponse)}>Say Tree Response: {treeResponse}</button> */}
+        </div>
+        Said: {latestSpeech}
+        <br></br>
+        Classified as: {classifications}
         
-        <button id="condition" onClick={() => setCondition(!condition)}>Switch Conditions:</button>
-        <div hidden={condition}><h3>Director</h3>
+        <div hidden={condition}><p>Condition: Director</p>
+        Recommended Statement:<button style={{backgroundColor:"Chartreuse"}} onClick={() => do_tts(participantSpeaker+". "+treeResponse)}>{participantSpeaker+". "+treeResponse}</button>
+        <br></br>
           <button onClick={() => get_preset("d_disclosure")}>Request Disclosure</button>--
           <button onClick={() => get_preset("d_response")}>Request Response</button></div>
-        <div hidden={!condition}><h3>Role Model</h3>
+        <div hidden={!condition}><p>Condition: Role Model</p>
+        Recommended Statement:<button style={{backgroundColor:"Chartreuse"}} onClick={() => do_tts(participantSpeaker+". "+treeResponse)}>{participantSpeaker+". "+treeResponse}</button>
+        <br></br>
           <button onClick={() => get_preset("r_disclosure")}>Make Disclosure</button>--
           <button onClick={() => do_tts(participantSpeaker+". "+treeResponse)}>Say Response: {treeResponse}</button></div>
         <br></br>
+
         {/* <h4>Utility Responses</h4> */}
+        Utility Responses: 
           <button style={{backgroundColor:"green"}} onClick={() => do_tts("Yes.")}>Yes</button>---
           <button style={{backgroundColor:"red"}} onClick={() => do_tts("No.")}>No</button>---
-          <button onClick={() => do_tts("Thank you "+participantSpeaker)}>Thank You</button>---
+          <button style={{backgroundColor:"BlueViolet"}} onClick={() => do_tts("Thank you, "+participantSpeaker)}>Thank You</button>---
           <button style={{backgroundColor:"orange"}} onClick={() => do_tts(participantSpeaker+" can you repeat that? I didn't hear you.")}>Please repeat</button>---
-          <button onClick={() => do_tts("I am unsure how to answer that, sorry.")}>Unsure</button>
-          <button onClick={() => get_preset("g_QT/hi")}>wave</button>--
+          <button onClick={() => do_tts("I am unsure how to answer that. sorry.")}>Unsure</button>----
+          <button onClick={() => do_tts("Is there anything anyone would like to talk about?")}>Prompt</button>----
+          <button onClick={() => get_preset("g_QT/emotions/happy")}>happy</button>--
+          <button onClick={() => get_preset("g_QT/emotions/shy")}>shy</button>--
         <br></br><br></br>
+        Say ChatBot Response: <button style={{backgroundColor:"pink"}} onClick={() => do_tts(botResponse)}>{botResponse}</button>
+        <br></br>
+        <br></br>
       </div>
 
       <button id="toggle" onClick={() => setFormToggle(!showForm)}>Show/Hide Form Input:</button>
