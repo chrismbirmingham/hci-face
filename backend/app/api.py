@@ -13,9 +13,8 @@ from app.utils.tts.coqui_tts import Speak
 # from app.utils.chatbot.zero_shot import ChatLLM, ClassifyLLM
 # from app.utils.chatbot.chatgpt import ChatGPT
 from app.utils.tts.viseme_generator import VisemeGenerator
+from app.utils.logger import Logger
 
-
-# First bytes are needed because the opus header gets messed up when passing audio data by a websocket
 common_hallucinations = ["        you",
      "       You",
      "          Thanks for watching!",
@@ -24,9 +23,10 @@ common_hallucinations = ["        you",
      "Thanks for watching! Don't forget to like, comment and subscribe!"
      "   THANKS FOR WATCHING!"]
 # PROMPT = "The following is a conversation with an AI assistant that can have meaningful conversations with users. The assistant is helpful, empathic, and friendly. Its objective is to make the user feel better by feeling heard. With each response, the AI assistant prompts the user to continue the conversation naturally."
+l = Logger()
 
+l.log("Beginning Setup")
 load_dotenv()
-
 vg = VisemeGenerator("phoneme-viseme_map.csv")
 tts = Speak()
 stt = Transcriber(model_size="small")
@@ -35,7 +35,6 @@ bot = FacilitatorChat(backend="gpt")
 rmf = RoleModelFacilitator()
 df = DirectorFacilitator()
 presets = FacilitatorPresets()
-print("Setup Complete")
 FACE_CONTROL_QUEUE = {
     "expression":[],
     "behavior":[],
@@ -48,8 +47,9 @@ VIZEME_QUEUE = []
 GESTURE_QUEUE = []
 VISEME_DELAY = .01  # second
 RETRY_TIMEOUT = 15000  # milisecond
-
+l.log("Conneting API")
 app = FastAPI(debug=False)
+l.log("Setup Complete")
 
 
 origins = [
@@ -76,6 +76,7 @@ async def read_root() -> dict:
 
 @app.get('/api/visemes')
 async def viseme_stream(request: Request):
+    # l.log(f"/api/visemes: request recieved.")
     # WARNING if you have multiple face tabs open, it will split the 
     # visemes sent to each one
     async def event_generator():
@@ -89,9 +90,9 @@ async def viseme_stream(request: Request):
 
             global VIZEME_QUEUE
             # Checks for new messages and return them to client if any
-            if len(VIZEME_QUEUE) >0:
+            if len(VIZEME_QUEUE) > 0:
                 msg = VIZEME_QUEUE.pop(0)
-                # print(msg, VISEME_DELAY)
+                l.log(f"Viseme msg: {msg}", printnow=False)
                 response = {
                         "event": "viseme",
                         "id": "message_id",
@@ -106,6 +107,7 @@ async def viseme_stream(request: Request):
 
 @app.get('/api/faceControl')
 async def face_control_stream(request: Request):
+    # l.log(f"/api/faceControl: request recieved.")
     async def event_generator():
         while True:
             # If client closes connection, stop sending events
@@ -118,7 +120,7 @@ async def face_control_stream(request: Request):
             for key, q in FACE_CONTROL_QUEUE.items():
                 if len(q) >0:
                     msg = q.pop(0)
-                    # print(msg)
+                    l.log(f"face control message: {msg}")
                     response = {
                             "event": key,
                             "id": "message_id",
@@ -135,7 +137,7 @@ async def face_control_stream(request: Request):
 async def websocket_endpoint(websocket: WebSocket):
     """Continuously Open STT, returns on completed phrases, when pauses are detected"""
     await websocket.accept()
-
+    l.log("api/stt websocket connected")
     try:
         while True:
             data = await websocket.receive_bytes()
@@ -147,11 +149,11 @@ async def websocket_endpoint(websocket: WebSocket):
                     if transcribed_text in h:
                         hallucination=True
                 if not hallucination:
-                    print("Collected speech length: ", len(speech_segment))
-                    print("Transcribed text: ", transcribed_text)
+                    l.log(f"Collected speech length: {len(speech_segment)}")
+                    l.log(f"Transcribed text: {transcribed_text}")
                     await websocket.send_text(transcribed_text)
                 else:
-                    print("Seems to have been a hallucination")
+                    l.log(f"Seems to have been a hallucination")
 
     except Exception as e:
         raise Exception(f'Could not process audio: {e}')
@@ -160,6 +162,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.get("/api/tts")
 def text_to_speech(text: str, speaker_id: str = "", style_wav: str = ""):
+    l.log(f"/api/tts: {text}, {speaker_id}, {style_wav}")
     """Synthesizes wav bytes from text, with a given speaker ID"""
     if bot.backend == "gpt":
         bot.bot.conversation[-1] = "AI: " + text
@@ -169,7 +172,7 @@ def text_to_speech(text: str, speaker_id: str = "", style_wav: str = ""):
     global VISEME_DELAY
     out, speaking_time = tts.synthesize_wav(text, speaker_id, style_wav)
     viseme_set = vg.get_visemes(text)
-    # print(speaking_time, len(viseme_set))
+    l.log(f"Return audio for msg: {text}, speech length:{speaking_time}, visemes produced: {len(viseme_set)}")
     viseme_length = (speaking_time) / (len(viseme_set)+1)
     VISEME_DELAY = viseme_length
     VIZEME_QUEUE += viseme_set
@@ -177,20 +180,24 @@ def text_to_speech(text: str, speaker_id: str = "", style_wav: str = ""):
     return StreamingResponse(out, media_type="audio/wav")
 
 @app.get("/api/bot_response")
-def generate_response(text: str, speaker: str, reset_conversation: bool):
+def generate_response(text: str, speaker: str, reset_conversation: bool, director_condition: bool):
+    l.log(f"/api/bot_response: '{text}', from {speaker}, reset_conversation: {reset_conversation}, director_condition: {director_condition}")
     """Generates a bot response"""
-    print(f"Front is asking for bot response to {text} from {speaker}")
-    tree_response, bot_response = bot.get_bot_response(text, speaker, reset_conversation)
-    joined_response = f"{tree_response}&&&{bot_response}"
+    response, bot_response, classes = bot.get_bot_response(text, speaker, reset_conversation, director_condition)
+    joined_response = f"{response}&&&{bot_response}&&&{classes}"
+    l.log(f"Bot response: {joined_response}")
     bot.bot.conversation.pop(-1)
     if bot.sc.emotion in ["joy", "sad", "surprise"]:
+        l.log(f"Setting face to: {bot.sc.emotion}")
         FACE_CONTROL_QUEUE["expression"].append(bot.sc.emotion)
     else: 
+        l.log(f"Setting face to: neutral")
         FACE_CONTROL_QUEUE["expression"].append("neutral")
     return PlainTextResponse(joined_response)
 
 @app.get("/api/facilitator_buttons")
 def return_response(text: str):
+    l.log(f"/api/facilitator_buttons: {text}")
     """Returns an existing bot response"""
     mode, query = text.split("_")
     global GESTURE_QUEUE
@@ -207,10 +214,12 @@ def return_response(text: str):
     if mode == "g":
         GESTURE_QUEUE.append(query)
         to_say = ""
+    l.log(f"facilitator_buttons response: {to_say}")
     return PlainTextResponse(to_say)
     
 @app.get("/api/facilitator_face")
 def update_face(text: str, update_type: str):
+    l.log(f"/api/facilitator_face: {text}, {update_type}")
     """Returns an existing bot response"""
     if update_type == "expression":
         FACE_CONTROL_QUEUE["expression"].append(text)
@@ -218,6 +227,7 @@ def update_face(text: str, update_type: str):
         FACE_CONTROL_QUEUE["behavior"].append(text)
     if update_type == "viseme":
         VIZEME_QUEUE.append(text)
+
     return PlainTextResponse(text)
 
 @app.get("/api/gestureControl")
@@ -225,6 +235,7 @@ def return_gesture():
     global GESTURE_QUEUE
     if len(GESTURE_QUEUE)>0:
         g = GESTURE_QUEUE.pop()
-        return PlainTextResponse(g)
-    return PlainTextResponse("")
+    else: g=""
+    l.log(f"/api/gestureControl: {g}")
+    return PlainTextResponse(g)
     
