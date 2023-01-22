@@ -19,9 +19,11 @@ if __name__ == "__main__":
     gesture_pub.publish("QT/hi")
     while not rospy.is_shutdown():
         try:
+            rospy.loginfo("getting gesture")
             r = requests.get("http://192.168.1.136:8000/api/gestureControl")
             gesture = r.text
             if gesture is not "":
+                rospy.loginfo(gesture)
                 gesture_pub.publish(gesture)
         except requests.exceptions.ConnectionError as e:
             print(e)
