@@ -38,11 +38,13 @@ Finally, `exit` to return to the nuc, and open a web browser on QT (e.g., Firefo
 1. Click ‘Autostart’. You’ll be prompted for a username and password. Enter `qtrobot` for both.
 2. Click the ‘Active’ checkbox next to `start_HCI_FACE.sh`.
 
-## Alternative
+## Alternative Helpful Commands
 ```
 ssh qtrobot@192.168.100.1
 chromium-browser --start-fullscreen --display=:0 http://192.168.1.136:3000/
 rostopic pub /qt_robot/gesture/play std_msgs/String "data: 'QT/hi'"
+roslaunch hci_face_bridge qt_robot_pi.launch
+roslaunch qt_motor qt_motor.launch
 ```
 QT/
 - angry, bye-bye, kiss, send_kiss, show_right, surprise, up_left,bored, bye, happy, point_front, show_left, show_tablet, swipe_left, up_right,breathing_exercise, challenge, hi, sad, show_QT, sneezing, swipe_right, yawn,
