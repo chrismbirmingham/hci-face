@@ -14,7 +14,7 @@ import EyeQT from './qt/eyes';
 
 
 function Head({face, position, eyeAU, browAU, mouthAU}){
-    position.faceColor = "grey" // "#D7E4F5"
+    position.faceColor = "#CCC" // "#D7E4F5"
     position.right_eye.faceColor = position.faceColor
     position.left_eye.faceColor = position.faceColor
     if (face==="default"){
