@@ -28,8 +28,4 @@ if __name__ == "__main__":
         rate.sleep()
     rospy.loginfo("finished")
 
-# rostopic pub /qt_robot/gesture/show std_msgs/String "data: 'QT/hi'"
-# QT/
-# angry, bye-bye, kiss, send_kiss, show_right, surprise, up_left,bored, bye, happy, point_front, show_left, show_tablet, swipe_left, up_right,breathing_exercise, challenge, hi, sad, show_QT, sneezing, swipe_right, yawn,
-# QT/emotions/
-# afraid, angry, calm, disgusted, happy, hoora, sad, shy, surprised,
+
