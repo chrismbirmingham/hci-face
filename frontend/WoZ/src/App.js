@@ -203,6 +203,7 @@ const App = ({ classes }) => {
           <button onClick={() => do_tts("Thank you "+participantSpeaker)}>Thank You</button>---
           <button style={{backgroundColor:"orange"}} onClick={() => do_tts(participantSpeaker+" can you repeat that? I didn't hear you.")}>Please repeat</button>---
           <button onClick={() => do_tts("I am unsure how to answer that, sorry.")}>Unsure</button>
+          <button onClick={() => get_preset("g_QT/hi")}>wave</button>--
         <br></br><br></br>
       </div>
 

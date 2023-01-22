@@ -193,6 +193,7 @@ def generate_response(text: str, speaker: str, reset_conversation: bool):
 def return_response(text: str):
     """Returns an existing bot response"""
     mode, query = text.split("_")
+    global GESTURE_QUEUE
     if mode == "f": to_say = presets.responses[query]
     if mode == "d":
         if query == "disclosure":
@@ -203,6 +204,9 @@ def return_response(text: str):
         if query == "disclosure":
             emotion = random.choice(["isolation","anxiety","fear","grief"])
             to_say = random.choice(rmf.disclosures[emotion])
+    if mode == "g":
+        GESTURE_QUEUE.append(query)
+        to_say = ""
     return PlainTextResponse(to_say)
     
 @app.get("/api/facilitator_face")

@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 import rospy
 import subprocess
-#from std_srvs.srv import Trigger, TriggerResponse
+import os
 
-
-# kill_command = "pkill luakit"
+kill_command = "killall -15 chomium-browser"
 start_command = "chromium-browser --start-fullscreen --display=:0 http://192.168.1.136:3000/"#.format(url=rospy.get_param('qt_robot/face/url'))
 
 
 def callback_srv(_):
-    # os.system(kill_command)
 
     return resp
 
 if __name__ == "__main__":
+    os.system(kill_command)
 
     rospy.init_node("start_browser")
     rospy.loginfo("start_browser started!")

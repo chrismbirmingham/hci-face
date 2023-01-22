@@ -23,7 +23,7 @@ if __name__ == "__main__":
             gesture = r.text
             if gesture is not "":
                 gesture_pub.publish(gesture)
-        except Exception as e:
+        except requests.exceptions.ConnectionError as e:
             print(e)
         time.sleep(.1)
     try:
