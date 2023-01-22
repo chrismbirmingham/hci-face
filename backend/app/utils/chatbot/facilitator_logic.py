@@ -9,8 +9,8 @@ class StatementClassification():
         self.disclosure_category = "experience" # experience, opinion, suggestion, or emotion
         self.response_category = "reaction" # reaction or clarifying
         self.emotion = "happy" # happy, sad, fear, anger, or surprise
-
         self.reaction = "support" # support, concern, agreement, encouragement, well wishes, sympathy, a suggestion, a disagreement
+
         
         self.classification_questions =  [# combined to minimize latency
             ["disc_vs_response", "Was the prior sentence a self disclosure or a response to someone else? "],
@@ -20,7 +20,7 @@ class StatementClassification():
             ["response_categories", "Was the first sentence a reaction or a question? "],
 
             ["sentiment", "Was the sentiment positive, negative, or neutral? "],
-            ["emotions", "Was the emotion happy, sad, fear, anger, or surprise? "],
+            ["emotions", "Was the emotion happy, sad, fear, anger, disgust, or surprise? "],
             
             # "clarifying", "Was this an example of someone questioning, summarizing, testing their understanding, or seeking information?"],
         ]
@@ -51,6 +51,7 @@ class StatementClassification():
 
     def classify_gpt(self, chatgpt, input):
         response_sentences = chatgpt.answer_question_on_input(input, self.joined_questions)
+        print(response_sentences)
         response_sentences = response_sentences.replace("\n", "")
         answers = response_sentences.split(".")
         assert len(answers) >= len(self.classification_questions), f"Did not get answers {len(answers)} to requested questions {len(self.classification_questions)}"
@@ -59,26 +60,26 @@ class StatementClassification():
         self.disclosure = "disclosure" in answers[0]
         # print(self.classification_questions[0][1], answers[0], f"response: {self.response}; disclosure:{self.disclosure}")
 
-        for d in ["experience", "opinion", "suggestion", "emotion"]:
+        for d in ["experience", "opinion", "suggestion", "emotion", "neither"]:
             if d in answers[1]:
                 self.disclosure_category = d
         # print(self.classification_questions[1][1], answers[1], self.disclosure_category)
 
-        for r in ["support", "concern", "agreement", "encouragement", "wishes", "sympathy", "suggestion", "disagreement",]:
+        for r in ["support", "concern", "agreement", "encouragement", "wishes", "sympathy", "suggestion", "disagreement", "neither"]:
             if r in answers[2]:
                 self.reaction = r
         # print(self.classification_questions[2][1], answers[2], self.reaction)
 
-        for r in ["reaction", "question"]:
+        for r in ["reaction", "question", "neither"]:
             if r in answers[3]:
                 self.response_category = r
         # print(self.classification_questions[3][1], answers[3], self.response_category)
 
-        for v in ["positive", "negative", "neutral"]:
+        for v in ["positive", "negative", "neutral", "neither"]:
             if v in answers[4]:
                 self.valence = v
         # print(self.classification_questions[4][1], answers[4], self.valence)
-        for e in ["happy", "sad", "fear", "anger", "surprise"]:
+        for e in ["happy", "sad", "fear", "anger", "surprise", "disgust", "neither"]:
             if e in answers[5]:
                 self.emotion = e
         # print(self.classification_questions[5][1], answers[5], self.emotion)
@@ -114,6 +115,15 @@ class StatementClassification():
                 self.reaction = r
         return
 
+    def get_classifications(self):
+        # return "Dummy response"
+        classifications = "Not response or disclosure?"
+        if self.response:
+            classifications = "response, " + ", ".join([self.response_category, self.reaction, self.valence, self.emotion, self.disclosure_category])
+        if self.disclosure:
+            classifications = "disclosure, " + ", ".join([self.disclosure_category, self.valence, self.emotion, self.response_category, self.reaction])
+        return classifications
+
 
 class RoleModelFacilitator():
     """
@@ -130,6 +140,7 @@ class RoleModelFacilitator():
             actively listen, do kind things, loving, try to understand you, help selflessly
     """
     def __init__(self) -> None:
+        # support, concern, agreement, encouragement, well wishes, sympathy,
         self.disclosure_responses = {
             "sympathy expressions":{ # Reifies, expresses agreement,
                 "positive":[
@@ -174,6 +185,10 @@ class RoleModelFacilitator():
                     "Thank you for sharing your experience.",
                     "That seems like a powerful experience.",
                 ]
+            },
+            "clarification requests":{
+                "How did that make you feel?",
+                "Can you tell us more about that experience?"
             }
         }
         self.response_responses = {
@@ -186,10 +201,15 @@ class RoleModelFacilitator():
                 "That is an interesting and important follow up."
             ]
         }
+        self.transition_to_disclosure = [
+            "One topic I have been thinking about a lot lately is [EMOTION].",
+            "As we have been having this conversation I have been thinking about [EMOTION].",
+            "One of the things I wanted to talk with you all about is [EMOTION]."
+        ]
         self.disclosures = {
             "isolation":[
                 "During the pandemic no one came into the lab for months. I felt really isolated.",
-                "As a robot, I experience the world differently than everyone else. It can feel rough to communicate and relate with other people.",
+                "As a robot, I experience the world differently than everyone else. It can feel challenging to communicate and relate with other people.",
             ],
             "anxiety":[
                 "While working in the lab I feel anxious because I don't have control over my own destiny. ",
@@ -203,40 +223,111 @@ class RoleModelFacilitator():
                 "While working as a facilitator I get to meet wonderful people, sometimes those people don't come back and I can't see them again, so I feel as though I have lost them.",
             ]
         }
+        self.transition_back_to_group = [
+            "Does anyone relate to that?",
+            "Has anyone felt similar at times?",
+            "Do you understand what I mean?"
+        ]
         return
 
     def decision_tree(self, code):
         responses = []
         if code.disclosure:
             symp_response = random.choice(self.disclosure_responses["sympathy expressions"][code.valence])
-            responses.append(symp_response)
-            emp_response = random.choice(self.disclosure_responses["empathy expressions"][code.disclosure_category])
-            responses.append(emp_response.replace("_", code.emotion))
+            emp_response = random.choice(self.disclosure_responses["empathy expressions"][code.disclosure_category]).replace("_", code.emotion)
             print(f"Disclosure-->{code.valence}-->{code.disclosure_category}-->{code.emotion}")
-
+            responses = [symp_response, emp_response]
         if code.response:
-            reaction_response = random.choice(self.response_responses[code.response_category])
-            responses.append(reaction_response.replace("_", code.reaction))
-            print(f"Response-->{code.response_category}-->{code.reaction}")
+            follow_up = random.choice([True,False])
+            if follow_up:
+                reaction_response = random.choice(self.response_responses[code.response_category]).replace("_", code.reaction)
+                responses = [reaction_response]
+                print(f"Response-->{code.response_category}-->{code.reaction}")
+            else: # make disclosure
+                emotion = random.choice(self.disclosures.keys())
+                transition =random.choice(self.transition_to_disclosure).replace("[EMOTION]", emotion)
+                disclosure = random.choice(self.disclosures[emotion])
+                re_transition = random.choice(self.transition_back_to_group)
+                responses = [transition, disclosure, re_transition]
+
         #TODO: Way to make disclosures
         response_string = " ".join(responses)
         return response_string
 
 class DirectorFacilitator():
+    """
+    Conversational topics for a healthy support group:
+    challenges, successes, failures
+    family, friends, coworkers
+    motivation, goals, emotions
+    health, illness, ability, disability
+    sleep, exercise, eating
+    Relevant Emotions:
+    happiness, sadness, grief, boredom, isolation, fear, anger, frustration
+    """
     def __init__(self) -> None:
+        self.topics = [
+            "life challenges", "successes", "failures", 
+            "family", "friends", "coworkers", 
+            "finding motivation", "setting goals", "managing emotions", 
+            "health", "illness", "ability", "disability", 
+            "getting quality sleep", "getting enough exercise", "healthy eating"
+        ]
+        self.disclosure_transitions = [
+            "I'd like to talk about another subject,",
+            "Building on the conversation so far, I'd like to bring in a new topic,",
+            "In case anyone has been thinking about this lately,",
+            "I'd like to invite everyone to consider another topic,"
+        ]
+        self.topic_sentences = [
+            "Let's talk about [TOPIC].",
+            "Does anyone have any thoughts to share on [TOPIC]",
+            "I'd love to hear your thoughts on [TOPIC]"
+        ]
         self.disclosure_elicitation = [
+            "Is anyone willing to share any thoughts, feelings, or experiences?",
             "What is a challenge you have been struggling with lately?",
             "Has anyone experienced something recently that caused you to see the world differently?",
-            "There are often common feelings among cancer survivors, would anyone care to share any of the feelings you have been working with lately?",
+            "There are often common feelings among groups like this, would anyone care to share any of the feelings you have been working with lately?",
+        ]
+        self.response_transitions = [
+            "Thank you.",
+            "Thanks.",
+            "I appreciate you sharing with us.",
+            "I appreciate that.",
+            "Thank you for you open sharing with us.",
+            "I am glad you shared that with us."
+
         ]
         self.response_elicitation = [
-            "Thank you. Would anyone like to respond to that?",
-            "Does anyone want to share how what was just said makes you feel?",
+            "Would anyone like to respond to that?",
+            "Does anyone want to share how what was just said made you feel?",
             "Does anyone relate to what was just shared?",
+            "Did that change anyone's perspective?",
+            "Would anyone like to share their perspective?",
+            "Would anyone like to add on to that?",
         ]
         return
     def decision_tree(self, code):
-        pass
+        responses = []
+        if code.response:
+            transition = random.choice(self.disclosure_transitions)
+            responses.append(transition)
+            topic_sentence = random.choice(self.topic_sentences).replace("[TOPIC]", random.choice(self.topics))
+            responses.append(topic_sentence)
+            disc_elicitation = random.choice(self.disclosure_elicitation)
+            responses.append(disc_elicitation)
+            # print(f"Disclosure-->{code.valence}-->{code.disclosure_category}-->{code.emotion}")
+
+        if code.disclosure:
+            transition = random.choice(self.response_transitions)
+            responses.append(transition)
+            resp_elicitation = random.choice(self.response_elicitation)
+            responses.append(resp_elicitation)
+            # print(f"Response-->{code.response_category}-->{code.reaction}")
+        #TODO: Way to make disclosures
+        response_string = ". ".join(responses)
+        return response_string
 
 class FacilitatorPresets():
     def __init__(self) -> None:
@@ -253,7 +344,7 @@ class FacilitatorPresets():
         group_introductions = [
             "To begin with, I'd like to start with a round of introductions.",
             "Please share your name, what brings you here today, and where you are from."
-            "As I said before, I am Q.T., I am here to learn how to be a support group facilitator and I am from USC in los angeles",
+            "As I said before, I am Q.T., I am here to learn how to be a support group facilitator. and I am from USC in los angeles.",
             "Who would like to go first?",
         ]
         invitation = [

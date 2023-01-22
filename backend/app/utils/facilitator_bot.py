@@ -11,10 +11,9 @@ else:
 
 
 class FacilitatorChat():
-    def __init__(self, backend="gpt", facilitator_style="role model") -> None:
+    def __init__(self, backend="gpt") -> None:
         self.facilitator_prompt = "The following is a conversation with an AI assistant that can have meaningful conversations with users. The assistant is helpful, empathic, and friendly. Its objective is to make the user feel better by feeling heard. With each response, the AI assistant prompts the user to continue the conversation naturally."
         self.sc = StatementClassification()
-        self.facilitator_style = facilitator_style
         self.backend = backend
         if backend == "gpt":
             self.bot = ChatGPT(prompt=self.facilitator_prompt)
@@ -23,13 +22,11 @@ class FacilitatorChat():
             self.bot = ChatLLM(prompt=self.facilitator_prompt)
             self.classifier = ClassifyLLM()
 
-        if self.facilitator_style == "role model":
-            self.facilitator = RoleModelFacilitator()
-        if self.facilitator_style == "director":
-            self.facilitator = DirectorFacilitator()
-        
+        self.rm_facilitator = RoleModelFacilitator()
+        self.d_facilitator = DirectorFacilitator()
+    
 
-    def get_bot_response(self, input, speaker="Human", reset_conversation=False):
+    def get_bot_response(self, input, speaker="Human", reset_conversation=False, director_condition=False):
         bot_response = self.bot.get_bot_response(input, speaker=speaker, reset_conversation=reset_conversation)
 
         if self.backend == "gpt":
@@ -38,9 +35,14 @@ class FacilitatorChat():
         if self.backend == "llm":
             self.sc.classify_llm(self.classifier, input)
 
-        tree_response = self.facilitator.decision_tree(self.sc)
+        if director_condition:
+            response = self.d_facilitator.decision_tree(self.sc)
+        else:
+            response = self.rm_facilitator.decision_tree(self.sc)
 
-        return tree_response, bot_response
+        classifications = self.sc.get_classifications()
+
+        return response, bot_response, classifications
         
 
 
@@ -58,7 +60,7 @@ if __name__ == "__main__":
 
         user_input = input("Says: ")
 
-        tree_response, bot_response = bot.get_bot_response(user_input, speaker=speaker)
+        tree_response, bot_response = bot.get_bot_response(user_input, speaker=speaker, director_condition=False)
         print(f"Tree: {tree_response}\nBot: {bot_response}")
 
         keep = input("keep response? (n/y tree or bot)")
