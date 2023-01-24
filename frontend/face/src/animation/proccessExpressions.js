@@ -64,13 +64,14 @@ export default function getExpresionAUs(expression, intensity = .5){
 
     if (expression.includes("sad")){ 
         BrowAU.au1 = BrowAU.au1 + (.5/d) * intensity
-        BrowAU.au4 = BrowAU.au4 + (1/d) * intensity
+        BrowAU.au2 = BrowAU.au2 - (1/d) * intensity
+        EyeAU.au41 = EyeAU.au41 + (.5/d) * intensity
         EyeAU.au44 = EyeAU.au44 + (.9/d) * intensity
         EyeAU.au45 = EyeAU.au45 + (.3/d) * intensity
         EyeAU.au64 = EyeAU.au64 + (1/d) * intensity
         MouthAU.au12 = MouthAU.au12 + (.2/d) * intensity
         MouthAU.au14 = MouthAU.au14 + (.24/d) * intensity
-        MouthAU.au15 = MouthAU.au15 + (1/d) * intensity
+        MouthAU.au15 = MouthAU.au15 + (1.5/d) * intensity
         MouthAU.au16 = MouthAU.au16 + (.2/d) * intensity
         MouthAU.au25 = MouthAU.au25 + (.15/d) * intensity
         MouthAU.au26 = MouthAU.au26 + (.27/d) * intensity
@@ -78,7 +79,7 @@ export default function getExpresionAUs(expression, intensity = .5){
     };
         
     if (expression.includes("surprise")){ 
-        BrowAU.au1 = BrowAU.au1 + (1/d) * intensity
+        BrowAU.au1 = BrowAU.au1 + (1.3/d) * intensity
         BrowAU.au2 = BrowAU.au2 + (1/d) * intensity
         MouthAU.au10 = MouthAU.au10 + (.54/d) * intensity
         MouthAU.au12 = MouthAU.au12 + (.2/d) * intensity
