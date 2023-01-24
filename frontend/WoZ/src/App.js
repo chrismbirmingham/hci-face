@@ -228,8 +228,14 @@ const App = ({ classes }) => {
       {/* <h2>Study Walkthrough:</h2> */}
       
         1- Start by reviewing consent <br></br> 
-        ---  Next provide link to survey:    https://usc.qualtrics.com/jfe/form/SV_diE2Ow6GQPlSCP4 <br></br>
-        ---  WoZ prompt participants to complete first question set. (4 pages)
+        ---<input type="checkbox"/>Being in the study is voluntary <br></br>
+        ---<input type="checkbox"/>You will interact with a robot and with the others on this call. <br></br>
+        ---<input type="checkbox"/>The primary risk in this study is that you may be uncomfortable answering a question posed in this study. You may decline to answer any question. <br></br>
+        ---<input type="checkbox"/>You will not recieve any direct benefit from this study <br></br>
+        ---<input type="checkbox"/>This study will be recorded. <br></br>
+        ---<input type="checkbox"/>Do you consent to be a part of this study? You may withdraw your consent at any time. <br></br>
+        <input type="checkbox"/>Please complete the first four pages of the survey linked in the chat, and return to the zoom session when directed to stop:<br></br>    
+        <input type="checkbox"/>https://usc.qualtrics.com/jfe/form/SV_diE2Ow6GQPlSCP4 <br></br>
         <br></br>
           <button onClick={() => do_tts("Testing, 1, 2, 3. Can you all hear me?")}>Speech Test</button>
         <br></br>
@@ -260,11 +266,11 @@ const App = ({ classes }) => {
         5- Ask participants to complete the final survey questions (3 pages)
         <br></br>
         6- Lead participants through group discussion<br></br>
-        <br></br>What did you like and dislike about interacting with QT? 
-        <br></br>What did you learn as part of the group today?
-        <br></br>Do you think that QT understood you? 
-        <br></br>What differences did you notice between round 1 and round 2 of the support group?
-        <br></br>How did the support group today affect your stress level? 
+        ---<input type="checkbox"/>What did you like and dislike about interacting with QT? <br></br>
+        ---<input type="checkbox"/>What did you learn as part of the group today?<br></br>
+        ---<input type="checkbox"/>Do you think that QT understood you? <br></br>
+        ---<input type="checkbox"/>What differences did you notice between round 1 and round 2 of the support group?<br></br>
+        ---<input type="checkbox"/>How did the support group today affect your stress level? <br></br>
       </div>
 
       <div id="controls">
