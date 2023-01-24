@@ -22,7 +22,7 @@ if __name__ == "__main__":
             rospy.loginfo("getting gesture")
             r = requests.get("http://192.168.1.136:8000/api/gestureControl")
             gesture = r.text
-            if gesture is not "":
+            if len(gesture) >3:
                 rospy.loginfo(gesture)
                 gesture_pub.publish(gesture)
         except requests.exceptions.ConnectionError as e:
