@@ -62,7 +62,7 @@ const App = ({ classes }) => {
   function mouthUpdater (AU) { updateMouthAU({ ...AU })}
   function browUpdater (AU) { updateBrowAU({ ...AU })}
   const eyeUpdater = useCallback(function eyeUpdaterInner (AU) { updateEyeAU({ ...eyeAU, ...AU })},[eyeAU])
-  const [behavior, setBehavior] = useState("bored");
+  const [behavior, setBehavior] = useState("focused");
 
   // Visemes are separated from the rest of the face control
   // so speaking and expression (aside from the lips) can happen together
