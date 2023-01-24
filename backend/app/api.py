@@ -28,13 +28,17 @@ l = Logger()
 l.log("Beginning Setup")
 load_dotenv()
 vg = VisemeGenerator("phoneme-viseme_map.csv")
+l.log("Setting Up TTS")
 tts = Speak()
+l.log("TTS Set Up Complete, Setting up STT")
 stt = Transcriber(model_size="small")
-wsap = WebSocketAudioProcessor(queue_length=5, rms_multiplier=1.2)
+wsap = WebSocketAudioProcessor(queue_length=7, rms_multiplier=1.1)
+l.log("STT Set Up Complete, Setting up Bots")
 bot = FacilitatorChat(backend="gpt")
 rmf = RoleModelFacilitator()
 df = DirectorFacilitator()
 presets = FacilitatorPresets()
+
 FACE_CONTROL_QUEUE = {
     "expression":[],
     "behavior":[],
@@ -42,13 +46,13 @@ FACE_CONTROL_QUEUE = {
     "mouth_aus":[],
     "brow_aus":[],
 }
-
 VIZEME_QUEUE = []
 GESTURE_QUEUE = []
 VISEME_DELAY = .01  # second
 RETRY_TIMEOUT = 15000  # milisecond
+
 l.log("Conneting API")
-app = FastAPI(debug=False)
+app = FastAPI(debug=True)
 l.log("Setup Complete")
 
 
@@ -92,7 +96,7 @@ async def viseme_stream(request: Request):
             # Checks for new messages and return them to client if any
             if len(VIZEME_QUEUE) > 0:
                 msg = VIZEME_QUEUE.pop(0)
-                l.log(f"Viseme msg: {msg}", printnow=False)
+                # l.log(f"Viseme msg: {msg}", printnow=False)
                 response = {
                         "event": "viseme",
                         "id": "message_id",
@@ -200,6 +204,7 @@ def return_response(text: str):
     l.log(f"/api/facilitator_buttons: {text}")
     """Returns an existing bot response"""
     mode, query = text.split("_")
+    print(mode, query)
     global GESTURE_QUEUE
     if mode == "f": to_say = presets.responses[query]
     if mode == "d":
@@ -209,8 +214,19 @@ def return_response(text: str):
             to_say = random.choice(df.response_elicitation)
     if mode == "r":
         if query == "disclosure":
-            emotion = random.choice(["isolation","anxiety","fear","grief"])
-            to_say = random.choice(rmf.disclosures[emotion])
+            emotion = random.choice(rmf.disclosures.keys())
+            transition =random.choice(rmf.transition_to_disclosure).replace("[EMOTION]", emotion)
+            disclosure = random.choice(rmf.disclosures[emotion])
+            re_transition = random.choice(rmf.transition_back_to_group)
+            responses = [transition, disclosure, re_transition]
+            to_say = " ".join(responses)
+        if query == "response":
+            print("getting response")
+            to_say = random.choice(rmf.disclosure_responses["sympathy expressions"]["neutral"])
+            print(to_say)
+            to_say2 = random.choice(rmf.disclosure_responses["clarification requests"])
+            print(to_say,to_say2)
+            to_say = to_say + ". " + to_say2
     if mode == "g":
         GESTURE_QUEUE.append(query)
         to_say = ""
@@ -235,7 +251,7 @@ def return_gesture():
     global GESTURE_QUEUE
     if len(GESTURE_QUEUE)>0:
         g = GESTURE_QUEUE.pop()
+        l.log(f"/api/gestureControl: {g}")
     else: g=""
-    l.log(f"/api/gestureControl: {g}")
     return PlainTextResponse(g)
     

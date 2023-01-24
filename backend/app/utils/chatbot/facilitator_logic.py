@@ -24,7 +24,7 @@ class StatementClassification():
             
             # "clarifying", "Was this an example of someone questioning, summarizing, testing their understanding, or seeking information?"],
         ]
-        self.joined_questions = " \n".join([f"{q[1]}" for idx, q in enumerate(self.classification_questions)])
+        self.joined_questions = " \n".join([f"{idx+1}. {q[1]}" for idx, q in enumerate(self.classification_questions)])
         self.classification_prompts = {
             "disc_vs_resp" : {
                 "hypothesis_template" : "This is an example of someone {}",
@@ -51,9 +51,9 @@ class StatementClassification():
 
     def classify_gpt(self, chatgpt, input):
         response_sentences = chatgpt.answer_question_on_input(input, self.joined_questions)
-        print(response_sentences)
-        response_sentences = response_sentences.replace("\n", "")
-        answers = response_sentences.split(".")
+        answers = response_sentences.split("\n")
+        print(answers)
+        # response_sentences = response_sentences.replace("\n", "")
         assert len(answers) >= len(self.classification_questions), f"Did not get answers {len(answers)} to requested questions {len(self.classification_questions)}"
 
         self.response = "response" in answers[0]
@@ -79,9 +79,14 @@ class StatementClassification():
             if v in answers[4]:
                 self.valence = v
         # print(self.classification_questions[4][1], answers[4], self.valence)
-        for e in ["happy", "sad", "fear", "anger", "surprise", "disgust", "neither"]:
+        found_emotion=False
+        for e in ["happy", "sad", "fear", "anger", "surprise", "disgust", "neither", "confusion", "joy", "guilt", "interest"]:
             if e in answers[5]:
+                found_emotion=True
                 self.emotion = e
+        if not found_emotion:
+            words = answers[5].split(" ")
+            self.emotion = words[-1]
         # print(self.classification_questions[5][1], answers[5], self.emotion)
 
         return
@@ -122,6 +127,9 @@ class StatementClassification():
             classifications = "response, " + ", ".join([self.response_category, self.reaction, self.valence, self.emotion, self.disclosure_category])
         if self.disclosure:
             classifications = "disclosure, " + ", ".join([self.disclosure_category, self.valence, self.emotion, self.response_category, self.reaction])
+        if not self.disclosure and not self.response:
+            classifications = "neither, " + ", ".join([self.disclosure_category, self.valence, self.emotion, self.response_category, self.reaction])
+
         return classifications
 
 
@@ -186,10 +194,10 @@ class RoleModelFacilitator():
                     "That seems like a powerful experience.",
                 ]
             },
-            "clarification requests":{
+            "clarification requests":[
                 "How did that make you feel?",
-                "Can you tell us more about that experience?"
-            }
+                "Can you tell us more about that?"
+            ]
         }
         self.response_responses = {
             "reaction": [
@@ -237,7 +245,7 @@ class RoleModelFacilitator():
             emp_response = random.choice(self.disclosure_responses["empathy expressions"][code.disclosure_category]).replace("_", code.emotion)
             print(f"Disclosure-->{code.valence}-->{code.disclosure_category}-->{code.emotion}")
             responses = [symp_response, emp_response]
-        if code.response:
+        elif code.response:
             follow_up = random.choice([True,False])
             if follow_up:
                 reaction_response = random.choice(self.response_responses[code.response_category]).replace("_", code.reaction)
@@ -249,6 +257,12 @@ class RoleModelFacilitator():
                 disclosure = random.choice(self.disclosures[emotion])
                 re_transition = random.choice(self.transition_back_to_group)
                 responses = [transition, disclosure, re_transition]
+        else: # make disclosure
+            emotion = random.choice(self.disclosures.keys())
+            transition =random.choice(self.transition_to_disclosure).replace("[EMOTION]", emotion)
+            disclosure = random.choice(self.disclosures[emotion])
+            re_transition = random.choice(self.transition_back_to_group)
+            responses = [transition, disclosure, re_transition]
 
         #TODO: Way to make disclosures
         response_string = " ".join(responses)
@@ -310,7 +324,13 @@ class DirectorFacilitator():
         return
     def decision_tree(self, code):
         responses = []
-        if code.response:
+        if code.disclosure:
+            transition = random.choice(self.response_transitions)
+            responses.append(transition)
+            resp_elicitation = random.choice(self.response_elicitation)
+            responses.append(resp_elicitation)
+            # print(f"Response-->{code.response_category}-->{code.reaction}")
+        else:# code.response:
             transition = random.choice(self.disclosure_transitions)
             responses.append(transition)
             topic_sentence = random.choice(self.topic_sentences).replace("[TOPIC]", random.choice(self.topics))
@@ -319,13 +339,6 @@ class DirectorFacilitator():
             responses.append(disc_elicitation)
             # print(f"Disclosure-->{code.valence}-->{code.disclosure_category}-->{code.emotion}")
 
-        if code.disclosure:
-            transition = random.choice(self.response_transitions)
-            responses.append(transition)
-            resp_elicitation = random.choice(self.response_elicitation)
-            responses.append(resp_elicitation)
-            # print(f"Response-->{code.response_category}-->{code.reaction}")
-        #TODO: Way to make disclosures
         response_string = ". ".join(responses)
         return response_string
 
@@ -361,9 +374,10 @@ class FacilitatorPresets():
             "For the next batch of questions, I am going to ask you to rate how I did in this section."
         ]
         survey_prompt = [
-            "Would everyone please open up the survey link from the chat or open the browser page if you have the link open",
-            "and answer the questions there until the survey tells you to return to the zoom session.",
-            "You can let me know that you are ready once you have completed the survey."
+            "Would everyone please open up the survey.",
+            "There is a link from the chat or you can return to the browser page.",
+            "Please answer the questions until the survey tells you to return to the zoom session.",
+            "Please let me know through the chat or by verbal acknowledgement that you are ready once you have completed the survey."
         ]
         survey_return = [
             "Thank you all for completing the survey"
