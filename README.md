@@ -113,7 +113,6 @@ These modules are imported into the app/api.py and can be replaced with private/
 
 
 ### Front End 
-- [ ] Pre-Process audio for speech segments on client side ***
 - [ ] Different visuals presets  
     - [ ] Additional idle behaviors
         - Breathing, Thinking
@@ -125,7 +124,6 @@ These modules are imported into the app/api.py and can be replaced with private/
 ### Back End
 - [ ] [Add Amazon Polly Support](https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/python/example_code/polly/polly_wrapper.py)
 - [ ] finish face control api (AU control) 
-- [ ] Long term interaction recording
 
 
 ### Long Term Goals
