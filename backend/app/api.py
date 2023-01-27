@@ -195,21 +195,24 @@ def generate_response(text: str, speaker: str, reset_conversation: bool, directo
     l.log(f"/api/bot_response: '{text}', from {speaker}, reset_conversation: {reset_conversation}, director_condition: {director_condition}")
     """Generates a bot response"""
     global TEXT_QUEUE
-    response, bot_response, classes = bot.get_bot_response(text, speaker, reset_conversation, director_condition)
-    TEXT_QUEUE["facilitator_response"].append(response)
-    TEXT_QUEUE["bot_response"].append(bot_response)
-    TEXT_QUEUE["classifications"].append(classes)
 
-    joined_response = f"{response}&&&{bot_response}&&&{classes}"
-    l.log(f"Bot response: {joined_response}")
-    bot.bot.conversation.pop(-1)
+    classifications = bot.get_classifications(text)
+    TEXT_QUEUE["classifications"].append(classifications)
     if bot.sc.emotion in ["joy", "sad", "surprise"]:
         l.log(f"Setting face to: {bot.sc.emotion}")
         FACE_CONTROL_QUEUE["expression"].append(bot.sc.emotion)
     else: 
         l.log(f"Setting face to: neutral")
         FACE_CONTROL_QUEUE["expression"].append("neutral")
-    return PlainTextResponse(joined_response)
+
+    facilitator_response = bot.get_facilitator_response(director_condition)
+    TEXT_QUEUE["facilitator_response"].append(facilitator_response)
+
+    bot_response= bot.get_bot_response(text, speaker, reset_conversation)
+    TEXT_QUEUE["bot_response"].append(bot_response)
+    bot.bot.conversation.pop(-1)
+    
+    return PlainTextResponse(bot_response)
 
 @app.get("/api/facilitator_presets")
 def return_response(text: str):

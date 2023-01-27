@@ -25,24 +25,28 @@ class FacilitatorChat():
         self.rm_facilitator = RoleModelFacilitator()
         self.d_facilitator = DirectorFacilitator()
     
-
-    def get_bot_response(self, input, speaker="Human", reset_conversation=False, director_condition=False):
-        bot_response = self.bot.get_bot_response(input, speaker=speaker, reset_conversation=reset_conversation)
-
+    def get_classifications(self, input):
         if self.backend == "gpt":
             self.sc.classify_gpt(self.bot, input)
 
         if self.backend == "llm":
             self.sc.classify_llm(self.classifier, input)
 
+        classifications = self.sc.get_classifications()
+        return classifications
+
+    def get_facilitator_response(self, director_condition=False):
         if director_condition:
             response = self.d_facilitator.decision_tree(self.sc)
         else:
             response = self.rm_facilitator.decision_tree(self.sc)
+        return  response
 
-        classifications = self.sc.get_classifications()
 
-        return response, bot_response, classifications
+    def get_bot_response(self, input, speaker="Human", reset_conversation=False):
+        bot_response = self.bot.get_bot_response(input, speaker=speaker, reset_conversation=reset_conversation)
+
+        return bot_response
         
 
 
