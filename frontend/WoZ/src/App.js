@@ -53,13 +53,13 @@ const App = ({ classes }) => {
     es.addEventListener('human_speech', (e) => {
       let speech = e.data;
       if (speech.length>0){
-        setLatestSpeech(speech);
         let full_speech = speech
         console.log("STT process: ", speech, " from ", participantSpeaker)
-
         if (participantSpeaker === priorSpeaker){
           full_speech = latestSpeech + " " + speech;
         }
+        setLatestSpeech(full_speech);
+
 
         setTranscribedData(oldData => [participantSpeaker+":"+speech,  <br></br>, ...oldData ]);
         setPriorSpeaker(participantSpeaker);
