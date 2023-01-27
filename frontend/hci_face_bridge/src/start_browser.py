@@ -3,7 +3,7 @@ import rospy
 import subprocess
 import os
 
-kill_command = "killall -15 chomium-browser"
+kill_command = "killall -15 chromium-browser"
 start_command = "chromium-browser --start-fullscreen --display=:0 http://192.168.1.136:3000/"#.format(url=rospy.get_param('qt_robot/face/url'))
 
 
