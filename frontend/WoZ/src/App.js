@@ -37,6 +37,9 @@ const App = ({ classes }) => {
   const [timerDeadline, setTimerDeadline] = useState("")
 	const [minuteGoal, setMinuteGoal] = useState('5');
 
+  const wrappingWalkthroughToggle = useCallback(val => {
+    setWalkthroughToggle(val);
+  }, [setWalkthroughToggle])
 
 
   const get_bot_response = useCallback(human_input => {
@@ -178,6 +181,7 @@ const App = ({ classes }) => {
       <button id="toggle" onClick={() => setWalkthroughToggle(!showWalkthrough)}>Show/Hide Study Walkthrough: </button>
       <div id="walkthrough" hidden={showWalkthrough}>
         <Walkthrough 
+          setWalkthroughToggle={setWalkthroughToggle}
           do_tts={do_tts}
           setTimerDeadline={setTimerDeadline}
           switch_condition={switch_condition}
