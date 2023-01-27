@@ -239,9 +239,6 @@ def return_response(mode: str, query: str):
             to_say2 = random.choice(rmf.disclosure_responses["clarification requests"])
             print(to_say,to_say2)
             to_say = to_say + ". " + to_say2
-    # if mode == "g":
-    #     GESTURE_QUEUE.append(query)
-    #     to_say = ""
     l.log(f"facilitator_presets response: {to_say}")
     return PlainTextResponse(to_say)
     
@@ -256,6 +253,12 @@ def update_face(text: str, update_type: str):
     if update_type == "viseme":
         VIZEME_QUEUE.append(text)
 
+    return PlainTextResponse(text)
+
+@app.get("/api/qt_gesture")
+def add_gesture(text: str):
+    l.log(f"/api/qt_gestures: {text}")
+    GESTURE_QUEUE.append(text)
     return PlainTextResponse(text)
 
 @app.get("/api/next_gesture")

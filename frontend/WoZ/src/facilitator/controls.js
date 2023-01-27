@@ -7,6 +7,11 @@ export default function FacilitatorControls ({do_tts, participantSpeaker, condit
     .then(response => response.text())
     .then(message => {console.log(message); do_tts(message)})
   }
+  function set_gesture(name){
+    return fetch(`//localhost:8000/api/qt_gesture?text=${encodeURIComponent(name)}`, { cache: 'no-cache' })
+      .then(response => response.text())
+      .then(message => {console.log(message)})
+  }
   return(
     <div id="controls">
   
@@ -35,10 +40,10 @@ export default function FacilitatorControls ({do_tts, participantSpeaker, condit
         <button onClick={() => do_tts("Is there anything anyone would like to talk about? Are there any challenges or struggles you are working through?")}>Prompt</button>----
         <br></br><br></br>
         Gestures:
-        <button onClick={() => get_preset("g_QT/emotions/happy")}>happy</button>--
-        <button onClick={() => get_preset("g_QT/emotions/shy")}>shy</button>--
-        <button onClick={() => get_preset("g_QT/emotions/sad")}>sad</button>--
-        <button onClick={() => get_preset("g_QT/hi")}>wave</button>--
+        <button onClick={() => set_gesture("QT/emotions/happy")}>happy</button>--
+        <button onClick={() => set_gesture("QT/emotions/shy")}>shy</button>--
+        <button onClick={() => set_gesture("QT/emotions/sad")}>sad</button>--
+        <button onClick={() => set_gesture("QT/hi")}>wave</button>--
       </div>
       <br></br>
       Say ChatBot Response: <button style={{backgroundColor:"pink"}} onClick={() => do_tts(botResponse)}>{botResponse}</button>
