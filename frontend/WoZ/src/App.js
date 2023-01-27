@@ -35,12 +35,7 @@ const App = ({ classes }) => {
   
 	// The state for our timer
   const [timerDeadline, setTimerDeadline] = useState("")
-	const [minuteGoal, setMinuteGoal] = useState('5');
-
-  const wrappingWalkthroughToggle = useCallback(val => {
-    setWalkthroughToggle(val);
-  }, [setWalkthroughToggle])
-
+	const [timerLength, setTimerLength] = useState('25');
 
   const get_bot_response = useCallback(human_input => {
     const text = human_input
@@ -223,8 +218,8 @@ const App = ({ classes }) => {
         setSpeakerVoice={setSpeakerVoice} 
         viseme={viseme} 
         update_viseme={update_viseme} 
-        minuteGoal={minuteGoal} 
-        setMinuteGoal={setMinuteGoal}
+        timerLength={timerLength} 
+        setMinuteGoal={setTimerLength}
       />
 
       <div id="transcription">
