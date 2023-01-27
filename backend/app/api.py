@@ -217,7 +217,6 @@ def generate_response(text: str, speaker: str, reset_conversation: bool, directo
 def return_response(mode: str, query: str):
     l.log(f"/api/facilitator_presets: {mode}, {query}")
     """Returns an existing bot response"""
-    global GESTURE_QUEUE
     if mode == "facilitator": to_say = presets.responses[query]
     if mode == "director":
         if query == "disclosure":
