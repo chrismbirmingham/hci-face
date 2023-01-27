@@ -217,19 +217,17 @@ def generate_response(text: str, speaker: str, reset_conversation: bool, directo
     return PlainTextResponse(bot_response)
 
 @app.get("/api/facilitator_presets")
-def return_response(text: str):
-    l.log(f"/api/facilitator_presets: {text}")
+def return_response(mode: str, query: str):
+    l.log(f"/api/facilitator_presets: {mode}, {query}")
     """Returns an existing bot response"""
-    mode, query = text.split("_")
-    print(mode, query)
     global GESTURE_QUEUE
-    if mode == "f": to_say = presets.responses[query]
-    if mode == "d":
+    if mode == "facilitator": to_say = presets.responses[query]
+    if mode == "director":
         if query == "disclosure":
             to_say = random.choice(df.disclosure_elicitation)
         if query == "response":
             to_say = random.choice(df.response_elicitation)
-    if mode == "r":
+    if mode == "role_model":
         if query == "disclosure":
             emotion = random.choice(rmf.disclosures.keys())
             transition =random.choice(rmf.transition_to_disclosure).replace("[EMOTION]", emotion)
@@ -244,9 +242,9 @@ def return_response(text: str):
             to_say2 = random.choice(rmf.disclosure_responses["clarification requests"])
             print(to_say,to_say2)
             to_say = to_say + ". " + to_say2
-    if mode == "g":
-        GESTURE_QUEUE.append(query)
-        to_say = ""
+    # if mode == "g":
+    #     GESTURE_QUEUE.append(query)
+    #     to_say = ""
     l.log(f"facilitator_presets response: {to_say}")
     return PlainTextResponse(to_say)
     
