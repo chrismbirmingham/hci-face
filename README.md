@@ -30,6 +30,10 @@ The browser should launch with each page automatically, but you may need to past
 
 For further details see the README in the face and WoZ folders.
 
+## QT Front End
+
+See the hci_face_bridge README for more information on setting up QT with HCI Face
+
 ### Back End
 
 To use the back end, install the requirements.txt with your favorite package manager. I suggest [anaconda](https://www.anaconda.com/)  
