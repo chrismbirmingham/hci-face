@@ -1,16 +1,13 @@
 import './App.css';
-import React, { useState, useRef } from "react";
-import { w3cwebsocket as W3CWebSocket } from "websocket";
-import { ReactMic } from './react-mic-clone';
-
-const stt_socket = new W3CWebSocket('ws://localhost:8000/api/stt');
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import Mic from './alternate-mic/Microphone';
 
 const App = ({ classes }) => {
   // Variables with state
   const [beginConversation, setBeginConversation] = useState(true);
   const [textToSay, setTextToSay] = useState("This is an example of what I sound like when I am talking.");
   const [botResponse, setBotResponse] = useState("This is the bot response");
-  const [treeResponse, setTreeResponse] = useState("This is the tree response");
+  const [facilitatorResponse, setFacilitatorResponse] = useState("This is the Facilitator response");
 
   const [isRecording, setIsRecording] = useState(false);
   const [showForm, setFormToggle] = useState(false);
@@ -34,8 +31,73 @@ const App = ({ classes }) => {
 	const [minuteGoal, setMinuteGoal] = useState('15');
 	const [color, setColor] = useState('Green');
 	const [date, setDate] = useState("")
-	// const [playTimerVar, setPlay] = useState(true)
 
+
+  const get_bot_response = useCallback(human_input => {
+    const text = human_input
+    const speaker = participantSpeaker
+    if (text) {
+      return fetch(`//localhost:8000/api/bot_response?text=${encodeURIComponent(text)}&speaker=${encodeURIComponent(speaker)}&reset_conversation=${encodeURIComponent(beginConversation)}&director_condition=${encodeURIComponent(!condition)}`, { cache: 'no-cache' })
+      .then(response => response.text())
+      .then(message => {console.log(message); return message})
+    }
+  },[beginConversation, condition, participantSpeaker]
+  )
+
+  useEffect(() => {const es = new EventSource("http://192.168.1.136:8000/api/text_stream");
+    es.addEventListener('open', () => {
+      // console.log('SSE opened@!')
+    });
+
+    // faceControls should handle vizemes, eyeAU, browAU, mouthAU
+    es.addEventListener('human_speech', (e) => {
+      let speech = e.data;
+      if (speech.length>0){
+        setLatestSpeech(speech);
+        let full_speech = speech
+        console.log("STT process: ", speech, " from ", participantSpeaker)
+
+        if (participantSpeaker === priorSpeaker){
+          full_speech = latestSpeech + " " + speech;
+        }
+
+        setTranscribedData(oldData => [participantSpeaker+":"+speech,  <br></br>, ...oldData ]);
+        setPriorSpeaker(participantSpeaker);
+        setClassifications("");
+        setBeginConversation(false);
+
+
+        if (full_speech.length > 20) {
+          console.log(full_speech, full_speech.length)
+          get_bot_response(full_speech);
+        }
+      };
+    });
+
+    es.addEventListener("bot_response", (e) => {
+      let bot_says = e.data
+      setBotResponse(bot_says);
+    });
+
+    es.addEventListener("facilitator_response", (e) => {
+      let facilitator_says = e.data
+      setFacilitatorResponse(facilitator_says);
+    });
+
+    es.addEventListener("classifications", (e) => {
+      let classifications = e.data
+      setClassifications(classifications);
+    });
+
+
+    es.addEventListener('error', (e) => {
+      console.error('Error: ',  e);
+    });
+
+    return () => {
+      es.close();
+    };
+  }, [get_bot_response, latestSpeech, participantSpeaker, priorSpeaker]);
 
 	const getTimeRemaining = (e) => {
 		const total = Date.parse(e) - Date.parse(new Date());
@@ -84,58 +146,6 @@ const App = ({ classes }) => {
 		deadline.setSeconds(deadline.getSeconds() + newseconds);
 		return deadline;
 	}
-	
-  /////// Socket Handler ///////
-  stt_socket.onopen = () => {console.log({ event: 'onopen' })};
-  stt_socket.onclose = () => {console.log({ event: 'onclose' })}
-  stt_socket.onerror = (error) => {console.log({ event: 'onerror', error })}
-  function onData(recordedBlob) {stt_socket.send(recordedBlob)}
-  stt_socket.onmessage = (message) => {
-      const received = message.data
-      if (received) {
-          console.log(received)
-          process_stt(received)
-     }
-  }
-
-
-  /////// Process STT input and get bot response ///////
-  async function process_stt(received) {
-    var speechToBot
-    setTranscribedData(oldData => [participantSpeaker+":"+received,  <br></br>, ...oldData ]);
-    if (participantSpeaker === priorSpeaker){
-      speechToBot = latestSpeech + " " + received;
-      setLatestSpeech(latestSpeech + " " + received)
-    }
-    else {
-      setLatestSpeech(received);
-      speechToBot = received
-    }
-
-    setPriorSpeaker(participantSpeaker);
-    setClassifications("");
-
-    if (speechToBot.length > 20) {
-      console.log(speechToBot, speechToBot.length)
-      const raw_res = await get_bot_response(speechToBot);
-      console.log("raw response ", raw_res)
-      const respArray = raw_res.split("&&&");
-      setTreeResponse(respArray[0]);
-      setBotResponse(respArray[1]);
-      setClassifications(respArray[2]);
-    }
-    setBeginConversation(false);
-  }
-
-  async function get_bot_response(human_input) {
-    const text = human_input
-    const speaker = participantSpeaker
-    if (text) {
-      return fetch(`//localhost:8000/api/bot_response?text=${encodeURIComponent(text)}&speaker=${encodeURIComponent(speaker)}&reset_conversation=${encodeURIComponent(beginConversation)}&director_condition=${encodeURIComponent(!condition)}`, { cache: 'no-cache' })
-      .then(response => response.text())
-      .then(message => {console.log(message); return message})
-    }
-  }
 
   /////// Get and Play Speech ///////
   function do_tts(e) {
@@ -147,7 +157,7 @@ const App = ({ classes }) => {
     setTranscribedData(oldData => ["bot: "+text, <br></br>, ...oldData ])
 
     if (text) {
-        fetch(`//localhost:8000/api/tts?text=${encodeURIComponent(text)}&speaker_id=${encodeURIComponent(speaker_id)}&style_wav=${encodeURIComponent(style_wav)}`, { cache: 'no-cache' })
+        fetch(`//localhost:8000/api/speech?text=${encodeURIComponent(text)}&speaker_id=${encodeURIComponent(speaker_id)}&style_wav=${encodeURIComponent(style_wav)}`, { cache: 'no-cache' })
             .then(function (res) {
                 if (!res.ok) throw Error(res.statusText)
                 return res.blob()
@@ -170,7 +180,7 @@ const App = ({ classes }) => {
       setWalkthroughToggle(true)
     }
     if (text) {
-      return fetch(`//localhost:8000/api/facilitator_buttons?text=${encodeURIComponent(text)}`, { cache: 'no-cache' })
+      return fetch(`//localhost:8000/api/facilitator_presets?text=${encodeURIComponent(text)}`, { cache: 'no-cache' })
       .then(response => response.text())
       .then(message => {console.log(message); do_tts(message)})
     }
@@ -179,11 +189,10 @@ const App = ({ classes }) => {
   function set_face(name, type){
     const name_text = name
     const type_text = type
-    return fetch(`//localhost:8000/api/facilitator_face?text=${encodeURIComponent(name_text)}&update_type=${encodeURIComponent(type_text)}`, { cache: 'no-cache' })
+    return fetch(`//localhost:8000/api/face_presets?text=${encodeURIComponent(name_text)}&update_type=${encodeURIComponent(type_text)}`, { cache: 'no-cache' })
       .then(response => response.text())
       .then(message => {console.log(message)})
-    }
-
+  }
 
   function update_behavior(name){
     setBehavior(name)
@@ -203,24 +212,15 @@ const App = ({ classes }) => {
     console.log(name)
   }
 
+  function update_speaker(name){
+    console.log("Updated speaker to "+name)
+    setParticipantSpeaker(name)
+  }
+
   return (
     <div className="App">
       <header className="App-header"></header>
-      <div id="listenbox">
-        <div id="mic">
-          <ReactMic
-            record={isRecording}
-            onData={onData}
-            sampleRate={16000}
-            timeSlice={5000}
-            className="sound-wave"
-            strokeColor="#fff"
-            backgroundColor="#000" 
-            height={60}
-            width={320} />
-          <button id="Recording" onClick={() => setIsRecording(true)}>Start Listening </button>
-        </div>      
-      </div>
+      <Mic/>
       
       <br></br>
       <button id="toggle" onClick={() => setWalkthroughToggle(!showWalkthrough)}>Show/Hide Study Walkthrough: </button>
@@ -277,7 +277,7 @@ const App = ({ classes }) => {
         <h3 style={{backgroundColor:color}}>Interactive Controls:</h3>
 			  <p style={{backgroundColor:color}}>Time Remaining: {timer}</p>
         
-        <div onChange={(e) => setParticipantSpeaker(e.target.value)}>The current speaker:
+        <div onChange={(e) => update_speaker(e.target.value)}>The current speaker:
           <label> <input type="radio" value="Nathan" name="speaker" /> Nathan</label>
           <label> <input type="radio" value="Lauren" name="speaker" /> Lauren</label>
           <label> <input type="radio" value="Mina" name="speaker" /> Mina</label>
@@ -290,12 +290,12 @@ const App = ({ classes }) => {
         Classified as: {classifications}
         
         <div hidden={condition}><p>Condition: Director</p>
-        Recommended Statement:<button style={{backgroundColor:"Chartreuse"}} onClick={() => do_tts(participantSpeaker+". "+treeResponse)}>{participantSpeaker+". "+treeResponse}</button>
+        Recommended Statement:<button style={{backgroundColor:"Chartreuse"}} onClick={() => do_tts(participantSpeaker+". "+facilitatorResponse)}>{participantSpeaker+". "+facilitatorResponse}</button>
         <br></br>
           <button onClick={() => get_preset("d_disclosure")}>Request Disclosure</button>--
           <button onClick={() => get_preset("d_response")}>Request Response</button></div>
         <div hidden={!condition}><p>Condition: Role Model</p>
-        Recommended Statement:<button style={{backgroundColor:"Chartreuse"}} onClick={() => do_tts(participantSpeaker+". "+treeResponse)}>{participantSpeaker+". "+treeResponse}</button>
+        Recommended Statement:<button style={{backgroundColor:"Chartreuse"}} onClick={() => do_tts(participantSpeaker+". "+facilitatorResponse)}>{participantSpeaker+". "+facilitatorResponse}</button>
         <br></br>
           <button onClick={() => get_preset("r_disclosure")}>Make Disclosure</button>--
           <button onClick={() => get_preset("r_response")}>Say Response</button></div>

@@ -1,19 +1,19 @@
-from fastapi import FastAPI, WebSocket, Request
+from fastapi import FastAPI, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, PlainTextResponse
 from sse_starlette.sse import EventSourceResponse
 from dotenv import load_dotenv
 import asyncio
 import random
+
 from app import FacilitatorChat
 from app.utils.chatbot.facilitator_logic import RoleModelFacilitator, DirectorFacilitator, FacilitatorPresets
 from app.utils.stt.whisper_stt import Transcriber
-from app.utils.stt.websocket_processor import WebSocketAudioProcessor
 from app.utils.tts.coqui_tts import Speak
-# from app.utils.chatbot.zero_shot import ChatLLM, ClassifyLLM
-# from app.utils.chatbot.chatgpt import ChatGPT
 from app.utils.tts.viseme_generator import VisemeGenerator
 from app.utils.logger import Logger
+import io
+from pydub import AudioSegment
 
 common_hallucinations = ["        you",
      "       You",
@@ -24,20 +24,19 @@ common_hallucinations = ["        you",
      "   THANKS FOR WATCHING!"]
 # PROMPT = "The following is a conversation with an AI assistant that can have meaningful conversations with users. The assistant is helpful, empathic, and friendly. Its objective is to make the user feel better by feeling heard. With each response, the AI assistant prompts the user to continue the conversation naturally."
 l = Logger()
-
 l.log("Beginning Setup")
 load_dotenv()
-vg = VisemeGenerator("phoneme-viseme_map.csv")
 l.log("Setting Up TTS")
 tts = Speak()
 l.log("TTS Set Up Complete, Setting up STT")
 stt = Transcriber(model_size="small")
-wsap = WebSocketAudioProcessor(queue_length=7, rms_multiplier=1.1)
+
 l.log("STT Set Up Complete, Setting up Bots")
 bot = FacilitatorChat(backend="gpt")
 rmf = RoleModelFacilitator()
 df = DirectorFacilitator()
 presets = FacilitatorPresets()
+vg = VisemeGenerator("phoneme-viseme_map.csv")
 
 FACE_CONTROL_QUEUE = {
     "expression":[],
@@ -46,8 +45,15 @@ FACE_CONTROL_QUEUE = {
     "mouth_aus":[],
     "brow_aus":[],
 }
+TEXT_QUEUE = {
+    "human_speech":[],
+    "bot_response":[],
+    "facilitator_response":[],
+    "classifications":[],
+}
 VIZEME_QUEUE = []
 GESTURE_QUEUE = []
+HUMAN_INPUT = []
 VISEME_DELAY = .01  # second
 RETRY_TIMEOUT = 15000  # milisecond
 
@@ -78,7 +84,7 @@ app.add_middleware(
 async def read_root() -> dict:
     return {"message": "Welcome to your bot fastapi."}
 
-@app.get('/api/visemes')
+@app.get('/api/viseme_stream')
 async def viseme_stream(request: Request):
     # l.log(f"/api/visemes: request recieved.")
     # WARNING if you have multiple face tabs open, it will split the 
@@ -109,9 +115,9 @@ async def viseme_stream(request: Request):
 
     return EventSourceResponse(event_generator())
 
-@app.get('/api/faceControl')
-async def face_control_stream(request: Request):
-    # l.log(f"/api/faceControl: request recieved.")
+@app.get('/api/face_stream')
+async def face_stream(request: Request):
+    # l.log(f"/api/face_stream: request recieved.")
     async def event_generator():
         while True:
             # If client closes connection, stop sending events
@@ -137,36 +143,37 @@ async def face_control_stream(request: Request):
 
     return EventSourceResponse(event_generator())
 
-@app.websocket("/api/stt")
-async def websocket_endpoint(websocket: WebSocket):
-    """Continuously Open STT, returns on completed phrases, when pauses are detected"""
-    await websocket.accept()
-    l.log("api/stt websocket connected")
-    try:
+@app.get('/api/text_stream')
+async def text_stream(request: Request):
+    # l.log(f"/api/human_text_stream: request recieved.")
+    async def event_generator():
         while True:
-            data = await websocket.receive_bytes()
-            speech_segment = wsap.process_bytes(data)
-            if speech_segment:
-                transcribed_text = stt.transcribe_clip(speech_segment)
-                hallucination = False
-                for h in common_hallucinations:
-                    if transcribed_text in h:
-                        hallucination=True
-                if not hallucination:
-                    l.log(f"Collected speech length: {len(speech_segment)}")
-                    l.log(f"Transcribed text: {transcribed_text}")
-                    await websocket.send_text(transcribed_text)
-                else:
-                    l.log(f"Seems to have been a hallucination")
+            # If client closes connection, stop sending events
+            if await request.is_disconnected():
+                # print("Disconnected")
+                break
 
-    except Exception as e:
-        raise Exception(f'Could not process audio: {e}')
-    finally:
-        await websocket.close()
+            global TEXT_QUEUE
+            # Checks for new messages and return them to client if any
+            for key, q in TEXT_QUEUE.items():
+                if len(q) >0:
+                    msg = q.pop(0)
+                    l.log(f"face control message: {key}: {msg}")
+                    response = {
+                            "event": key,
+                            "id": "message_id",
+                            "retry": RETRY_TIMEOUT,
+                            "data": msg,
+                    }
+                    yield response
 
-@app.get("/api/tts")
+            await asyncio.sleep(.03)
+
+    return EventSourceResponse(event_generator())
+
+@app.get("/api/speech")
 def text_to_speech(text: str, speaker_id: str = "", style_wav: str = ""):
-    l.log(f"/api/tts: {text}, {speaker_id}, {style_wav}")
+    l.log(f"/api/speech: {text}, {speaker_id}, {style_wav}")
     """Synthesizes wav bytes from text, with a given speaker ID"""
     if bot.backend == "gpt":
         bot.bot.conversation[-1] = "AI: " + text
@@ -187,7 +194,12 @@ def text_to_speech(text: str, speaker_id: str = "", style_wav: str = ""):
 def generate_response(text: str, speaker: str, reset_conversation: bool, director_condition: bool):
     l.log(f"/api/bot_response: '{text}', from {speaker}, reset_conversation: {reset_conversation}, director_condition: {director_condition}")
     """Generates a bot response"""
+    global TEXT_QUEUE
     response, bot_response, classes = bot.get_bot_response(text, speaker, reset_conversation, director_condition)
+    TEXT_QUEUE["facilitator_response"].append(response)
+    TEXT_QUEUE["bot_response"].append(bot_response)
+    TEXT_QUEUE["classifications"].append(classes)
+
     joined_response = f"{response}&&&{bot_response}&&&{classes}"
     l.log(f"Bot response: {joined_response}")
     bot.bot.conversation.pop(-1)
@@ -199,9 +211,9 @@ def generate_response(text: str, speaker: str, reset_conversation: bool, directo
         FACE_CONTROL_QUEUE["expression"].append("neutral")
     return PlainTextResponse(joined_response)
 
-@app.get("/api/facilitator_buttons")
+@app.get("/api/facilitator_presets")
 def return_response(text: str):
-    l.log(f"/api/facilitator_buttons: {text}")
+    l.log(f"/api/facilitator_presets: {text}")
     """Returns an existing bot response"""
     mode, query = text.split("_")
     print(mode, query)
@@ -230,12 +242,12 @@ def return_response(text: str):
     if mode == "g":
         GESTURE_QUEUE.append(query)
         to_say = ""
-    l.log(f"facilitator_buttons response: {to_say}")
+    l.log(f"facilitator_presets response: {to_say}")
     return PlainTextResponse(to_say)
     
-@app.get("/api/facilitator_face")
+@app.get("/api/face_presets")
 def update_face(text: str, update_type: str):
-    l.log(f"/api/facilitator_face: {text}, {update_type}")
+    l.log(f"/api/face_presets: {text}, {update_type}")
     """Returns an existing bot response"""
     if update_type == "expression":
         FACE_CONTROL_QUEUE["expression"].append(text)
@@ -246,12 +258,25 @@ def update_face(text: str, update_type: str):
 
     return PlainTextResponse(text)
 
-@app.get("/api/gestureControl")
+@app.get("/api/next_gesture")
 def return_gesture():
     global GESTURE_QUEUE
     if len(GESTURE_QUEUE)>0:
         g = GESTURE_QUEUE.pop()
-        l.log(f"/api/gestureControl: {g}")
+        l.log(f"/api/next_gesture: {g}")
     else: g=""
     return PlainTextResponse(g)
     
+@app.post("/api/audio")
+async def create_upload_file(uploadedFile: UploadFile):
+    contents = uploadedFile.file.read()
+    data_bytes = io.BytesIO(contents)
+    audio_clip = AudioSegment.from_file(data_bytes, codec='opus')
+    audio_clip.export("temp.wav", format="wav")
+    transcription = stt.transcribe_clip(audio_clip)
+    global TEXT_QUEUE
+    TEXT_QUEUE["human_speech"].append(transcription)
+    l.log(f"Speech Detected: {transcription}")
+    return {"filename": "temp.wav"}
+
+
