@@ -1,33 +1,26 @@
 import React from "react"
 
-export default function FacilitatorControls ({update_speaker, do_tts, get_preset, participantSpeaker, latestSpeech, classifications, condition, botResponse, facilitatorResponse}) {
-
+export default function FacilitatorControls ({do_tts, participantSpeaker, condition, botResponse, facilitatorResponse}) {
+  /////// Fetch Speech ///////
+  function get_preset(mode, query) {
+    return fetch(`//localhost:8000/api/facilitator_presets?mode=${encodeURIComponent(mode)}&query=${encodeURIComponent(query)}`, { cache: 'no-cache' })
+    .then(response => response.text())
+    .then(message => {console.log(message); do_tts(message)})
+  }
   return(
     <div id="controls">
-    
-      <div onChange={(e) => update_speaker(e.target.value)}>The current speaker:
-        <label> <input type="radio" value="Nathan" name="speaker" /> Nathan</label>
-        <label> <input type="radio" value="Lauren" name="speaker" /> Lauren</label>
-        <label> <input type="radio" value="Mina" name="speaker" /> Mina</label>
-        <label> <input type="radio" value="Participant" name="speaker" /> Default</label>
-        <label> <input type="radio" value="" name="speaker" /> None</label>
-      </div>
-      <br></br>
-      {participantSpeaker} Said: {latestSpeech}
-      <br></br>
-      Classified as: {classifications}
-      
+  
       <div hidden={condition}><p>Condition: Director</p>
         Recommended Statement:<button style={{backgroundColor:"Chartreuse"}} onClick={() => do_tts(participantSpeaker+". "+facilitatorResponse)}>{participantSpeaker+". "+facilitatorResponse}</button>
-        <br></br>
-        <button onClick={() => get_preset("d_disclosure")}>Request Disclosure</button>--
-        <button onClick={() => get_preset("d_response")}>Request Response</button>
+        <br></br> Ignore Recommendations: 
+        <button onClick={() => get_preset("director","disclosure")}>Request Disclosure</button>--
+        <button onClick={() => get_preset("director","response")}>Request Response</button>
       </div>
       <div hidden={!condition}><p>Condition: Role Model</p>
         Recommended Statement:<button style={{backgroundColor:"Chartreuse"}} onClick={() => do_tts(participantSpeaker+". "+facilitatorResponse)}>{participantSpeaker+". "+facilitatorResponse}</button>
-        <br></br>
-        <button onClick={() => get_preset("r_disclosure")}>Make Disclosure</button>--
-        <button onClick={() => get_preset("r_response")}>Say Response</button>
+        <br></br> Ignore Recommendations: 
+        <button onClick={() => get_preset("role_model","disclosure")}>Make Disclosure</button>--
+        <button onClick={() => get_preset("role_model","response")}>Say Response</button>
       </div>
       <br></br>
 

@@ -3,7 +3,7 @@ import AudioAnalyser from './AudioAnalyser';
 import useRecorder from "./useRecorder";
 
 export default function Mic ({isRecording}) {
-  const [listen, setListen] = useState(false);
+  const [listening, setListen] = useState(false);
   const [audio, setAudio] = useState(null) // eslint-disable-next-line
   const [rmsThresh, setRMSThresh] = useState(.005)
   const [bufferSize, setBufferSize] = useState(20)
@@ -13,6 +13,7 @@ export default function Mic ({isRecording}) {
 
 
   async function getMicrophone() {
+    setListen(true)
     const audioDevice = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: false
@@ -21,6 +22,7 @@ export default function Mic ({isRecording}) {
   }
 
   function stopMicrophone() {
+    setListen(false)
     audio.getTracks().forEach(track => track.stop());
     setAudio(null );
   }
@@ -34,16 +36,14 @@ export default function Mic ({isRecording}) {
   }
 
   useEffect(() => {
-    console.log("responding to change in isRecording", isRecording, "listen is ", listen)
-    if (listen && !isRecording) {
+    console.log("responding to change in isRecording", isRecording, "listening is ", listening)
+    if (listening && !isRecording) {
       console.log("toggle off")
-      setListen(false)
-      toggleMicrophone()
+      stopMicrophone()
     }
-    if (!listen && isRecording) {
+    if (!listening && isRecording) {
       console.log("toggle on")
-      setListen(true)
-      toggleMicrophone()
+      getMicrophone()
     }
   },[isRecording])
 

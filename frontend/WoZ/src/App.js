@@ -1,9 +1,11 @@
 import './App.css';
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Mic from './mic/Microphone';
 import Timer from './timer/timer';
+import getDeadTime from './timer/utils';
 import Walkthrough from './facilitator/walkthrough';
 import FacilitatorControls from './facilitator/controls';
+import SpeakerMonitor from './facilitator/speech';
 import RobotControls from './robotControls';
 
 
@@ -35,13 +37,7 @@ const App = ({ classes }) => {
   const [timerDeadline, setTimerDeadline] = useState("")
 	const [minuteGoal, setMinuteGoal] = useState('5');
 
-  const getDeadTime = (m) => {
-    console.log("New goal: ", m)
-    let deadline = new Date();
-    let newseconds = m*60 + 1
-    deadline.setSeconds(deadline.getSeconds() + newseconds);
-    return deadline;
-}
+
 
   const get_bot_response = useCallback(human_input => {
     const text = human_input
@@ -110,7 +106,7 @@ const App = ({ classes }) => {
   }, [get_bot_response, latestSpeech, participantSpeaker, priorSpeaker]);
 
 
-  /////// Get and Play Speech ///////
+  /////// Play Speech ///////
   function do_tts(e) {
     console.log("Will say"+e)
     setPriorSpeaker("bot")
@@ -136,18 +132,6 @@ const App = ({ classes }) => {
     return false
   }
 
-  function get_preset(name) {
-    const text = name
-    if (text==="f_invitation"){
-      setTimerDeadline(getDeadTime(5))
-      setWalkthroughToggle(true)
-    }
-    if (text) {
-      return fetch(`//localhost:8000/api/facilitator_presets?text=${encodeURIComponent(text)}`, { cache: 'no-cache' })
-      .then(response => response.text())
-      .then(message => {console.log(message); do_tts(message)})
-    }
-  }
 
   function set_face(name, type){
     const name_text = name
@@ -188,25 +172,31 @@ const App = ({ classes }) => {
     <div className="App">
       <header className="App-header"></header>
       <Mic isRecording={isRecording}/>
+      <button onClick={() => do_tts("Testing, 1, 2, 3. Can you all hear me?")}>Speech Test</button>
       
       <br></br>
       <button id="toggle" onClick={() => setWalkthroughToggle(!showWalkthrough)}>Show/Hide Study Walkthrough: </button>
-      <Walkthrough 
-        showWalkthrough={showWalkthrough} 
-        do_tts={do_tts}
-        get_preset={get_preset}
-        switch_condition={switch_condition}
-      />
+      <div id="walkthrough" hidden={showWalkthrough}>
+        <Walkthrough 
+          do_tts={do_tts}
+          setTimerDeadline={setTimerDeadline}
+          switch_condition={switch_condition}
+        />
+      </div>
 
+      <br></br>
       <Timer timerDeadline={timerDeadline} />
 
-      <FacilitatorControls
+      <SpeakerMonitor
         update_speaker={update_speaker}
-        do_tts={do_tts}
-        get_preset={get_preset}
         participantSpeaker={participantSpeaker}
         latestSpeech={latestSpeech}
         classifications={classifications}
+      />
+
+      <FacilitatorControls
+        do_tts={do_tts}
+        participantSpeaker={participantSpeaker}
         condition={condition}
         botResponse={botResponse}
         facilitatorResponse={facilitatorResponse}
