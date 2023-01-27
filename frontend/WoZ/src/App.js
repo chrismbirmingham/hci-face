@@ -1,6 +1,6 @@
 import './App.css';
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import Mic from './alternate-mic/Microphone';
+import Mic from './mic/Microphone';
 
 const App = ({ classes }) => {
   // Variables with state
