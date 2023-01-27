@@ -1,19 +1,16 @@
 from fastapi import FastAPI, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, PlainTextResponse
+
 from sse_starlette.sse import EventSourceResponse
 from dotenv import load_dotenv
+from pydub import AudioSegment
 import asyncio
 import random
-
-from app import FacilitatorChat
-from app.utils.chatbot.facilitator_logic import RoleModelFacilitator, DirectorFacilitator, FacilitatorPresets
-from app.utils.stt.whisper_stt import Transcriber
-from app.utils.tts.coqui_tts import Speak
-from app.utils.tts.viseme_generator import VisemeGenerator
-from app.utils.logger import Logger
 import io
-from pydub import AudioSegment
+
+from app.facilitator import FacilitatorChat, RoleModelFacilitator, DirectorFacilitator, FacilitatorPresets
+from app.utils import Transcriber, Speak, VisemeGenerator, Logger
 
 common_hallucinations = ["        you",
      "       You",
@@ -38,7 +35,7 @@ bot = FacilitatorChat(backend="gpt")
 rmf = RoleModelFacilitator()
 df = DirectorFacilitator()
 presets = FacilitatorPresets()
-vg = VisemeGenerator("phoneme-viseme_map.csv")
+vg = VisemeGenerator(".phoneme-viseme_map.csv")
 
 FACE_CONTROL_QUEUE = {
     "expression":[],

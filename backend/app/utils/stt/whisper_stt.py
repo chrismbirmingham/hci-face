@@ -69,12 +69,12 @@ class Transcriber():
         else: print("no filename here")
 
         result = self.audio_model.transcribe(self.save_path, language='english')
-        self.save_csv(result["segments"], "transcription.csv")
+        self.save_csv(result["segments"], "output/transcription.csv")
         # for s in result["segments"]:
         #     print(s)
         if diarize:
             diarized_segments = self.diarize_segments(result["segments"])
-            self.save_csv(diarized_segments, "diarization.csv")
+            self.save_csv(diarized_segments, "output/diarization.csv")
             return diarized_segments
         return result
 
@@ -152,7 +152,7 @@ def main():
                         choices=["tiny", "base", "small", "medium", "large"])
     parser.add_argument("--record", default=False, 
                         help="record a 20 second example", type=bool)
-    parser.add_argument("--filename", default="test_input.wav", 
+    parser.add_argument("--filename", default="output/test_input.wav", 
                         help="location of file to transcribe")
     
     args = parser.parse_args()

@@ -45,24 +45,25 @@ class VisemeGenerator:
         if self.log: print(f"String to process: {text}")
         phonemized = self.backend.phonemize(text, strip=False)[0]
         if self.log: print(f"Phonemes: {phonemized}")
-        s = self.process_phoneme_string(phonemized) + [' ']
-        v = []
-        for p in s:
+        phonemes = self.process_phoneme_string(phonemized) + [' ']
+        visemes = []
+        for p in phonemes:
             vis = self.get_viseme(p)
             if vis == "IDLE":
-                v.append(vis)
-            v.append(vis)
+                visemes.append(vis)
+            visemes.append(vis)
 
         if return_phonemes:
-            return v, s
-        return v
+            return visemes, phonemes
+        return visemes
 
 
 if __name__ == "__main__":
     text = ["Hello, world! Welcome to the arena?"]
-    vg = VisemeGenerator("./phoneme-viseme_map.csv")
-    v,s = vg.get_visemes(text, True)
+    vg = VisemeGenerator("./.phoneme-viseme_map.csv")
+    visemes,phonemes = vg.get_visemes(text, True)
 
-    print(len(v), len(s))
-    for i in range(len(v)):
-        print(i, s[i], v[i])
+    print(len(visemes), len(phonemes))
+    m = min(len(visemes),len(phonemes))
+    for i in range(m):
+        print(i, phonemes[i], visemes[i])

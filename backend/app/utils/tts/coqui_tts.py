@@ -81,7 +81,7 @@ class Speak():
 
         self.path = Path(__file__).parent  
 
-        manager = ModelManager(os.path.join(self.path,".models.json"))
+        manager = ModelManager(os.path.join(self.path,".coqui_tts_models.json"))
 
         # if args.list_models:
         #     manager.list_models()
