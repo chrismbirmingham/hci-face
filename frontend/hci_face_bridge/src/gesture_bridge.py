@@ -20,7 +20,7 @@ if __name__ == "__main__":
     while not rospy.is_shutdown():
         try:
             rospy.loginfo("getting gesture")
-            r = requests.get("http://192.168.1.136:8000/api/gestureControl")
+            r = requests.get("http://192.168.1.136:8000/api/qt_gesture")
             gesture = r.text
             if len(gesture) >3:
                 rospy.loginfo(gesture)
