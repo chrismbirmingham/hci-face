@@ -23,7 +23,9 @@ common_hallucinations = ["        you",
      "Thanks for watching! Don't forget to like, comment and subscribe!"
      "   THANKS FOR WATCHING!"]
 # PROMPT = "The following is a conversation with an AI assistant that can have meaningful conversations with users. The assistant is helpful, empathic, and friendly. Its objective is to make the user feel better by feeling heard. With each response, the AI assistant prompts the user to continue the conversation naturally."
-l = Logger()
+logs_dir = "./logs/testing"
+
+l = Logger(folder=logs_dir)
 l.log("Beginning Setup")
 load_dotenv()
 l.log("Setting Up TTS")
@@ -275,7 +277,7 @@ async def create_upload_file(uploadedFile: UploadFile):
     contents = uploadedFile.file.read()
     data_bytes = io.BytesIO(contents)
     audio_clip = AudioSegment.from_file(data_bytes, codec='opus')
-    audio_clip.export("temp.wav", format="wav")
+    l.log_sound(audio_clip)
     transcription = stt.transcribe_clip(audio_clip)
     global TEXT_QUEUE
     TEXT_QUEUE["human_speech"].append(transcription)
