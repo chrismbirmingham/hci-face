@@ -1,5 +1,3 @@
-
-
 ![Visual of Face](frontend/public/face.png?raw=true "HCI-FACE")
 
 # HCI-FACE

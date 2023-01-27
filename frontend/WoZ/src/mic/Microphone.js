@@ -2,12 +2,13 @@ import React, {useState, useCallback, useEffect} from 'react';
 import AudioAnalyser from './AudioAnalyser';
 import useRecorder from "./useRecorder";
 
-export default function Mic () {
-  const [audio, setAudio] = useState(null)// eslint-disable-next-line
+export default function Mic ({isRecording}) {
+  const [listen, setListen] = useState(false);
+  const [audio, setAudio] = useState(null) // eslint-disable-next-line
   const [rmsThresh, setRMSThresh] = useState(.005)
   const [bufferSize, setBufferSize] = useState(20)
   const [hearing, setHearing] = useState(false)
-  const { recorderState, ...handlers } = useRecorder();// eslint-disable-next-line
+  const { recorderState, ...handlers } = useRecorder(); // eslint-disable-next-line
   const { startRecording, cancelRecording, saveRecording } = handlers;
 
 
@@ -31,6 +32,20 @@ export default function Mic () {
       getMicrophone();
     }
   }
+
+  useEffect(() => {
+    console.log("responding to change in isRecording", isRecording, "listen is ", listen)
+    if (listen && !isRecording) {
+      console.log("toggle off")
+      setListen(false)
+      toggleMicrophone()
+    }
+    if (!listen && isRecording) {
+      console.log("toggle on")
+      setListen(true)
+      toggleMicrophone()
+    }
+  },[isRecording])
 
   useEffect(() => {
     if (hearing) {
@@ -60,13 +75,16 @@ export default function Mic () {
     <div className="App">
         <div className="controls">
         <button onClick={toggleMicrophone}>
-            {audio ? 'Stop Auto' : 'Start Auto'}
+            {audio ? 'Stop Listening' : 'Start Listening'}
           </button>
           {audio ? 
           <div id='Visualize Audio Capture'>
-            <AudioAnalyser audio={audio} setHearing={wrappingSetHearing}
-            rmsThresh={rmsThresh}
-            bufferSize={bufferSize}/> 
+            <AudioAnalyser 
+              audio={audio} 
+              setHearing={wrappingSetHearing}
+              rmsThresh={rmsThresh}
+              bufferSize={bufferSize}
+            /> 
             <label>RMS Threshold:
               <input 
                 type="range" 

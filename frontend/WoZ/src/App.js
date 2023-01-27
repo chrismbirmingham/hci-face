@@ -14,7 +14,7 @@ const App = ({ classes }) => {
   const [botResponse, setBotResponse] = useState("This is the bot response");
   const [facilitatorResponse, setFacilitatorResponse] = useState("This is the Facilitator response");
 
-  const [isRecording, setIsRecording] = useState(false);
+  const [isRecording, setIsRecording] = useState(true);
   const [showForm, setFormToggle] = useState(false);
   const [showWalkthrough, setWalkthroughToggle] = useState(false);
   const [condition, setCondition] = useState(false);
@@ -187,7 +187,7 @@ const App = ({ classes }) => {
   return (
     <div className="App">
       <header className="App-header"></header>
-      <Mic/>
+      <Mic isRecording={isRecording}/>
       
       <br></br>
       <button id="toggle" onClick={() => setWalkthroughToggle(!showWalkthrough)}>Show/Hide Study Walkthrough: </button>
