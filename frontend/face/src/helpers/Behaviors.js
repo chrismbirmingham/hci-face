@@ -1,3 +1,20 @@
+export default function doBehavior(count, behavior, browUpdater, mouthUpdater, getExpresionAUs, eyeUpdaterWrapper) {
+  switch (behavior)
+  {
+      case "bored":
+          count = boredEyes(count, 10, eyeUpdaterWrapper, mouthUpdater)
+          break;
+      case "focused":
+          count = focusedEyes(count, 20, eyeUpdaterWrapper, mouthUpdater)
+          break;
+      case "random":
+          count = randomFace(count, 6, eyeUpdaterWrapper, browUpdater, mouthUpdater, getExpresionAUs)
+          break;
+      default:
+          break;
+  }
+}
+
 function lookRandom(focus) {
     const eyes = { // focus of 1 move 0, focus of zero move 1
       au61_left: (1-focus) * Math.random(),
@@ -81,5 +98,3 @@ function randomFace(count, reset_count, eyeUpdater, browUpdater, mouthUpdater, g
     }
     return count
 }
-
-export {randomFace, boredEyes, focusedEyes}

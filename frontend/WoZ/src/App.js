@@ -48,7 +48,7 @@ const App = ({ classes }) => {
   },[beginConversation, condition, participantSpeaker]
   )
 
-  useEffect(() => {const es = new EventSource("http://192.168.1.136:8000/api/text_stream");
+  useEffect(() => {const es = new EventSource("http://localhost:8000/api/text_stream");
     es.addEventListener('open', () => {
       // console.log('SSE opened@!')
     });

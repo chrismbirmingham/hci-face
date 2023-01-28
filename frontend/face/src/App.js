@@ -3,13 +3,18 @@ import React, { useReducer, useState, useEffect, useCallback } from "react";
 import Head from './components/Head';
 import getAUs from './helpers/Visemes';
 import getExpresionAUs from './helpers/Expressions';
-import {randomFace, boredEyes, focusedEyes} from './helpers/Behaviors';
+import doBehavior from './helpers/Behaviors';
 
 import {EyeForm, BrowForm, MouthForm} from './components/Form';
 
 
+
 const App = ({ classes }) => {
   const [behavior, setBehavior] = useState("focused");
+  let form=false
+  let display="qt"
+  let server_ip = "192.168.1.145"
+
   // Initial positions
   const positions = {
     right_eye: {x:22, y:-10},
@@ -61,15 +66,14 @@ const App = ({ classes }) => {
   const [eyeAU, updateEyeAU] = useReducer((eyeAU, updates) => ({ ...eyeAU, ...updates }),initialEyeAU);
   const [browAU, updateBrowAU] = useReducer((browAU, updates) => ({ ...browAU, ...updates }),initialBrowAU);
 
+
   function mouthUpdater (AU) { updateMouthAU({ ...AU })}
   function browUpdater (AU) { updateBrowAU({ ...AU })}
-  const eyeUpdater = useCallback(function eyeUpdaterInner (AU) { updateEyeAU({ ...eyeAU, ...AU })},[eyeAU])
-  let form=true
+  function eyeUpdater (AU) { updateEyeAU({ ...eyeAU, ...AU })}
+  const eyeUpdaterWrapper = useCallback(eyeUpdater,[eyeAU])
 
-
-  // Visemes are separated from the rest of the face control
-  // so speaking and expression (aside from the lips) can happen together
-  useEffect(() => {const es = new EventSource("http://192.168.1.136:8000/api/viseme_stream");
+  function sourceVisemes () {
+    const es = new EventSource("http://"+server_ip+":8000/api/viseme_stream");
     es.addEventListener('open', () => {});
 
     // faceControls should handle vizemes, eyeAU, browAU, mouthAU
@@ -85,17 +89,18 @@ const App = ({ classes }) => {
     return () => {
       es.close();
     };
-  }, []);
+  }
 
-  useEffect(() => {const es = new EventSource("http://192.168.1.136:8000/api/face_stream");
+  function sourceFaceCommands () {
+    const es = new EventSource("http://"+server_ip+":8000/api/face_stream");
     es.addEventListener('open', () => {});
 
     // faceControls should handle emotion, eyeAU, browAU, mouthAU
-  es.addEventListener('expression', (e) => {
+    es.addEventListener('expression', (e) => {
       var [MouthAU, EyeAU, BrowAU] = getExpresionAUs(e.data)
       mouthUpdater(MouthAU);
       browUpdater(BrowAU);
-      eyeUpdater(EyeAU);
+      eyeUpdaterWrapper(EyeAU);
     });
 
     es.addEventListener('behavior', (e) => {
@@ -105,33 +110,26 @@ const App = ({ classes }) => {
     es.addEventListener('error', (e) => {console.error('Error: ',  e)});
 
     return () => {es.close();};
-  });
+  }
 
-  useEffect(() => { // Process behaviors over time using intervals
+  function runBehaviors() {
     var count = 0
     var update_interval_ms = 500
     const interval = setInterval(() => {
       if (!form){
-        switch (behavior)
-        {
-            case "bored":
-                count = boredEyes(count, 10, eyeUpdater, mouthUpdater)
-                break;
-            case "focused":
-                count = focusedEyes(count, 20, eyeUpdater, mouthUpdater)
-                break;
-            case "random":
-                count = randomFace(count, 6, eyeUpdater, browUpdater, mouthUpdater, getExpresionAUs)
-                break;
-            default:
-                break;
-        }
+        doBehavior(count, behavior, browUpdater, mouthUpdater, getExpresionAUs, eyeUpdaterWrapper)
+      }
+      else {
+        doBehavior(count, "", browUpdater, mouthUpdater, getExpresionAUs, eyeUpdaterWrapper)
       }
     }, update_interval_ms);
     return () => clearInterval(interval);
-  }, [behavior, eyeUpdater,form]);
+  }
 
-  let display="qt"
+
+  useEffect(sourceVisemes , []);
+  useEffect(sourceFaceCommands, [eyeUpdaterWrapper]);
+  useEffect(runBehaviors, [behavior, eyeUpdaterWrapper, form]);
 
   return (
     <div className="App">
@@ -144,7 +142,7 @@ const App = ({ classes }) => {
           </div>
         </div>
         <div style={{"float":"right"}} id="AU control">
-          <EyeForm v={eyeAU} f={eyeUpdater}/>
+          <EyeForm v={eyeAU} f={eyeUpdaterWrapper}/>
           <BrowForm v={browAU} f={browUpdater}/>
           <MouthForm v={mouthAU} f={mouthUpdater}/>
         </div>
@@ -154,7 +152,7 @@ const App = ({ classes }) => {
       <div id="bot" className="neutral">
         <Head face={display} position={positions} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
       </div>
-    </div>
+      </div>
       }
     </div>
   );
