@@ -115,12 +115,14 @@ const App = ({ classes }) => {
   function runBehaviors() {
     var count = 0
     var update_interval_ms = 500
+    console.log("running behaviors", behavior)
     const interval = setInterval(() => {
       if (!form){
-        doBehavior(count, behavior, browUpdater, mouthUpdater, getExpresionAUs, eyeUpdaterWrapper)
+        // console.log("No form, so do behavior")
+        count = doBehavior(count, behavior, browUpdater, mouthUpdater, getExpresionAUs, eyeUpdaterWrapper)
       }
       else {
-        doBehavior(count, "", browUpdater, mouthUpdater, getExpresionAUs, eyeUpdaterWrapper)
+        count = doBehavior(count, "", browUpdater, mouthUpdater, getExpresionAUs, eyeUpdaterWrapper)
       }
     }, update_interval_ms);
     return () => clearInterval(interval);

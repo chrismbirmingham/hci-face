@@ -1,4 +1,5 @@
 export default function doBehavior(count, behavior, browUpdater, mouthUpdater, getExpresionAUs, eyeUpdaterWrapper) {
+  // console.log("in do behavior", behavior, count)
   switch (behavior)
   {
       case "bored":
@@ -13,6 +14,8 @@ export default function doBehavior(count, behavior, browUpdater, mouthUpdater, g
       default:
           break;
   }
+  // console.log(count)
+  return count
 }
 
 function lookRandom(focus) {
@@ -28,7 +31,7 @@ function lookRandom(focus) {
 
 function boredEyes(count, reset_count, eyeUpdater, mouthUpdater){
     count = count + 1
-
+    // console.log("bored")
     if (count % 4 === 0){
         let eyes = lookRandom(.5)
         eyeUpdater(eyes)
@@ -56,6 +59,7 @@ function boredEyes(count, reset_count, eyeUpdater, mouthUpdater){
 
 function focusedEyes(count, reset_count, eyeUpdater, mouthUpdater){
     count = count + 1
+    // console.log("focused")
 
     if (count % 4 === 0){
         let eyes = lookRandom(.85)
@@ -84,6 +88,7 @@ function focusedEyes(count, reset_count, eyeUpdater, mouthUpdater){
 
 function randomFace(count, reset_count, eyeUpdater, browUpdater, mouthUpdater, getExpresionAUs){
     let faces = ["anger", "joy", "sad", "fear", "disgust", "surprise", "neutral"]
+    // console.log("random")
     count = count + 1
     var expression
     if (count>reset_count){
