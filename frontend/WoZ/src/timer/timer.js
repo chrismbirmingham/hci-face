@@ -51,10 +51,10 @@ export default function Timer ({timerDeadline}) {
     },[timerDeadline, runTimer])
 
 
-        return(
-            <div>
-            <h3 style={{backgroundColor:color}}>Interactive Controls:</h3>
-            <p style={{backgroundColor:color}}>Time Remaining: {timer}</p>
-            </div>
-        )
+    return(
+        <div>
+        <h3 style={{backgroundColor:color}}>Interactive Controls:</h3>
+        <p style={{backgroundColor:color}}>Time Remaining: {timer}</p>
+        </div>
+    )
 }

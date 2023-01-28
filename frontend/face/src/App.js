@@ -1,14 +1,15 @@
-// import 'es6-symbol/implement'
 import './App.css';
 import React, { useReducer, useState, useEffect, useCallback } from "react";
 import Head from './rendering/head';
-import getAUs from './animation/processVisemes';
-import getExpresionAUs from './animation/proccessExpressions';
-import {randomFace, boredEyes, focusedEyes} from './animation/proccessBehaviors';
+import getAUs from './animation/Visemes';
+import getExpresionAUs from './animation/Expressions';
+import {randomFace, boredEyes, focusedEyes} from './animation/Behaviors';
+
 import {EyeForm, BrowForm, MouthForm} from '../../face/src/control/Form';
 
 
 const App = ({ classes }) => {
+  const [behavior, setBehavior] = useState("focused");
   // Initial positions
   const positions = {
     right_eye: {x:22, y:-10},
@@ -59,17 +60,15 @@ const App = ({ classes }) => {
   const [mouthAU, updateMouthAU] = useReducer((mouthAU, updates) => ({ ...mouthAU, ...updates }),initialMouthAU);
   const [eyeAU, updateEyeAU] = useReducer((eyeAU, updates) => ({ ...eyeAU, ...updates }),initialEyeAU);
   const [browAU, updateBrowAU] = useReducer((browAU, updates) => ({ ...browAU, ...updates }),initialBrowAU);
+
   function mouthUpdater (AU) { updateMouthAU({ ...AU })}
   function browUpdater (AU) { updateBrowAU({ ...AU })}
   const eyeUpdater = useCallback(function eyeUpdaterInner (AU) { updateEyeAU({ ...eyeAU, ...AU })},[eyeAU])
-  const [behavior, setBehavior] = useState("focused");
 
   // Visemes are separated from the rest of the face control
   // so speaking and expression (aside from the lips) can happen together
   useEffect(() => {const es = new EventSource("http://192.168.1.136:8000/api/viseme_stream");
-    es.addEventListener('open', () => {
-      // console.log('SSE opened@!')
-    });
+    es.addEventListener('open', () => {});
 
     // faceControls should handle vizemes, eyeAU, browAU, mouthAU
     es.addEventListener('viseme', (e) => {
@@ -85,14 +84,12 @@ const App = ({ classes }) => {
       es.close();
     };
   }, []);
+
   useEffect(() => {const es = new EventSource("http://192.168.1.136:8000/api/face_stream");
-    es.addEventListener('open', () => {
-      // console.log('SSE opened@!')
-    });
+    es.addEventListener('open', () => {});
 
     // faceControls should handle emotion, eyeAU, browAU, mouthAU
     es.addEventListener('expression', (e) => {
-      // console.log(e.data)
       var [MouthAU, EyeAU, BrowAU] = getExpresionAUs(e.data)
       mouthUpdater(MouthAU);
       browUpdater(BrowAU);
@@ -100,19 +97,15 @@ const App = ({ classes }) => {
     });
 
     es.addEventListener('behavior', (e) => {
-      // console.log(e.data)
       setBehavior(e.data)
     });
 
-    es.addEventListener('error', (e) => {
-      console.error('Error: ',  e);
-    });
+    es.addEventListener('error', (e) => {console.error('Error: ',  e)});
 
-    return () => {
-      es.close();
-    };
+    return () => {es.close();};
   });
-  useEffect(() => {
+
+  useEffect(() => { // Process behaviors over time using intervals
     var count = 0
     var update_interval_ms = 500
     const interval = setInterval(() => {
@@ -140,7 +133,7 @@ const App = ({ classes }) => {
       <header className="App-header"></header>
       <div id="robot-container">
         <div id="bot" className="neutral">
-          <Head face="qt" position={positions} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
+          <Head face="qt_head" position={positions} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
         </div>
       </div>
       <div id="AU control" hidden={true}>

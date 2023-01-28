@@ -1,6 +1,6 @@
 import { animated, useSpring } from "react-spring";
 
-var ey, ex, erx, ery;
+var ey, ex, eright_x, eright_y;
 var px, py, pr, sr;
 var ulc, llc;
 var lr, ud;
@@ -8,61 +8,61 @@ var lr, ud;
 
 
 
-function moveEye(new_px, new_py, r, erx, ery){
+function moveEye(new_px, new_py, r, eright_x, eright_y){
     if (new_px < 0){
-        px = Math.min(Math.abs(new_px), erx-r) * -1
+        px = Math.min(Math.abs(new_px), eright_x-r) * -1
     }
-    else {px = Math.min(new_px, erx-r)}
+    else {px = Math.min(new_px, eright_x-r)}
 
     if (new_py < 0){
-        py = Math.min(Math.abs(new_py), ery-r) * -1
+        py = Math.min(Math.abs(new_py), eright_y-r) * -1
     }
-    else {py = Math.min(new_py, ery-r)}
+    else {py = Math.min(new_py, eright_y-r)}
 
     return [px, py]
 
 
 }
 
-function circlePath(cx, cy, r){
+function circlePath(center_x, center_y, r){
     var dis = [
-        "M", cx-2, cy+r*.8,
-        "A", r*.7,r, "0","1","0",cx-2, cy-r*.8,
-        "A", r*.7,r, "0","0","0",cx-2, cy+r*.8,
+        "M", center_x-2, center_y+r*.8,
+        "A", r*.7,r, "0","1","0",center_x-2, center_y-r*.8,
+        "A", r*.7,r, "0","0","0",center_x-2, center_y+r*.8,
     ];
     const d = dis.join(' ');
     // console.log(d)
     return d
 }
 
-function bezelCirclePath(cx, cy, r){
+function bezelCirclePath(center_x, center_y, r){
     var dis = [
-        "M", cx-r, cy,
-        "C", cx-r, cy+r, cx+r, cy+r, cx+r, cy,// bottom half
-        "C", cx+r, cy-r, cx-r, cy-r, cx-r, cy,
+        "M", center_x-r, center_y,
+        "C", center_x-r, center_y+r, center_x+r, center_y+r, center_x+r, center_y,// bottom half
+        "C", center_x+r, center_y-r, center_x-r, center_y-r, center_x-r, center_y,
     ];
     const d = dis.join(' ');
     // console.log(d)
     return d
 }
 
-function lowerLidPath(cx, cy, erx, ery, c){
+function lowerLidPath(center_x, center_y, eright_x, eright_y, c){
     // v: 1 is bottom half, with higher c = more closed. 0 is upper half with lower c more closed
     var dis = [
-        "M", cx-erx*1.1, cy,
-        "C", cx-erx*1.1, cy+ery, cx+erx*1.1, cy+ery, cx+erx*1.1, cy,
-        "Q", cx, cy+ery*(1-c)*2, cx-erx*1.1, cy,
+        "M", center_x-eright_x*1.1, center_y,
+        "C", center_x-eright_x*1.1, center_y+eright_y, center_x+eright_x*1.1, center_y+eright_y, center_x+eright_x*1.1, center_y,
+        "Q", center_x, center_y+eright_y*(1-c)*2, center_x-eright_x*1.1, center_y,
     ];
     const d = dis.join(' ');
     // console.log(d)
     return d
 }
-function upperLidPath(cx, cy, erx, ery, c){
+function upperLidPath(center_x, center_y, eright_x, eright_y, c){
     // desired behavior is 0 is open, 1 is closed and 2 is all the way down
     var dis = [
-        "M", cx-erx*1.1, cy,
-        "C", cx-erx*1.1, cy-ery, cx+erx*1.1, cy-ery, cx+erx*1.1, cy,
-        "Q", cx, cy-ery*(1-c)*2, cx-erx*1.1, cy,
+        "M", center_x-eright_x*1.1, center_y,
+        "C", center_x-eright_x*1.1, center_y-eright_y, center_x+eright_x*1.1, center_y-eright_y, center_x+eright_x*1.1, center_y,
+        "Q", center_x, center_y-eright_y*(1-c)*2, center_x-eright_x*1.1, center_y,
     ];
     const d = dis.join(' ');
     // console.log(d)
@@ -73,7 +73,7 @@ function upperLidPath(cx, cy, erx, ery, c){
 function Eye({position, eyeAU}) {
     [ey, ex] = [position.y+3, position.x];
     // Eye Params
-    [erx, ery, pr, sr] = [10, 10, 6, 1];
+    [eright_x, eright_y, pr, sr] = [10, 10, 6, 1];
     [llc, ulc] = [0,0];
     [lr, ud] = [0,0];
 
@@ -113,17 +113,17 @@ function Eye({position, eyeAU}) {
 
     ulc = ulc + au45_blink*2;
 
-    [px, py] = moveEye(lr * erx, ud * -1 * ery, pr, erx, ery)
+    [px, py] = moveEye(lr * eright_x, ud * -1 * eright_y, pr, eright_x, eright_y)
 
-    let ed = bezelCirclePath(ex,ey, erx)
-    let bd = bezelCirclePath(ex,ey, erx+3)
+    let ed = bezelCirclePath(ex,ey, eright_x)
+    let bd = bezelCirclePath(ex,ey, eright_x+3)
 
     let pd = circlePath(ex+px, ey+py, pr)// Pupil
     let sd = circlePath(ex+px-pr*.1, ey+py-pr*.3, sr*1.2) // Pupil shine
 
 
-    let lld = lowerLidPath(ex+px, ey+py, erx, ery, llc)
-    let uld = upperLidPath(ex+px, ey+py, erx, ery, ulc)
+    let lld = lowerLidPath(ex+px, ey+py, eright_x, eright_y, llc)
+    let uld = upperLidPath(ex+px, ey+py, eright_x, eright_y, ulc)
 
     const animationProps = useSpring({
         border: bd,

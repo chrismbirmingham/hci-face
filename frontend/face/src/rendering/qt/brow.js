@@ -1,7 +1,7 @@
 import { animated, useSpring } from "react-spring";
 
 
-let cx, cy, ox, oy, mx, my, ix, iy
+let center_x, center_y, ox, oy, mx, my, ix, iy
 
 function AdjustMUnits (position, browAU) 
 {
@@ -12,7 +12,7 @@ function AdjustMUnits (position, browAU)
     var au4_brow_lowerer = browAU.au4*scale;
 
 
-    [cx, cy] = [position.x, position.y];
+    [center_x, center_y] = [position.x, position.y];
     [ix, iy, mx, my, ox, oy] = [5*flip, 4,   -3*flip, 7,   -11*flip, 4];
 
     my = my + au1_inner_brow_raiser*.25
@@ -27,23 +27,23 @@ function AdjustMUnits (position, browAU)
     ix = ix + au4_brow_lowerer*flip
     iy = iy - au4_brow_lowerer*1.4
 
-    return [cx, cy, ox, oy, mx, my, ix, iy]
+    return [center_x, center_y, ox, oy, mx, my, ix, iy]
 }
 
 function Linify(bunits)
 {
-    [cx, cy, ox, oy, mx, my, ix, iy] = bunits
+    [center_x, center_y, ox, oy, mx, my, ix, iy] = bunits
     var dis = [
-    "M", cx+ox, cy-oy,
+    "M", center_x+ox, center_y-oy,
     "Q", 
-    cx+mx, cy-my,
-    cx+ix, cy-iy,
+    center_x+mx, center_y-my,
+    center_x+ix, center_y-iy,
     
-    // "L",cx+ix*1.1, cy-iy-2,
-    // // "M", cx+ox, cy-oy,
+    // "L",center_x+ix*1.1, center_y-iy-2,
+    // // "M", center_x+ox, center_y-oy,
     // "Q", 
-    // cx+mx, cy-my-4,
-    // cx+ox, cy-oy-1,
+    // center_x+mx, center_y-my-4,
+    // center_x+ox, center_y-oy-1,
     // "Z"
     ];
 

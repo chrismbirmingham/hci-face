@@ -1,10 +1,10 @@
 import { animated, useSpring } from "react-spring";
 
 
-let cx, cy
-let rx, ry, lx, ly, tx, ty, bx, by
-let lbx, lby, rbx, rby, ltx, lty, rtx, rty;
-let chiny, nosey;
+let center_x, center_y
+let right_x, right_y, left_x, left_y, top_x, top_y, bottom_x, bottom_y
+let lbottom_x, lbottom_y, rbottom_x, rbottom_y, ltop_x, ltop_y, rtop_x, rtop_y;
+let chin_y, nose_y;
 
 function AdjustMouth (position, mouthAU) 
 {
@@ -27,172 +27,172 @@ function AdjustMouth (position, mouthAU)
     var au28_lip_suck = mouthAU.au28*scale;
 
     // SET BASELINES
-    [cx, cy] = [position.x, position.y]; // location of the mouth - all coordinates relative to center
-    const w=.6;
+    [center_x, center_y] = [position.x, position.y]; // location of the mouth - all coordinates relative to center
+    const width_factor=.6;
 
-    [rx, ry] = [25*w, 1]; // lip right corner x and y
-    [lx, ly] = [-25*w, 1]; // lip left corner x and y
+    [right_x, right_y] = [25*width_factor, 1]; // lip right corner x and y
+    [left_x, left_y] = [-25*width_factor, 1]; // lip left corner x and y
 
-    [tx, ty] = [0, 1]; // lip top x and y
-    [rtx, rty] = [12.5*w, 2.5]; // right side top line control point
-    [ltx, lty] = [-12.5*w, 2.5]; // left side top line control point
+    [top_x, top_y] = [0, 1]; // lip top x and y
+    [rtop_x, rtop_y] = [12.5*width_factor, 2.5]; // right side top line control point
+    [ltop_x, ltop_y] = [-12.5*width_factor, 2.5]; // left side top line control point
 
-    [bx, by] = [0, 0.5];  // lip bottom x and y
-    [rbx, rby] = [12.5*w, 1.5]; // right side bottom line control point
-    [lbx, lby] = [-12.5*w, 1.5]; // left side bottom line control point
-    chiny = -20
-    nosey = 12
+    [bottom_x, bottom_y] = [0, 0.5];  // lip bottom x and y
+    [rbottom_x, rbottom_y] = [12.5*width_factor, 1.5]; // right side bottom line control point
+    [lbottom_x, lbottom_y] = [-12.5*width_factor, 1.5]; // left side bottom line control point
+    chin_y = -20
+    nose_y = 12
 
 
     
     // Adjust baselines
-    ty = ty + au10_raise_upper
-    rty = rty + au10_raise_upper
-    lty = lty + au10_raise_upper
+    top_y = top_y + au10_raise_upper
+    rtop_y = rtop_y + au10_raise_upper
+    ltop_y = ltop_y + au10_raise_upper
     
-    rx = rx + au12_lip_corners_out
-    ry = ry + au12_lip_corners_out*1.2
-    lx = lx - au12_lip_corners_out
-    ly = ly + au12_lip_corners_out*1.2
+    right_x = right_x + au12_lip_corners_out
+    right_y = right_y + au12_lip_corners_out*1.2
+    left_x = left_x - au12_lip_corners_out
+    left_y = left_y + au12_lip_corners_out*1.2
     
-    cy = cy - au13_cheek_puffer*.7
-    rx = rx + au13_cheek_puffer*.5
-    ry = ry + au13_cheek_puffer*.6
-    rx = rx - au13_cheek_puffer*.5
-    ly = ly + au13_cheek_puffer*.6
+    center_y = center_y - au13_cheek_puffer*.7
+    right_x = right_x + au13_cheek_puffer*.5
+    right_y = right_y + au13_cheek_puffer*.6
+    right_x = right_x - au13_cheek_puffer*.5
+    left_y = left_y + au13_cheek_puffer*.6
     
-    rx = rx + au14_dimpler
-    lx = lx - au14_dimpler
+    right_x = right_x + au14_dimpler
+    left_x = left_x - au14_dimpler
     
-    ry = ry - au15_lip_corner_depr
-    ly = ly - au15_lip_corner_depr
+    right_y = right_y - au15_lip_corner_depr
+    left_y = left_y - au15_lip_corner_depr
     
-    by = by - au16_lower_lip_depr
-    rby = rby - au16_lower_lip_depr
-    lby = lby - au16_lower_lip_depr
+    bottom_y = bottom_y - au16_lower_lip_depr
+    rbottom_y = rbottom_y - au16_lower_lip_depr
+    lbottom_y = lbottom_y - au16_lower_lip_depr
     
-    by = by + au17_chin_raiser
-    rby = rby + au17_chin_raiser
-    lby = lby + au17_chin_raiser
-    chiny = chiny + au17_chin_raiser
+    bottom_y = bottom_y + au17_chin_raiser
+    rbottom_y = rbottom_y + au17_chin_raiser
+    lbottom_y = lbottom_y + au17_chin_raiser
+    chin_y = chin_y + au17_chin_raiser
     
-    lx = lx + au18_lip_pucker*1.5
-    rx = rx - au18_lip_pucker*1.5
-    by = by - au18_lip_pucker*.333
+    left_x = left_x + au18_lip_pucker*1.5
+    right_x = right_x - au18_lip_pucker*1.5
+    bottom_y = bottom_y - au18_lip_pucker*.333
     
-    rx = rx + au20_lip_stretcher
-    ry = ry - au20_lip_stretcher
-    lx = lx - au20_lip_stretcher
-    ly = ly - au20_lip_stretcher
+    right_x = right_x + au20_lip_stretcher
+    right_y = right_y - au20_lip_stretcher
+    left_x = left_x - au20_lip_stretcher
+    left_y = left_y - au20_lip_stretcher
     
-    lx = lx + au22_lip_funneler
-    rx = rx - au22_lip_funneler
-    by = by - au22_lip_funneler*.333
-    ty = ty + au22_lip_funneler
+    left_x = left_x + au22_lip_funneler
+    right_x = right_x - au22_lip_funneler
+    bottom_y = bottom_y - au22_lip_funneler*.333
+    top_y = top_y + au22_lip_funneler
     
-    lx = lx + au23_lip_tightener*2
-    rx = rx - au23_lip_tightener*2
+    left_x = left_x + au23_lip_tightener*2
+    right_x = right_x - au23_lip_tightener*2
     
-    ty = ty - au24_lip_pressor*.5
-    by = by + au24_lip_pressor*.25
+    top_y = top_y - au24_lip_pressor*.5
+    bottom_y = bottom_y + au24_lip_pressor*.25
     
-    ty = ty + au25_lips_part*.5
-    by = by - au25_lips_part*.25
+    top_y = top_y + au25_lips_part*.5
+    bottom_y = bottom_y - au25_lips_part*.25
     
-    by = by - au26_jaw_drop
-    rby = rby - au26_jaw_drop
-    lby = lby - au26_jaw_drop
-    chiny = chiny - au26_jaw_drop
+    bottom_y = bottom_y - au26_jaw_drop
+    rbottom_y = rbottom_y - au26_jaw_drop
+    lbottom_y = lbottom_y - au26_jaw_drop
+    chin_y = chin_y - au26_jaw_drop
     
-    by = by - au27_mouth_stretch*2.5
-    rby = rby - au27_mouth_stretch*2.2
-    lby = lby - au27_mouth_stretch*2.2
-    ty = ty + au27_mouth_stretch*1.2
-    rty = rty + au27_mouth_stretch
-    lty = lty + au27_mouth_stretch
+    bottom_y = bottom_y - au27_mouth_stretch*2.5
+    rbottom_y = rbottom_y - au27_mouth_stretch*2.2
+    lbottom_y = lbottom_y - au27_mouth_stretch*2.2
+    top_y = top_y + au27_mouth_stretch*1.2
+    rtop_y = rtop_y + au27_mouth_stretch
+    ltop_y = ltop_y + au27_mouth_stretch
     
-    ty = ty - au28_lip_suck*.333
-    by = by + au28_lip_suck*.333
-    rty = rty - au28_lip_suck*.333
-    rby = rby + au28_lip_suck*.333
-    lty = lty - au28_lip_suck*.333
-    lby = lby + au28_lip_suck*.333
+    top_y = top_y - au28_lip_suck*.333
+    bottom_y = bottom_y + au28_lip_suck*.333
+    rtop_y = rtop_y - au28_lip_suck*.333
+    rbottom_y = rbottom_y + au28_lip_suck*.333
+    ltop_y = ltop_y - au28_lip_suck*.333
+    lbottom_y = lbottom_y + au28_lip_suck*.333
 
-    let chinPoints = [cx, cy, rx, chiny]
-    let nosePoints = [cx, cy, rx, nosey]
+    let chinPoints = [center_x, center_y, right_x, chin_y]
+    let nosePoints = [center_x, center_y, right_x, nose_y]
 
-    let mouthPoints = [cx, cy, rx, ry, lx, ly, tx, ty, bx, by, lbx, lby, rbx, rby, ltx, lty, rtx, rty]
+    let mouthPoints = [center_x, center_y, right_x, right_y, left_x, left_y, top_x, top_y, bottom_x, bottom_y, lbottom_x, lbottom_y, rbottom_x, rbottom_y, ltop_x, ltop_y, rtop_x, rtop_y]
 
     return [mouthPoints, chinPoints, nosePoints]
 }
 
 function LinifyMouth(mouthPoints)
 {
-    [cx, cy, rx, ry, lx, ly, tx, ty, bx, by, lbx, lby, rbx, rby, ltx, lty, rtx, rty] = mouthPoints
+    [center_x, center_y, right_x, right_y, left_x, left_y, top_x, top_y, bottom_x, bottom_y, lbottom_x, lbottom_y, rbottom_x, rbottom_y, ltop_x, ltop_y, rtop_x, rtop_y] = mouthPoints
 
     var udis = [
     //left to top
-    "M", cx+lx, cy-ly,
+    "M", center_x+left_x, center_y-left_y,
     "Q", 
-    cx+ltx, cy-lty-5,
-    cx+tx, cy-ty-4,
+    center_x+ltop_x, center_y-ltop_y-5,
+    center_x+top_x, center_y-top_y-4,
     //top to right
     "Q", 
-    cx+rtx, cy-rty-5,
-    cx+rx, cy-ry,
+    center_x+rtop_x, center_y-rtop_y-5,
+    center_x+right_x, center_y-right_y,
     //right to top
     "Q", 
-    cx+rtx, cy-rty,
-    cx+tx, cy-ty,
+    center_x+rtop_x, center_y-rtop_y,
+    center_x+top_x, center_y-top_y,
     //top to left
     "Q", 
-    cx+ltx, cy-lty,
-    cx+lx, cy-ly,
+    center_x+ltop_x, center_y-ltop_y,
+    center_x+left_x, center_y-left_y,
     ];
 
     var ldis = [
     //right to bottom
-    "M", cx+rx, cy-ry,
+    "M", center_x+right_x, center_y-right_y,
     "Q", 
-    cx+rbx, cy-rby,
-    cx+bx, cy-by,
+    center_x+rbottom_x, center_y-rbottom_y,
+    center_x+bottom_x, center_y-bottom_y,
 
     //bottom to left
     "Q", 
-    cx+lbx, cy-lby,
-    cx+lx, cy-ly,
+    center_x+lbottom_x, center_y-lbottom_y,
+    center_x+left_x, center_y-left_y,
 
     //left to bottom
     "Q", 
-    cx+lbx, cy-lby+5,
-    cx+bx, cy-by+4,
+    center_x+lbottom_x, center_y-lbottom_y+5,
+    center_x+bottom_x, center_y-bottom_y+4,
     
     //bottom to right
     "Q", 
-    cx+rbx, cy-rby+5,
-    cx+rx, cy-ry,
+    center_x+rbottom_x, center_y-rbottom_y+5,
+    center_x+right_x, center_y-right_y,
     "Z"
     ]
 
     var mdis = [
     //right to top
-    "M", cx+rx, cy-ry,
+    "M", center_x+right_x, center_y-right_y,
     "Q", 
-    cx+rtx, cy-rty,
-    cx+tx, cy-ty,
+    center_x+rtop_x, center_y-rtop_y,
+    center_x+top_x, center_y-top_y,
     //top to left
     "Q", 
-    cx+ltx, cy-lty,
-    cx+lx, cy-ly,
+    center_x+ltop_x, center_y-ltop_y,
+    center_x+left_x, center_y-left_y,
     //left to bottom
     "Q", 
-    cx+lbx, cy-lby,
-    cx+bx, cy-by,
+    center_x+lbottom_x, center_y-lbottom_y,
+    center_x+bottom_x, center_y-bottom_y,
     
     //bottom to right
     "Q", 
-    cx+rbx, cy-rby,
-    cx+rx, cy-ry,
+    center_x+rbottom_x, center_y-rbottom_y,
+    center_x+right_x, center_y-right_y,
     ]
 
 
@@ -205,15 +205,15 @@ function LinifyMouth(mouthPoints)
 
 function LinifyChin(chinPoints)
 {
-    [cx, cy, rx, chiny] = chinPoints
+    [center_x, center_y, right_x, chin_y] = chinPoints
 
     var dis = [
     //chin
-    "M", cx-rx*.3, cy-chiny,
+    "M", center_x-right_x*.3, center_y-chin_y,
     "C", 
-    cx-rx*.3, cy-(chiny-chiny*.3),
-    cx+rx*.3, cy-(chiny-chiny*.3),
-    cx+rx*.3, cy-chiny,
+    center_x-right_x*.3, center_y-(chin_y-chin_y*.3),
+    center_x+right_x*.3, center_y-(chin_y-chin_y*.3),
+    center_x+right_x*.3, center_y-chin_y,
     ];
 
 
@@ -224,29 +224,29 @@ function LinifyChin(chinPoints)
 
 function LinifyNose(nosePoints)
 {
-    [cx, cy, rx, nosey] = nosePoints
+    [center_x, center_y, right_x, nose_y] = nosePoints
 
     let i = 3
 
     var dis = [
     //nose
-    "M", cx-i*1.5, cy-(nosey+i*1.8),
+    "M", center_x-i*1.5, center_y-(nose_y+i*1.8),
     "C", 
-    cx-i*2, cy-(nosey-i*.25),
-    cx-i*1.8, cy-(nosey-i*.1),
-    cx-i, cy-nosey,
+    center_x-i*2, center_y-(nose_y-i*.25),
+    center_x-i*1.8, center_y-(nose_y-i*.1),
+    center_x-i, center_y-nose_y,
 
-    "M", cx-i, cy-nosey,
+    "M", center_x-i, center_y-nose_y,
     "C", 
-    cx+i*.3, cy-(nosey-nosey*.1),
-    cx-i*.3, cy-(nosey-nosey*.1),
-    cx+i, cy-nosey,
+    center_x+i*.3, center_y-(nose_y-nose_y*.1),
+    center_x-i*.3, center_y-(nose_y-nose_y*.1),
+    center_x+i, center_y-nose_y,
 
-    "M", cx+i*1.5, cy-(nosey+i*1.8),
+    "M", center_x+i*1.5, center_y-(nose_y+i*1.8),
     "C", 
-    cx+i*2, cy-(nosey-i*.25),
-    cx+i*1.8, cy-(nosey-i*.1),
-    cx+i, cy-nosey,
+    center_x+i*2, center_y-(nose_y-i*.25),
+    center_x+i*1.8, center_y-(nose_y-i*.1),
+    center_x+i, center_y-nose_y,
     ];
 
 
