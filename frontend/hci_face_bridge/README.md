@@ -1,9 +1,9 @@
 # hci_face_bridge
 
-This package will automatically start the face on QT and will recieve and play gestures from the HCI server backend.
+This package will automatically start the face on QT and will recieve and play gestures from the HCI server backend. Currently only functions over a local area network.
 
 
-## Installation 
+## Installation on QT
 
 To set up this bridge, clone the hci-face repository to the nuc. 
 
@@ -42,7 +42,9 @@ When you restart QT the gestures and face should run automatically, though it ma
 
 ## Additional Support
 
-There can be issues with setting up HCI-FACE on QT and it may not always start perfectly every time.
+There can be issues with setting up HCI-FACE on QT and it may not always start perfectly every time. 
+
+If you are having connectivity challenges on startup, I recommend disabling the autostart script and launching qt_robot_pi.launch directly.
 
 The following commands can be useful in making debugging what is not working
 ```
@@ -52,9 +54,13 @@ rostopic pub /qt_robot/gesture/play std_msgs/String "data: 'QT/hi'"
 roslaunch hci_face_bridge qt_robot_pi.launch
 roslaunch qt_motor qt_motor.launch
 ```
-QT/
+
+## Available preset gestures on QT
+
+These can be accessed through either the server or topic ROS API
+
+QT/[GESTURE]
 - angry, bye-bye, kiss, send_kiss, show_right, surprise, up_left,bored, bye, happy, point_front, show_left, show_tablet, swipe_left, up_right,breathing_exercise, challenge, hi, sad, show_QT, sneezing, swipe_right, yawn,
 
-
-QT/emotions/
+QT/emotions/[EMOTION]
 - afraid, angry, calm, disgusted, happy, hoora, sad, shy, surprised,
