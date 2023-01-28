@@ -55,13 +55,10 @@ const App = ({ classes }) => {
           full_speech = latestSpeech + " " + speech;
         }
         setLatestSpeech(full_speech);
-
-
         setTranscribedData(oldData => [participantSpeaker+":"+speech,  <br></br>, ...oldData ]);
         setPriorSpeaker(participantSpeaker);
         setClassifications("");
         setBeginConversation(false);
-
 
         if (full_speech.length > 20) {
           console.log(full_speech, full_speech.length)
@@ -69,22 +66,21 @@ const App = ({ classes }) => {
         }
       };
     });
-
+  
     es.addEventListener("bot_response", (e) => {
       let bot_says = e.data
       setBotResponse(bot_says);
     });
-
+  
     es.addEventListener("facilitator_response", (e) => {
       let facilitator_says = e.data
       setFacilitatorResponse(facilitator_says);
     });
-
+  
     es.addEventListener("classifications", (e) => {
       let classifications = e.data
       setClassifications(classifications);
     });
-
 
     es.addEventListener('error', (e) => {
       console.error('Error: ',  e);
@@ -129,7 +125,7 @@ const App = ({ classes }) => {
   const requestBotResponseCB = useCallback(requestBotResponse,[beginConversation, condition, participantSpeaker])
 
   /////// Play Speech ///////
-  function do_tts(text) {
+  function ttsWrapper(text) {
     console.log("Will say"+text)
     setPriorSpeaker("bot")
     setTranscribedData(oldData => ["bot: "+text, <br></br>, ...oldData ])
@@ -162,19 +158,18 @@ const App = ({ classes }) => {
 
   useEffect(getTextStream, [requestBotResponseCB, latestSpeech, participantSpeaker, priorSpeaker]);
 
-
   return (
     <div className="App">
       <header className="App-header"></header>
       <Mic isRecording={isRecording}/>
-      <button onClick={() => do_tts("Testing, 1, 2, 3. Can you all hear me?")}>Speech Test</button>
+      <button onClick={() => ttsWrapper("Testing, 1, 2, 3. Can you all hear me?")}>Speech Test</button>
       
       <br></br>
       <button id="toggle" onClick={() => setWalkthroughToggle(!showWalkthrough)}>Show/Hide Study Walkthrough: </button>
       <div id="walkthrough" hidden={showWalkthrough}>
         <Walkthrough 
           setWalkthroughToggle={setWalkthroughToggle}
-          do_tts={do_tts}
+          do_tts={ttsWrapper}
           setTimerDeadline={setTimerDeadline}
           switch_condition={switch_condition}/>
       </div>
@@ -189,7 +184,7 @@ const App = ({ classes }) => {
         classifications={classifications}/>
 
       <FacilitatorControls
-        do_tts={do_tts}
+        do_tts={ttsWrapper}
         participantSpeaker={participantSpeaker}
         condition={condition}
         botResponse={botResponse}
@@ -201,9 +196,9 @@ const App = ({ classes }) => {
         setTimerDeadline={setTimerDeadline}
         getDeadTime={getDeadTime}
         showForm={showForm} 
-        do_tts={do_tts} 
-        setTextToSay={setTextToSay} 
+        do_tts={ttsWrapper} 
         textToSay={textToSay} 
+        setTextToSay={setTextToSay} 
         behavior={behavior} 
         update_behavior={update_behavior} 
         expression={expression} 
