@@ -9,6 +9,7 @@ default_prompt = "The following is a conversation with an AI assistant. The assi
 
 class ChatGPT():
     def __init__(self, prompt=default_prompt) -> None:
+        self.backend = "gpt"
         self.prompt = prompt
         self.conversation = [prompt]
         pass

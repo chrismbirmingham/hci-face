@@ -99,6 +99,7 @@ bot_default = "Hi, I am your virtual personal assistant. It is a pleasure to tal
 class ChatLLM():
     def __init__(self, LLM: str = 'GPTNEO', prompt=default_prompt, bot_default=bot_default, max_length=100) -> None:
         self.prompt = prompt
+        self.backend = "llm"
         self.bot_default = bot_default
         self.conversation = [("AI:", bot_default)]
         self.gen, self.tokenizer = get_generator("text-generation", LLM, 0, return_full_text=False)

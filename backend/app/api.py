@@ -78,6 +78,8 @@ app.add_middleware(
         allow_methods=["*"],
         allow_headers=["*"]
 )
+print("API Setup Complete")
+
 
 @app.get("/", tags=["root"])
 async def read_root() -> dict:
@@ -175,9 +177,9 @@ def text_to_speech(text: str, speaker_id: str = "", style_wav: str = ""):
     l.log(f"/api/speech: {text}, {speaker_id}, {style_wav}")
     """Synthesizes wav bytes from text, with a given speaker ID"""
     if bot.backend == "gpt":
-        bot.bot.conversation[-1] = "AI: " + text
+        bot.conversation[-1] = "AI: " + text
     if bot.backend == "llm":
-        bot.bot.conversation[-1] = ("AI:", text)
+        bot.conversation[-1] = ("AI:", text)
     global VIZEME_QUEUE
     global VISEME_DELAY
     out, speaking_time = tts.synthesize_wav(text, speaker_id, style_wav)
