@@ -77,18 +77,18 @@ function Eye({position, eyeAU}) {
     [llc, ulc] = [0,0];
     [lr, ud] = [0,0];
 
-    var au5_upper_lid_raiser = eyeAU.au5;
-    var au6_cheek_raiser = eyeAU.au6;
-    var au7_lid_tightener = eyeAU.au7;
-    var au41_lid_droop = eyeAU.au41;
-    var au42_slit = eyeAU.au42;
-    var au43_eyes_closed = eyeAU.au43;
-    var au44_squint = eyeAU.au44;
-    var au45_blink = eyeAU.au45;
-    var au61_left = eyeAU.au61;
-    var au62_right = eyeAU.au62;
-    var au63_up = eyeAU.au63;
-    var au64_down = eyeAU.au64;
+    var au5_upper_lid_raiser = eyeAU.au5_upper_lid_raiser;
+    var au6_cheek_raiser = eyeAU.au6_cheek_raiser;
+    var au7_lid_tightener = eyeAU.au7_lid_tightener;
+    var au41_lid_droop = eyeAU.au41_lid_droop;
+    var au42_slit = eyeAU.au42_slit;
+    var au43_eyes_closed = eyeAU.au43_eyes_closed;
+    var au44_squint = eyeAU.au44_squint;
+    var au45_blink = eyeAU.au45_blink;
+    var au61_left = eyeAU.au61_left;
+    var au62_right = eyeAU.au62_right;
+    var au63_up = eyeAU.au63_up;
+    var au64_down = eyeAU.au64_down;
 
 
     lr = lr + au62_right - au61_left;

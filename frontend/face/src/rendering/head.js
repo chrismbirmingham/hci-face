@@ -28,7 +28,6 @@ function Head({face, position, eyeAU, browAU, mouthAU}){
             <stop offset="100%" stopColor="#555" />
           </radialGradient>
         </defs>
-        <h1>{face}</h1>
             {face==="default" ?
             <svg viewBox={viewBox} xmlns="http://www.w3.org/2000/svg">
               <rect id="face" x="-50" y="-30" width="100" height="59" fill={position.faceColor} stroke="black" strokeWidth="2"/>

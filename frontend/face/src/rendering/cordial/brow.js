@@ -7,9 +7,9 @@ function AdjustMUnits (position, browAU)
 {
     var scale = position.auScaler;
     var flip = position.flip;
-    var au1_inner_brow_raiser = browAU.au1*scale;
-    var au2_outer_brow_raiser = browAU.au2*scale;
-    var au4_brow_lowerer = browAU.au4*scale;
+    var au1_inner_brow_raiser = browAU.au1_inner_brow_raiser*scale;
+    var au2_outer_brow_raiser = browAU.au2_outer_brow_raiser*scale;
+    var au4_brow_lowerer = browAU.au4_brow_lowerer*scale;
 
 
     [center_x, center_y] = [position.x, position.y-2];

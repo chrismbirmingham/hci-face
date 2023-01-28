@@ -9,22 +9,22 @@ let chin_y, nose_y;
 function AdjustMouth (position, mouthAU) 
 {
     var scale = position.auScaler;
-    var au10_raise_upper = mouthAU.au10*scale;
-    var au12_lip_corners_out = mouthAU.au12*scale;
-    var au13_cheek_puffer = mouthAU.au13*scale;
-    var au14_dimpler = mouthAU.au14*scale;
-    var au15_lip_corner_depr = mouthAU.au15*scale;
-    var au16_lower_lip_depr = mouthAU.au16*scale;
-    var au17_chin_raiser = mouthAU.au17*scale;
-    var au18_lip_pucker = mouthAU.au18*scale;
-    var au20_lip_stretcher = mouthAU.au20*scale;
-    var au22_lip_funneler = mouthAU.au22*scale;
-    var au23_lip_tightener = mouthAU.au23*scale;
-    var au24_lip_pressor = mouthAU.au24*scale;
-    var au25_lips_part = mouthAU.au25*scale;
-    var au26_jaw_drop = mouthAU.au26*scale;
-    var au27_mouth_stretch = mouthAU.au27*scale;
-    var au28_lip_suck = mouthAU.au28*scale;
+    var au10_raise_upper = mouthAU.au10_raise_upper*scale;
+    var au12_lip_corners_out = mouthAU.au12_lip_corners_out*scale;
+    var au13_cheek_puffer = mouthAU.au13_cheek_puffer*scale;
+    var au14_dimpler = mouthAU.au14_dimpler*scale;
+    var au15_lip_corner_depr = mouthAU.au15_lip_corner_depr*scale;
+    var au16_lower_lip_depr = mouthAU.au16_lower_lip_depr*scale;
+    var au17_chin_raiser = mouthAU.au17_chin_raiser*scale;
+    var au18_lip_pucker = mouthAU.au18_lip_pucker*scale;
+    var au20_lip_stretcher = mouthAU.au20_lip_stretcher*scale;
+    var au22_lip_funneler = mouthAU.au22_lip_funneler*scale;
+    var au23_lip_tightener = mouthAU.au23_lip_tightener*scale;
+    var au24_lip_pressor = mouthAU.au24_lip_pressor*scale;
+    var au25_lips_part = mouthAU.au25_lips_part*scale;
+    var au26_jaw_drop = mouthAU.au26_jaw_drop*scale;
+    var au27_mouth_stretch = mouthAU.au27_mouth_stretch*scale;
+    var au28_lip_suck = mouthAU.au28_lip_suck*scale;
 
     // SET BASELINES
     [center_x, center_y] = [position.x, position.y]; // location of the mouth - all coordinates relative to center

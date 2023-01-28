@@ -19,41 +19,41 @@ const App = ({ classes }) => {
     mouth: {x:0, y:16, auScaler: 6},
   }
   const initialMouthAU = {
-    au10: 0,
-    au12: 0.2,
-    au13: 0,
-    au14: 0,
-    au15: 0,
-    au16: 0,
-    au17: 0,
-    au18: 0,
-    au20: 0,
-    au22: 0,
-    au23: 0,
-    au24: 0,
-    au25: 0,
-    au26: 0,
-    au27: 0,
-    au28: 0
+    au10_raise_upper: 0,
+    au12_lip_corners_out: 0.2,
+    au13_cheek_puffer: 0,
+    au14_dimpler: 0,
+    au15_lip_corner_depr: 0,
+    au16_lower_lip_depr: 0,
+    au17_chin_raiser: 0,
+    au18_lip_pucker: 0,
+    au20_lip_stretcher: 0,
+    au22_lip_funneler: 0,
+    au23_lip_tightener: 0,
+    au24_lip_pressor: 0,
+    au25_lips_part: 0,
+    au26_jaw_drop: 0,
+    au27_mouth_stretch: 0,
+    au28_lip_suck: 0
   };
   const initialBrowAU = {
-    au1: 0,
-    au2: 0,
-    au4: 0,
+    au1_inner_brow_raiser: 0,
+    au2_outer_brow_raiser: 0,
+    au4_brow_lowerer: 0,
   };  
   const initialEyeAU = {
-    au5: 0,
-    au6: 0,
-    au7: 0,
-    au41: 0,
-    au42: 0,
-    au43: 0,
-    au44: 0.6,
-    au45: 0,
-    au61: 0,
-    au62: 0,
-    au63: 0,
-    au64: 0,
+    au5_upper_lid_raiser: 0,
+    au6_cheek_raiser: 0,
+    au7_lid_tightener: 0,
+    au41_lid_droop: 0,
+    au42_slit: 0,
+    au43_eyes_closed: 0,
+    au44_squint: 0.6,
+    au45_blink: 0,
+    au61_left: 0,
+    au62_right: 0,
+    au63_up: 0,
+    au64_down: 0,
   };  
 
   // Variables with state
@@ -64,6 +64,8 @@ const App = ({ classes }) => {
   function mouthUpdater (AU) { updateMouthAU({ ...AU })}
   function browUpdater (AU) { updateBrowAU({ ...AU })}
   const eyeUpdater = useCallback(function eyeUpdaterInner (AU) { updateEyeAU({ ...eyeAU, ...AU })},[eyeAU])
+  let form=false
+
 
   // Visemes are separated from the rest of the face control
   // so speaking and expression (aside from the lips) can happen together
@@ -89,7 +91,7 @@ const App = ({ classes }) => {
     es.addEventListener('open', () => {});
 
     // faceControls should handle emotion, eyeAU, browAU, mouthAU
-    es.addEventListener('expression', (e) => {
+  es.addEventListener('expression', (e) => {
       var [MouthAU, EyeAU, BrowAU] = getExpresionAUs(e.data)
       mouthUpdater(MouthAU);
       browUpdater(BrowAU);
@@ -109,6 +111,7 @@ const App = ({ classes }) => {
     var count = 0
     var update_interval_ms = 500
     const interval = setInterval(() => {
+      if (!form){
         switch (behavior)
         {
             case "bored":
@@ -123,24 +126,36 @@ const App = ({ classes }) => {
             default:
                 break;
         }
+      }
     }, update_interval_ms);
     return () => clearInterval(interval);
-  }, [behavior, eyeUpdater]);
+  }, [behavior, eyeUpdater,form]);
 
+  let display="qt"
 
   return (
     <div className="App">
       <header className="App-header"></header>
-      <div id="robot-container">
-        <div id="bot" className="neutral">
-          <Head face="qt_head" position={positions} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
+      {form ?
+      <div>
+        <div style={{"float":"left","width":"50%"}} id="robot-container">
+          <div id="bot" className="neutral">
+            <Head face={display} position={positions} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
+          </div>
+        </div>
+        <div style={{"float":"right"}} id="AU control">
+          <EyeForm v={eyeAU} f={eyeUpdater}/>
+          <BrowForm v={browAU} f={browUpdater}/>
+          <MouthForm v={mouthAU} f={mouthUpdater}/>
         </div>
       </div>
-      <div id="AU control" hidden={true}>
-        <EyeForm v={eyeAU} f={eyeUpdater}/>
-        <BrowForm v={browAU} f={browUpdater}/>
-        <MouthForm v={mouthAU} f={mouthUpdater}/>
+      : 
+      <div id="robot-container">
+      <div id="bot" className="neutral">
+        <Head face={display} position={positions} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
       </div>
+    </div>
+      }
     </div>
   );
 }

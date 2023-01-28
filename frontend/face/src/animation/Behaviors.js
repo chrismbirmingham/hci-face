@@ -1,9 +1,9 @@
 function lookRandom(focus) {
     const eyes = { // focus of 1 move 0, focus of zero move 1
-      au61: (1-focus) * Math.random(),
-      au62: (1-focus) * Math.random(),
-      au63: (1-focus) * Math.random(),
-      au64: (1-focus) * Math.random(),
+      au61_left: (1-focus) * Math.random(),
+      au62_right: (1-focus) * Math.random(),
+      au63_up: (1-focus) * Math.random(),
+      au64_down: (1-focus) * Math.random(),
     }
     return eyes
     
@@ -19,19 +19,19 @@ function boredEyes(count, reset_count, eyeUpdater, mouthUpdater){
 
       // Purse lips
       if (count===reset_count-4){
-        mouthUpdater({au24:.75})
+        mouthUpdater({au24_lip_pressor:.75})
       }
       if (count===reset_count-1){
-        mouthUpdater({au24:0})
+        mouthUpdater({au24_lip_pressor:0})
       }
 
       // close eyes
       if (count===reset_count){
-        eyeUpdater({au45:.65})
+        eyeUpdater({au45_blink:.65})
       }
       // open eyes
       if (count>reset_count){
-        eyeUpdater({au45:0})
+        eyeUpdater({au45_blink:0})
         count = 0
       }
       return count
@@ -47,19 +47,19 @@ function focusedEyes(count, reset_count, eyeUpdater, mouthUpdater){
 
       // Purse lips
       if (count===reset_count-4){
-        mouthUpdater({au28:.33})
+        mouthUpdater({au28_lip_suck:.33})
       }
       if (count===reset_count-1){
-        mouthUpdater({au28:0})
+        mouthUpdater({au28_lip_suck:0})
       }
 
       // close eyes
       if (count===reset_count){
-        eyeUpdater({au45:.65})
+        eyeUpdater({au45_blink:.65})
       }
       // open eyes
       if (count>reset_count){
-        eyeUpdater({au45:0})
+        eyeUpdater({au45_blink:0})
         count = 0
       }
       return count
