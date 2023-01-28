@@ -1,12 +1,12 @@
 import './App.css';
 import React, { useState, useEffect, useCallback } from "react";
-import Mic from './mic/Microphone';
-import Timer from './timer/timer';
-import getDeadTime from './timer/utils';
-import Walkthrough from './facilitator/walkthrough';
-import FacilitatorControls from './facilitator/controls';
-import SpeakerMonitor from './facilitator/speech';
-import RobotControls from './robotControls';
+import Mic from './components/mic/Microphone';
+import Timer from './components/timer/timer';
+import getDeadTime from './components/timer/utils';
+import Walkthrough from './components/facilitator/walkthrough';
+import FacilitatorControls from './components/facilitator/controls';
+import SpeakerMonitor from './components/facilitator/speech';
+import RobotControls from './components/robotControls';
 
 
 const App = ({ classes }) => {
@@ -37,18 +37,10 @@ const App = ({ classes }) => {
   const [timerDeadline, setTimerDeadline] = useState("")
 	const [timerLength, setTimerLength] = useState('25');
 
-  const get_bot_response = useCallback(human_input => {
-    const text = human_input
-    const speaker = participantSpeaker
-    if (text) {
-      return fetch(`//localhost:8000/api/bot_response?text=${encodeURIComponent(text)}&speaker=${encodeURIComponent(speaker)}&reset_conversation=${encodeURIComponent(beginConversation)}&director_condition=${encodeURIComponent(!condition)}`, { cache: 'no-cache' })
-      .then(response => response.text())
-      .then(message => {console.log(message); return message})
-    }
-  },[beginConversation, condition, participantSpeaker]
-  )
 
-  useEffect(() => {const es = new EventSource("http://localhost:8000/api/text_stream");
+  // API calling functions
+  function getTextStream() {
+    const es = new EventSource("http://localhost:8000/api/text_stream");
     es.addEventListener('open', () => {
       // console.log('SSE opened@!')
     });
@@ -73,7 +65,7 @@ const App = ({ classes }) => {
 
         if (full_speech.length > 20) {
           console.log(full_speech, full_speech.length)
-          get_bot_response(full_speech);
+          requestBotResponseCB(full_speech);
         }
       };
     });
@@ -101,62 +93,66 @@ const App = ({ classes }) => {
     return () => {
       es.close();
     };
-  }, [get_bot_response, latestSpeech, participantSpeaker, priorSpeaker]);
-
-
-  /////// Play Speech ///////
-  function do_tts(e) {
-    console.log("Will say"+e)
-    setPriorSpeaker("bot")
-    const text = e
-    const speaker_id = [speakerVoice]
-    const style_wav = ""
-    setTranscribedData(oldData => ["bot: "+text, <br></br>, ...oldData ])
-
-    if (text) {
-        fetch(`//localhost:8000/api/speech?text=${encodeURIComponent(text)}&speaker_id=${encodeURIComponent(speaker_id)}&style_wav=${encodeURIComponent(style_wav)}`, { cache: 'no-cache' })
-            .then(function (res) {
-                if (!res.ok) throw Error(res.statusText)
-                return res.blob()
-            }).then(function (blob) {
-                const audioUrl = URL.createObjectURL(blob)
-                const audio = new Audio(audioUrl)
-                setIsRecording(false)
-                audio.play();
-                audio.addEventListener('ended', () => {setIsRecording(true)});
-            }).catch(function (err) {
-            })
-    }
-    return false
   }
-
-
-  function set_face(name, type){
+  function requestFaceUpdate(name, type){
     const name_text = name
     const type_text = type
     return fetch(`//localhost:8000/api/face_presets?text=${encodeURIComponent(name_text)}&update_type=${encodeURIComponent(type_text)}`, { cache: 'no-cache' })
       .then(response => response.text())
       .then(message => {console.log(message)})
   }
+  function requestBotResponse(human_input) {
+    const text = human_input
+    const speaker = participantSpeaker
+    if (text) {
+      return fetch(`//localhost:8000/api/bot_response?text=${encodeURIComponent(text)}&speaker=${encodeURIComponent(speaker)}&reset_conversation=${encodeURIComponent(beginConversation)}&director_condition=${encodeURIComponent(!condition)}`, { cache: 'no-cache' })
+      .then(response => response.text())
+      .then(message => {console.log(message); return message})
+    }
+  }
+  function requestSpeech(text){
+    const speaker_id = [speakerVoice]
+    const style_wav = ""
+    fetch(`//localhost:8000/api/speech?text=${encodeURIComponent(text)}&speaker_id=${encodeURIComponent(speaker_id)}&style_wav=${encodeURIComponent(style_wav)}`, { cache: 'no-cache' })
+    .then(function (res) {
+        if (!res.ok) throw Error(res.statusText)
+        return res.blob()
+    }).then(function (blob) {
+        const audioUrl = URL.createObjectURL(blob)
+        const audio = new Audio(audioUrl)
+        setIsRecording(false)
+        audio.play();
+        audio.addEventListener('ended', () => {setIsRecording(true)});
+    }).catch(function (err) {
+  })
+  }
+  const requestBotResponseCB = useCallback(requestBotResponse,[beginConversation, condition, participantSpeaker])
 
+  /////// Play Speech ///////
+  function do_tts(text) {
+    console.log("Will say"+text)
+    setPriorSpeaker("bot")
+    setTranscribedData(oldData => ["bot: "+text, <br></br>, ...oldData ])
+    requestSpeech(text)
+    return false
+  }
+
+  // Wrappers for updating variables
   function update_behavior(name){
     setBehavior(name)
-    set_face(name, "behavior")
+    requestFaceUpdate(name, "behavior")
     console.log(name)
   }
-
   function update_viseme(name){
     setViseme(name)
-    set_face(name, "viseme")
+    requestFaceUpdate(name, "viseme")
     console.log(name)
   }
-
   function update_expression(name){
     setExpression(name)
-    set_face(name, "expression")
+    requestFaceUpdate(name, "expression")
     console.log(name)
   }
-
   function update_speaker(name){
     console.log("Updated speaker to "+name)
     setParticipantSpeaker(name)
@@ -164,6 +160,7 @@ const App = ({ classes }) => {
 
   function switch_condition(){setCondition(!condition)}
 
+  useEffect(getTextStream, [requestBotResponseCB, latestSpeech, participantSpeaker, priorSpeaker]);
 
 
   return (
@@ -179,8 +176,7 @@ const App = ({ classes }) => {
           setWalkthroughToggle={setWalkthroughToggle}
           do_tts={do_tts}
           setTimerDeadline={setTimerDeadline}
-          switch_condition={switch_condition}
-        />
+          switch_condition={switch_condition}/>
       </div>
 
       <br></br>
@@ -190,16 +186,14 @@ const App = ({ classes }) => {
         update_speaker={update_speaker}
         participantSpeaker={participantSpeaker}
         latestSpeech={latestSpeech}
-        classifications={classifications}
-      />
+        classifications={classifications}/>
 
       <FacilitatorControls
         do_tts={do_tts}
         participantSpeaker={participantSpeaker}
         condition={condition}
         botResponse={botResponse}
-        facilitatorResponse={facilitatorResponse}
-      />
+        facilitatorResponse={facilitatorResponse}/>
 
 
       <button id="toggle" onClick={() => setFormToggle(!showForm)}>Show/Hide Form Input:</button>
@@ -219,8 +213,7 @@ const App = ({ classes }) => {
         viseme={viseme} 
         update_viseme={update_viseme} 
         timerLength={timerLength} 
-        setMinuteGoal={setTimerLength}
-      />
+        setMinuteGoal={setTimerLength}/>
 
       <div id="transcription">
         <h2>Transcribed Data:</h2>
