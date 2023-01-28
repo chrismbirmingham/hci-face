@@ -21,13 +21,7 @@ function Head({face, position, eyeAU, browAU, mouthAU}){
     let viewBox = x_0 + " " + y_0  + " " +  width  + " " + height
 
     return (
-      <div id="head">{/* fill="url(#sampleGradient)" */}
-        <defs>
-          <radialGradient id="sampleGradient">
-            <stop offset="90%" stopColor={position.faceColor} />
-            <stop offset="100%" stopColor="#555" />
-          </radialGradient>
-        </defs>
+      <div id="head">
           {face==="default" ?
           <svg viewBox={viewBox} xmlns="http://www.w3.org/2000/svg">
             <rect id="face" x="-50" y="-30" width="100" height="59" fill={position.faceColor} stroke="black" strokeWidth="2"/>
