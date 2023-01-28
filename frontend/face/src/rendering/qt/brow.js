@@ -63,7 +63,7 @@ function Brow({position, browAU}) {
         )
   
     return (
-          <animated.path d={animationProps.brow} stroke="#999" fillOpacity=".0" strokeWidth="3" strokeLinecap="round"/>
+          <animated.path d={animationProps.brow} stroke="#555" fillOpacity=".0" strokeWidth="3" strokeLinecap="round"/>
     );
 }
 

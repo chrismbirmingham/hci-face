@@ -62,11 +62,11 @@ const App = ({ classes }) => {
   function mouthUpdater (AU) { updateMouthAU({ ...AU })}
   function browUpdater (AU) { updateBrowAU({ ...AU })}
   const eyeUpdater = useCallback(function eyeUpdaterInner (AU) { updateEyeAU({ ...eyeAU, ...AU })},[eyeAU])
-  const [behavior, setBehavior] = useState("bored");
+  const [behavior, setBehavior] = useState("focused");
 
   // Visemes are separated from the rest of the face control
   // so speaking and expression (aside from the lips) can happen together
-  useEffect(() => {const es = new EventSource("http://192.168.1.136:8000/api/visemes");
+  useEffect(() => {const es = new EventSource("http://192.168.1.136:8000/api/viseme_stream");
     es.addEventListener('open', () => {
       // console.log('SSE opened@!')
     });
@@ -85,7 +85,7 @@ const App = ({ classes }) => {
       es.close();
     };
   }, []);
-  useEffect(() => {const es = new EventSource("http://192.168.1.136:8000/api/faceControl");
+  useEffect(() => {const es = new EventSource("http://192.168.1.136:8000/api/face_stream");
     es.addEventListener('open', () => {
       // console.log('SSE opened@!')
     });

@@ -1,0 +1,18 @@
+[ERROR] [1674429301.812112008]: cannot load gesture file /home/qtrobot/robot/data/gestures/.xml
+[ERROR] [1674429301.983571382]: cannot load gesture file /home/qtrobot/robot/data/gestures/.xml
+terminate called after throwing an instance of 'boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<boost::thread_resource_error> >'
+  what():  boost::thread_resource_error: Resource temporarily unavailable
+================================================================================REQUIRED process [qt_motor-1] has died!
+process has died [pid 6360, exit code -6, cmd /opt/ros/kinetic/lib/qt_motor/qt_motor joint_states:=/qt_robot/joints/state __name:=qt_motor __log:=/home/qtrobot/.ros/log/3ae51a66-99fe-11ed-b7cb-b827eb83e0cb/qt_motor-1.log].
+log file: /home/qtrobot/.ros/log/3ae51a66-99fe-11ed-b7cb-b827eb83e0cb/qt_motor-1*.log
+Initiating shutdown!
+================================================================================
+[controller-2] killing on exit
+[qt_motor-1] killing on exit
+[INFO] [1674429302.410911]: Shutting down spawner. Stopping and unloading controllers...
+[INFO] [1674429302.414563]: Stopping all controllers...
+[WARN] [1674429302.431959]: Controller Spawner error while taking down controllers: unable to connect to service: [Errno 111] Connection refused
+shutting down processing monitor...
+... shutting down processing monitor complete
+done
+

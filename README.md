@@ -1,5 +1,3 @@
-
-
 ![Visual of Face](frontend/public/face.png?raw=true "HCI-FACE")
 
 # HCI-FACE
@@ -31,6 +29,10 @@ Then to launch each webpage (in a development environment), run the following co
 The browser should launch with each page automatically, but you may need to past the address into the url bar.
 
 For further details see the README in the face and WoZ folders.
+
+## QT Front End
+
+See the hci_face_bridge README for more information on setting up QT with HCI Face
 
 ### Back End
 
@@ -113,7 +115,6 @@ These modules are imported into the app/api.py and can be replaced with private/
 
 
 ### Front End 
-- [ ] Pre-Process audio for speech segments on client side ***
 - [ ] Different visuals presets  
     - [ ] Additional idle behaviors
         - Breathing, Thinking
@@ -121,13 +122,12 @@ These modules are imported into the app/api.py and can be replaced with private/
 - [ ] Create additional face visual presents *
     - Such as QT default, cordial replica, and human mask
 - [ ] Improve accuracy of lip synch *
-- [ ] Export faces from AU for custom expressions
-- [ ] Seperate left and right control
+- [ ] Export faces from AU form for custom expressions
+- [ ] Seperate left and right control for facial expressions
 
 ### Back End
 - [ ] [Add Amazon Polly Support](https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/python/example_code/polly/polly_wrapper.py)
-- [ ] finish face control api (AU control) 
-- [ ] Long term interaction recording
+- [ ] finish face control api (AU and left-right control) 
 
 
 ### Long Term Goals
@@ -141,7 +141,7 @@ These modules are imported into the app/api.py and can be replaced with private/
 - [ ] Deploy backend to the cloud
 
 ### General
-- [ ] Improve Documentation (start a read the docs)
+- [ ] Improve Documentation (start a read the docs)*
     - [ ] How to Customizing the bot appearance * 
     - [ ] How to contribute
     - [ ] How to customize responses

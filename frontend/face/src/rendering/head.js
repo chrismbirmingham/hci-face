@@ -14,7 +14,7 @@ import EyeQT from './qt/eyes';
 
 
 function Head({face, position, eyeAU, browAU, mouthAU}){
-    position.faceColor = "grey" // "#D7E4F5"
+    position.faceColor = "#CCC" // "#D7E4F5"
     position.right_eye.faceColor = position.faceColor
     position.left_eye.faceColor = position.faceColor
     if (face==="default"){
@@ -53,7 +53,7 @@ function Head({face, position, eyeAU, browAU, mouthAU}){
                   <stop offset="100%" stopColor="#555" />
                 </radialGradient>{/* fill="url(#sampleGradient)" */}
               </defs>
-              <rect id="face" x="-50" y="-30" width="100" height="59" fill="url(#sampleGradient)" stroke="black" strokeWidth="5"/>
+              <rect id="face" x="-50" y="-30" width="100" height="59" fill={position.faceColor} stroke="black" strokeWidth="5"/>
               <EyeQT id="right" position={position.right_eye} eyeAU={eyeAU}/>
               <EyeQT id="left" position={position.left_eye} eyeAU={eyeAU}/> 
               <BrowQT id="leftbrow" position={position.left_brow} browAU={browAU}/>
