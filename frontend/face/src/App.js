@@ -1,19 +1,19 @@
 import './App.css';
 import React, { useReducer, useState, useEffect, useCallback } from "react";
+import {EyeForm, BrowForm, MouthForm} from './components/Form';
 import Head from './components/Head';
 import getAUs from './helpers/Visemes';
 import getExpresionAUs from './helpers/Expressions';
 import doBehavior from './helpers/Behaviors';
 
-import {EyeForm, BrowForm, MouthForm} from './components/Form';
 
-
+// Update these as needed
+const server_ip = "192.168.1.145" // Set server IP (can be found with ifconfig on host)
+const form=false // display form input if manually controlling action units
 
 const App = ({ classes }) => {
   const [behavior, setBehavior] = useState("focused");
-  let form=false
   let display="qt"
-  let server_ip = "192.168.1.145"
 
   // Initial positions
   const positions = {
@@ -129,7 +129,7 @@ const App = ({ classes }) => {
 
   useEffect(sourceVisemes , []);
   useEffect(sourceFaceCommands, [eyeUpdaterWrapper]);
-  useEffect(runBehaviors, [behavior, eyeUpdaterWrapper, form]);
+  useEffect(runBehaviors, [behavior, eyeUpdaterWrapper]);
 
   return (
     <div className="App">
