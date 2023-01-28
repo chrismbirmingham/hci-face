@@ -122,10 +122,12 @@ These modules are imported into the app/api.py and can be replaced with private/
 - [ ] Create additional face visual presents *
     - Such as QT default, cordial replica, and human mask
 - [ ] Improve accuracy of lip synch *
+- [ ] Export faces from AU form for custom expressions
+- [ ] Seperate left and right control for facial expressions
 
 ### Back End
 - [ ] [Add Amazon Polly Support](https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/python/example_code/polly/polly_wrapper.py)
-- [ ] finish face control api (AU control) 
+- [ ] finish face control api (AU and left-right control) 
 
 
 ### Long Term Goals
@@ -139,7 +141,7 @@ These modules are imported into the app/api.py and can be replaced with private/
 - [ ] Deploy backend to the cloud
 
 ### General
-- [ ] Improve Documentation (start a read the docs)
+- [ ] Improve Documentation (start a read the docs)*
     - [ ] How to Customizing the bot appearance * 
     - [ ] How to contribute
     - [ ] How to customize responses
