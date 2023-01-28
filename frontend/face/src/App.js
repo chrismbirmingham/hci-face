@@ -1,11 +1,11 @@
 import './App.css';
 import React, { useReducer, useState, useEffect, useCallback } from "react";
-import Head from './rendering/head';
-import getAUs from './animation/Visemes';
-import getExpresionAUs from './animation/Expressions';
-import {randomFace, boredEyes, focusedEyes} from './animation/Behaviors';
+import Head from './components/Head';
+import getAUs from './helpers/Visemes';
+import getExpresionAUs from './helpers/Expressions';
+import {randomFace, boredEyes, focusedEyes} from './helpers/Behaviors';
 
-import {EyeForm, BrowForm, MouthForm} from '../../face/src/control/Form';
+import {EyeForm, BrowForm, MouthForm} from './components/Form';
 
 
 const App = ({ classes }) => {
@@ -64,7 +64,7 @@ const App = ({ classes }) => {
   function mouthUpdater (AU) { updateMouthAU({ ...AU })}
   function browUpdater (AU) { updateBrowAU({ ...AU })}
   const eyeUpdater = useCallback(function eyeUpdaterInner (AU) { updateEyeAU({ ...eyeAU, ...AU })},[eyeAU])
-  let form=false
+  let form=true
 
 
   // Visemes are separated from the rest of the face control
