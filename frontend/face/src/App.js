@@ -127,8 +127,8 @@ const App = ({ classes }) => {
   }
 
 
-  useEffect(sourceVisemes , []);
-  useEffect(sourceFaceCommands, [eyeUpdaterWrapper]);
+  useEffect(sourceVisemes , [server_ip]);
+  useEffect(sourceFaceCommands, [eyeUpdaterWrapper, server_ip]);
   useEffect(runBehaviors, [behavior, eyeUpdaterWrapper, form]);
 
   return (
