@@ -119,8 +119,6 @@ These modules are imported into the app/api.py and can be replaced with private/
     - [ ] Additional idle behaviors
         - Breathing, Thinking
 - [ ] organize consistent styles and colors *
-- [ ] Create additional face visual presents *
-    - Such as QT default, cordial replica, and human mask
 - [ ] Improve accuracy of lip synch *
 - [ ] Export faces from AU form for custom expressions
 - [ ] Seperate left and right control for facial expressions
