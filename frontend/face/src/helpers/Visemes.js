@@ -1,6 +1,6 @@
 
 // text -> X-SAMPA -> Viseme -> FACS
-export default function getAUs(vizeme, intensity = .5){
+export default function getAUs(vizeme, intensity = .3){
     const au = {
         au10_raise_upper: 0,
         au12_lip_corners_out: 0,
@@ -36,7 +36,7 @@ export default function getAUs(vizeme, intensity = .5){
 
         case "AO_AW": //au 25, 26, 27
         au.au26_jaw_drop= .75 * intensity
-        au.au27_mouth_stretch= 1 * intensity
+        au.au27_mouth_stretch= .5 * intensity
         break;
 
         case "EH_AE_AY": //au 25, 26, 14

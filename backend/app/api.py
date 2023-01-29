@@ -30,12 +30,12 @@ l = Logger(folder=LOGS_DIR)
 l.log("Beginning Setup")
 load_dotenv()
 l.log("Setting Up TTS")
-tts = Speaker(backend="coqui")
+tts = Speaker(backend="polly")
 l.log("TTS Set Up Complete, Setting up STT")
 stt = Transcriber(model_size="small")
 
 l.log("STT Set Up Complete, Setting up Bots")
-bot = FacilitatorChat(backend="gpt")
+bot = FacilitatorChat(chat_backend="gpt", classifier_backend="llm")
 rmf = RoleModelFacilitator()
 df = DirectorFacilitator()
 presets = FacilitatorPresets()
@@ -91,10 +91,9 @@ async def read_root() -> dict:
 @app.get('/api/viseme_stream')
 async def viseme_stream(request: Request):
     # l.log(f"/api/visemes: request recieved.")
-    # WARNING if you have multiple face tabs open, it will split the 
+    # WARNING if you have multiple face tabs open, it will split the
     # visemes sent to each one
     async def event_generator():
-        global VIZEME_QUEUE
         while True:
             global VISEME_DELAYS
             # If client closes connection, stop sending events
@@ -106,7 +105,7 @@ async def viseme_stream(request: Request):
             # Checks for new messages and return them to client if any
             if len(VIZEME_QUEUE) > 0:
                 msg = VIZEME_QUEUE.pop(0)
-                # l.log(f"Viseme msg: {msg}", printnow=False)
+                l.log(f"Viseme msg: {msg}", printnow=True)
                 response = {
                         "event": "viseme",
                         "id": "message_id",
@@ -115,8 +114,8 @@ async def viseme_stream(request: Request):
                 }
                 yield response
             if len(VISEME_DELAYS)>0:
-                w = VISEME_DELAYS.pop(0)
-                await asyncio.sleep(w)
+                sleep_delay = VISEME_DELAYS.pop(0)
+                await asyncio.sleep(sleep_delay)
             else:await asyncio.sleep(.05)
 
     return EventSourceResponse(event_generator())
@@ -181,10 +180,7 @@ async def text_stream(request: Request):
 def text_to_speech(text: str, speaker_id: str = ""):
     """Synthesizes wav bytes from text, with a given speaker ID"""
     l.log(f"/api/speech: {text}, {speaker_id}")
-    if bot.backend == "gpt":
-        bot.bot.conversation[-1] = "AI: " + text
-    if bot.backend == "llm":
-        bot.bot.conversation[-1] = ("AI:", text)
+    bot.chatbot.accept_response(text)
 
     global VIZEME_QUEUE
     global VISEME_DELAYS
@@ -203,9 +199,9 @@ def generate_response(text: str, speaker: str, reset_conversation: bool, directo
 
     classifications = bot.get_classifications(text)
     TEXT_QUEUE["classifications"].append(classifications)
-    if bot.sc.emotion in ["joy", "sad", "surprise"]:
-        l.log(f"Setting face to: {bot.sc.emotion}")
-        FACE_CONTROL_QUEUE["expression"].append(bot.sc.emotion)
+    if bot.classification_processor.emotion in ["joy", "sad", "surprise"]:
+        l.log(f"Setting face to: {bot.classification_processor.emotion}")
+        FACE_CONTROL_QUEUE["expression"].append(bot.classification_processor.emotion)
     else:
         l.log("Setting face to: neutral")
         FACE_CONTROL_QUEUE["expression"].append("neutral")
@@ -215,7 +211,7 @@ def generate_response(text: str, speaker: str, reset_conversation: bool, directo
 
     bot_response= bot.get_bot_response(text, speaker, reset_conversation)
     TEXT_QUEUE["bot_response"].append(bot_response)
-    bot.bot.conversation.pop(-1)
+    bot.chatbot.reject_response()
     
     return PlainTextResponse(bot_response)
 
@@ -246,7 +242,7 @@ def return_response(mode: str, query: str):
             to_say = to_say + ". " + to_say2
     l.log(f"facilitator_presets response: {to_say}")
     return PlainTextResponse(to_say)
-    
+
 @app.get("/api/face_presets")
 def update_face(text: str, update_type: str):
     """Returns an existing bot response"""
@@ -274,7 +270,7 @@ def return_gesture():
         l.log(f"/api/next_gesture: {g}")
     else: g=""
     return PlainTextResponse(g)
-    
+
 @app.post("/api/audio")
 async def create_upload_file(uploadedFile: UploadFile):
     contents = uploadedFile.file.read()
@@ -286,5 +282,3 @@ async def create_upload_file(uploadedFile: UploadFile):
     TEXT_QUEUE["human_speech"].append(transcription)
     l.log(f"Speech Detected: {transcription}")
     return {"filename": "temp.wav"}
-
-

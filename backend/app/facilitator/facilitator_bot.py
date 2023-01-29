@@ -15,15 +15,16 @@ class FacilitatorChat():
     def __init__(self, chat_backend="gpt", classifier_backend="llm") -> None:
         self.facilitator_prompt = "The following is a conversation with an AI assistant that can have meaningful conversations with users. The assistant is helpful, empathic, and friendly. Its objective is to make the user feel better by feeling heard. With each response, the AI assistant prompts the user to continue the conversation naturally."
         self.classification_processor = StatementClassification()
-        self.chatbot = Responder(chat_backend=chat_backend, classifier_backend=classifier_backend)
+        self.chatbot = Responder(
+            chat_backend=chat_backend, classifier_backend=classifier_backend)
         self.classifier_backend = classifier_backend
 
         self.rm_facilitator = RoleModelFacilitator()
         self.d_facilitator = DirectorFacilitator()
-    
+
     def get_classifications(self, statement):
         """Passes the bot to the classification processor
-        
+
         in order to properly handle the different methods for
         doing classification
         """
@@ -41,23 +42,24 @@ class FacilitatorChat():
         based on the respective facilitator logic
         """
         if director_condition:
-            response = self.d_facilitator.decision_tree(self.classification_processor)
+            response = self.d_facilitator.decision_tree(
+                self.classification_processor)
         else:
-            response = self.rm_facilitator.decision_tree(self.classification_processor)
-        return  response
-
+            response = self.rm_facilitator.decision_tree(
+                self.classification_processor)
+        return response
 
     def get_bot_response(self, statement, speaker="Human", reset_conversation=False):
         """Get a response from the language model based on the prompt, statement, and conversation so far"""
-        bot_response = self.chatbot.get_response(statement, speaker=speaker, reset_conversation=reset_conversation)
+        bot_response = self.chatbot.get_response(
+            statement, speaker=speaker, reset_conversation=reset_conversation)
 
         return bot_response
-        
 
 
 def main():
     """Interactively test the FacilitatorChat
-    
+
     Must be run from the backend dir:
     python -m app.facilitator.facilitator_bot
     """
@@ -75,8 +77,9 @@ def main():
         user_input = input("Says: ")
         classifications = bot.get_classifications(user_input)
         facilitator_response = bot.get_facilitator_response(False)
-        bot_response= bot.get_bot_response(user_input, identified_speaker)
-        print(f"Tree: {facilitator_response}\nBot: {bot_response}\nClasses: {classifications}")
+        bot_response = bot.get_bot_response(user_input, identified_speaker)
+        print(
+            f"Tree: {facilitator_response}\nBot: {bot_response}\nClasses: {classifications}")
 
         keep = input("keep response? (n/y tree or bot)")
         if "n" in keep:
@@ -85,7 +88,6 @@ def main():
             bot.chatbot.accept_response(facilitator_response)
         if "bot" in keep:
             bot.chatbot.accept_response(bot_response)
-
 
 
 if __name__ == "__main__":

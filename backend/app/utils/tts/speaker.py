@@ -16,12 +16,13 @@ class Speaker:
             self.speaker = PollySpeak()
         if self.backend == "coqui":
             self.speaker = CoquiSpeak()
-            self.viseme_generator = VisemeGenerator()
+        self.viseme_generator = VisemeGenerator()
         
     def synthesize(self, input_text: str, speaker_identifier: str):
         """Takes in text and a speaker id and returns speech and visemes and timings"""
         if self.backend == "polly":
             audio_stream, visemes, delays = self.speaker.synthesize(input_text,speaker_id=speaker_identifier)
+            visemes = self.viseme_generator.convert_aws_visemes(visemes)
 
         if self.backend == "coqui":
             audio_stream, speaking_time = self.speaker.synthesize_wav(input_text, speaker_id=speaker_identifier)

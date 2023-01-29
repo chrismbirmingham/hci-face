@@ -1,5 +1,6 @@
 """Module for calling on AWS Polly"""
 
+import io
 import os
 import sys
 import json
@@ -37,7 +38,7 @@ class PollySpeak():
         Indian English en-IN {'Kajal'}
     """
 
-    def __init__(self, save_path:str="./output/temp.mp3") -> None:
+    def __init__(self, save_path:str="./output/temp.wav") -> None:
         self.engine = "neural"
         self.audio_format = "mp3"
         self.polly_client = polly
@@ -46,11 +47,14 @@ class PollySpeak():
 
     def synthesize(self, text: str, speaker_id: str = ""):
         """Turns text into audio and visemes"""
-
+        lang_code = None
         for key, names in english_speaker_map.items():
             if speaker_id in names:
                 lang_code = key
                 voice = speaker_id
+        if not lang_code:
+            lang_code = "en-US"
+            voice = 'Kendra'
         try:
             kwargs = {
                 'Engine': self.engine,
@@ -64,10 +68,10 @@ class PollySpeak():
             print("got response", response)
             audio_stream = response['AudioStream']
             output = self.save_path
-
-            with closing(audio_stream) as stream:
+            with closing(audio_stream) as stream:                
                 with open(output, "wb") as file:
                     file.write(stream.read())
+            outstream = io.open(output, 'rb', buffering=0)
             visemes = None
             kwargs['OutputFormat'] = 'json'
             kwargs['SpeechMarkTypes'] = ['viseme']
@@ -89,7 +93,7 @@ class PollySpeak():
             print(exc)
             raise
         else:
-            return audio_stream, viseme_list, sleep_times
+            return outstream, viseme_list, sleep_times
 
 
 def main():

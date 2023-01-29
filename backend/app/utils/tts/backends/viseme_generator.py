@@ -11,7 +11,10 @@ import pandas as pd
 
 
 class VisemeGenerator:
-    """Contains the functionality to convert text to visemes"""
+    """Contains the functionality to convert text to visemes
+    
+    Or to convert between viseme types
+    """
 
     def __init__(self, convertion_table="./resources/.phoneme-viseme_map.csv", log=False) -> None:
         
@@ -24,10 +27,10 @@ class VisemeGenerator:
         self.joint_df = pd.read_csv(conversion_table_path, header=0)
         self.joint_df.set_index("IPA")
 
-    def get_viseme(self, ipa):
+    def get_viseme(self, ipa, type='IPA'):
         """Converts individual phoneme to a viseme"""
         try:
-            viseme_dict = self.joint_df[self.joint_df['IPA']==ipa]
+            viseme_dict = self.joint_df[self.joint_df[type]==ipa]
             if len(viseme_dict) < 1:
                 viseme_dict = self.joint_df[self.joint_df['Alternative IPA'] == ipa]
                 if len(viseme_dict) < 1:
@@ -55,6 +58,11 @@ class VisemeGenerator:
             print(phoneme_list)
         return phoneme_list
 
+    def convert_aws_visemes(self, visemes):
+        new_visemes = []
+        for vis in visemes:
+            new_visemes.append(self.get_viseme(vis, type="Viseme"))
+        return new_visemes
 
     def get_visemes(self, sentence, return_phonemes = False):
         """Process a sentence or list of sentences into visemes"""
