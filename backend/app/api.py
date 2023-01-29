@@ -1,3 +1,9 @@
+"""Exposes interactive bot functionality through FastAPI"""
+
+import asyncio
+import random
+import io
+
 from fastapi import FastAPI, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, PlainTextResponse
@@ -5,28 +11,26 @@ from fastapi.responses import StreamingResponse, PlainTextResponse
 from sse_starlette.sse import EventSourceResponse
 from dotenv import load_dotenv
 from pydub import AudioSegment
-import asyncio
-import random
-import io
 
-from app.facilitator import FacilitatorChat, RoleModelFacilitator, DirectorFacilitator, FacilitatorPresets
-from app.utils import Transcriber, Speak, VisemeGenerator, Logger
+from app.utils import Speaker, Logger, Transcriber
+from app.facilitator import FacilitatorChat, RoleModelFacilitator
+from app.facilitator import DirectorFacilitator, FacilitatorPresets
 
 common_hallucinations = ["        you",
      "       You",
      "          Thanks for watching!",
      "  Thank you for watching!",
-     "        THANK YOU FOR WATCHING!", 
+     "        THANK YOU FOR WATCHING!",
      "Thanks for watching! Don't forget to like, comment and subscribe!"
      "   THANKS FOR WATCHING!"]
 # PROMPT = "The following is a conversation with an AI assistant that can have meaningful conversations with users. The assistant is helpful, empathic, and friendly. Its objective is to make the user feel better by feeling heard. With each response, the AI assistant prompts the user to continue the conversation naturally."
-logs_dir = "./logs/testing"
+LOGS_DIR = "./logs/testing"
 
-l = Logger(folder=logs_dir)
+l = Logger(folder=LOGS_DIR)
 l.log("Beginning Setup")
 load_dotenv()
 l.log("Setting Up TTS")
-tts = Speak()
+tts = Speaker(backend="coqui")
 l.log("TTS Set Up Complete, Setting up STT")
 stt = Transcriber(model_size="small")
 
@@ -35,7 +39,6 @@ bot = FacilitatorChat(backend="gpt")
 rmf = RoleModelFacilitator()
 df = DirectorFacilitator()
 presets = FacilitatorPresets()
-vg = VisemeGenerator(".phoneme-viseme_map.csv")
 
 FACE_CONTROL_QUEUE = {
     "expression":[],
@@ -53,7 +56,7 @@ TEXT_QUEUE = {
 VIZEME_QUEUE = []
 GESTURE_QUEUE = []
 HUMAN_INPUT = []
-VISEME_DELAY = .01  # second
+VISEME_DELAYS = []  # second
 RETRY_TIMEOUT = 15000  # milisecond
 
 l.log("Conneting API")
@@ -93,7 +96,7 @@ async def viseme_stream(request: Request):
     async def event_generator():
         global VIZEME_QUEUE
         while True:
-            global VISEME_DELAY
+            global VISEME_DELAYS
             # If client closes connection, stop sending events
             if await request.is_disconnected():
                 # print("Disconnected")
@@ -111,8 +114,10 @@ async def viseme_stream(request: Request):
                         "data": msg,
                 }
                 yield response
-
-            await asyncio.sleep(VISEME_DELAY)
+            if len(VISEME_DELAYS)>0:
+                w = VISEME_DELAYS.pop(0)
+                await asyncio.sleep(w)
+            else:await asyncio.sleep(.05)
 
     return EventSourceResponse(event_generator())
 
@@ -173,28 +178,27 @@ async def text_stream(request: Request):
     return EventSourceResponse(event_generator())
 
 @app.get("/api/speech")
-def text_to_speech(text: str, speaker_id: str = "", style_wav: str = ""):
-    l.log(f"/api/speech: {text}, {speaker_id}, {style_wav}")
+def text_to_speech(text: str, speaker_id: str = ""):
     """Synthesizes wav bytes from text, with a given speaker ID"""
+    l.log(f"/api/speech: {text}, {speaker_id}")
     if bot.backend == "gpt":
         bot.bot.conversation[-1] = "AI: " + text
     if bot.backend == "llm":
         bot.bot.conversation[-1] = ("AI:", text)
-    global VIZEME_QUEUE
-    global VISEME_DELAY
-    out, speaking_time = tts.synthesize_wav(text, speaker_id, style_wav)
-    viseme_set = vg.get_visemes(text)
-    l.log(f"Return audio for msg: {text}, speech length:{speaking_time}, visemes produced: {len(viseme_set)}")
-    viseme_length = (speaking_time) / (len(viseme_set)+1)
-    VISEME_DELAY = viseme_length
-    VIZEME_QUEUE += viseme_set
 
-    return StreamingResponse(out, media_type="audio/wav")
+    global VIZEME_QUEUE
+    global VISEME_DELAYS
+
+    audio_stream, visemes, delays = tts.synthesize(text, speaker_id)
+    VISEME_DELAYS += delays
+    VIZEME_QUEUE += visemes
+
+    return StreamingResponse(audio_stream, media_type="audio/wav")
 
 @app.get("/api/bot_response")
 def generate_response(text: str, speaker: str, reset_conversation: bool, director_condition: bool):
-    l.log(f"/api/bot_response: '{text}', from {speaker}, reset_conversation: {reset_conversation}, director_condition: {director_condition}")
     """Generates a bot response"""
+    l.log(f"/api/bot_response: '{text}', from {speaker}, reset_conversation: {reset_conversation}, director_condition: {director_condition}")
     global TEXT_QUEUE
 
     classifications = bot.get_classifications(text)
@@ -202,8 +206,8 @@ def generate_response(text: str, speaker: str, reset_conversation: bool, directo
     if bot.sc.emotion in ["joy", "sad", "surprise"]:
         l.log(f"Setting face to: {bot.sc.emotion}")
         FACE_CONTROL_QUEUE["expression"].append(bot.sc.emotion)
-    else: 
-        l.log(f"Setting face to: neutral")
+    else:
+        l.log("Setting face to: neutral")
         FACE_CONTROL_QUEUE["expression"].append("neutral")
 
     facilitator_response = bot.get_facilitator_response(director_condition)
@@ -217,8 +221,8 @@ def generate_response(text: str, speaker: str, reset_conversation: bool, directo
 
 @app.get("/api/facilitator_presets")
 def return_response(mode: str, query: str):
-    l.log(f"/api/facilitator_presets: {mode}, {query}")
     """Returns an existing bot response"""
+    l.log(f"/api/facilitator_presets: {mode}, {query}")
     if mode == "facilitator": to_say = presets.responses[query]
     if mode == "director":
         if query == "disclosure":
@@ -245,8 +249,8 @@ def return_response(mode: str, query: str):
     
 @app.get("/api/face_presets")
 def update_face(text: str, update_type: str):
-    l.log(f"/api/face_presets: {text}, {update_type}")
     """Returns an existing bot response"""
+    l.log(f"/api/face_presets: {text}, {update_type}")
     if update_type == "expression":
         FACE_CONTROL_QUEUE["expression"].append(text)
     if update_type == "behavior":

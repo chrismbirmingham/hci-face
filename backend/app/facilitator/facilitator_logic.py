@@ -1,6 +1,9 @@
+"""All of the core logic for facilitation is here"""
+
 import random
 
 class StatementClassification():
+    """Gets process statement for all classification categories"""
     def __init__(self) -> None:
         self.disclosure = False
         self.response = False
@@ -11,7 +14,6 @@ class StatementClassification():
         self.emotion = "happy" # happy, sad, fear, anger, or surprise
         self.reaction = "support" # support, concern, agreement, encouragement, well wishes, sympathy, a suggestion, a disagreement
 
-        
         self.classification_questions =  [# combined to minimize latency
             ["disc_vs_response", "Was the prior sentence a self disclosure or a response to someone else? "],
             
@@ -21,7 +23,7 @@ class StatementClassification():
 
             ["sentiment", "Was the sentiment positive, negative, or neutral? "],
             ["emotions", "Was the emotion happy, sad, fear, anger, disgust, or surprise? "],
-            
+
             # "clarifying", "Was this an example of someone questioning, summarizing, testing their understanding, or seeking information?"],
         ]
         self.joined_questions = " \n".join([f"{idx+1}. {q[1]}" for idx, q in enumerate(self.classification_questions)])
@@ -49,8 +51,9 @@ class StatementClassification():
             #     "classes" : ["questioning", "summarizing", "testing their understanding", "seeking information"]}
         }
 
-    def classify_gpt(self, chatgpt, input):
-        response_sentences = chatgpt.answer_question_on_input(input, self.joined_questions)
+    def classify_gpt(self, chatbot, statement):
+        """Process sentence classifications from chatgpt"""
+        response_sentences = chatbot.classifier.answer_questions(statement, self.joined_questions)
         answers = response_sentences.split("\n")
         print(answers)
         # response_sentences = response_sentences.replace("\n", "")
@@ -60,30 +63,30 @@ class StatementClassification():
         self.disclosure = "disclosure" in answers[0]
         # print(self.classification_questions[0][1], answers[0], f"response: {self.response}; disclosure:{self.disclosure}")
 
-        for d in ["experience", "opinion", "suggestion", "emotion", "neither"]:
-            if d in answers[1]:
-                self.disclosure_category = d
+        for dis in ["experience", "opinion", "suggestion", "emotion", "neither"]:
+            if dis in answers[1]:
+                self.disclosure_category = dis
         # print(self.classification_questions[1][1], answers[1], self.disclosure_category)
 
-        for r in ["support", "concern", "agreement", "encouragement", "wishes", "sympathy", "suggestion", "disagreement", "neither"]:
-            if r in answers[2]:
-                self.reaction = r
+        for rea in ["support", "concern", "agreement", "encouragement", "wishes", "sympathy", "suggestion", "disagreement", "neither"]:
+            if rea in answers[2]:
+                self.reaction = rea
         # print(self.classification_questions[2][1], answers[2], self.reaction)
 
-        for r in ["reaction", "question", "neither"]:
-            if r in answers[3]:
-                self.response_category = r
+        for res in ["reaction", "question", "neither"]:
+            if res in answers[3]:
+                self.response_category = res
         # print(self.classification_questions[3][1], answers[3], self.response_category)
 
-        for v in ["positive", "negative", "neutral", "neither"]:
-            if v in answers[4]:
-                self.valence = v
+        for val in ["positive", "negative", "neutral", "neither"]:
+            if val in answers[4]:
+                self.valence = val
         # print(self.classification_questions[4][1], answers[4], self.valence)
         found_emotion=False
-        for e in ["happy", "sad", "fear", "anger", "surprise", "disgust", "neither", "confusion", "joy", "guilt", "interest"]:
-            if e in answers[5]:
+        for emo in ["happy", "sad", "fear", "anger", "surprise", "disgust", "neither", "confusion", "joy", "guilt", "interest"]:
+            if emo in answers[5]:
                 found_emotion=True
-                self.emotion = e
+                self.emotion = emo
         if not found_emotion:
             words = answers[5].split(" ")
             self.emotion = words[-1]
@@ -91,36 +94,43 @@ class StatementClassification():
 
         return
 
-    def classify_llm(self, classifier, input):
-        classes = classifier.process_zero_shot(input, self.classification_prompts["disc_vs_resp"])
+    def classify_llm(self, chatbot, statement):
+        """Process sentence classifications with llm"""
+        prompt = self.classification_prompts["disc_vs_resp"]
+        classes = chatbot.classifier.classify(statement, prompt["classes"], question=prompt["hypothesis_template"])
         if "disclosure" in classes[0]:
             self.disclosure =True
         if "resp" in classes[0]:
             self.response = True
-
-        classes = classifier.process_zero_shot(input, self.classification_prompts["disclosure_categories"])
-        for d in ["experience", "opinion", "suggestion", "emotion"]:
-            if d in classes[0]:
-                self.disclosure_category = d
-        classes = classifier.process_zero_shot(input, self.classification_prompts["sentiment"])
-        for v in ["positive", "negative", "neutral"]:
-            if v in classes[0]:
-                self.valence = v
-        classes = classifier.process_zero_shot(input, self.classification_prompts["emotions"])
-        for e in ["happy", "sad", "fear", "anger", "surprise"]:
-            if e in classes[0]:
-                self.emotion = e
-        classes = classifier.process_zero_shot(input, self.classification_prompts["response_categories"])
-        for r in ["reaction", "question"]:
-            if r in classes[0]:
-                self.response_category = r
-        classes = classifier.process_zero_shot(input, self.classification_prompts["reaction"])
-        for r in ["support", "concern", "agreement", "encouragement", "wishes", "sympathy", "suggestion", "disagreement",]:
-            if r in classes[0]:
-                self.reaction = r
+        prompt = self.classification_prompts["disclosure_categories"]
+        classes = chatbot.classifier.classify(statement, prompt["classes"], question=prompt["hypothesis_template"])
+        for dis in ["experience", "opinion", "suggestion", "emotion", "neither"]:
+            if dis in classes[0]:
+                self.disclosure_category = dis
+        prompt = self.classification_prompts["sentiment"]
+        classes = chatbot.classifier.classify(statement, prompt["classes"], question=prompt["hypothesis_template"])
+        for val in ["positive", "negative", "neutral", "neither"]:
+            if val in classes[0]:
+                self.valence = val
+        prompt = self.classification_prompts["emotions"]
+        classes = chatbot.classifier.classify(statement, prompt["classes"], question=prompt["hypothesis_template"])
+        for emo in ["happy", "sad", "fear", "anger", "surprise", "disgust", "neither", "confusion", "joy", "guilt", "interest"]:
+            if emo in classes[0]:
+                self.emotion = emo
+        prompt = self.classification_prompts["response_categories"]
+        classes = chatbot.classifier.classify(statement, prompt["classes"], question=prompt["hypothesis_template"])
+        for res in ["reaction", "question", "neither"]:
+            if res in classes[0]:
+                self.response_category = res
+        prompt = self.classification_prompts["reaction"]
+        classes = chatbot.classifier.classify(statement, prompt["classes"], question=prompt["hypothesis_template"])
+        for reaction in ["support", "concern", "agreement", "encouragement", "wishes", "sympathy", "suggestion", "disagreement", "neither"]:
+            if reaction in classes[0]:
+                self.reaction = reaction
         return
 
     def get_classifications(self):
+        """Returns classifications as a string"""
         # return "Dummy response"
         classifications = "Not response or disclosure?"
         if self.response:
@@ -239,6 +249,7 @@ class RoleModelFacilitator():
         return
 
     def decision_tree(self, code):
+        """Returns a suggested response according to how the user statement was classified"""
         responses = []
         if code.disclosure:
             symp_response = random.choice(self.disclosure_responses["sympathy expressions"][code.valence])
@@ -264,7 +275,6 @@ class RoleModelFacilitator():
             re_transition = random.choice(self.transition_back_to_group)
             responses = [transition, disclosure, re_transition]
 
-        #TODO: Way to make disclosures
         response_string = " ".join(responses)
         return response_string
 
@@ -323,6 +333,7 @@ class DirectorFacilitator():
         ]
         return
     def decision_tree(self, code):
+        """Returns a suggested response according to how the user statement was classified"""
         responses = []
         if code.disclosure:
             transition = random.choice(self.response_transitions)
@@ -343,6 +354,7 @@ class DirectorFacilitator():
         return response_string
 
 class FacilitatorPresets():
+    """Hard coded preset sayings for the robot facilitator to say when WoZed"""
     def __init__(self) -> None:
         qt_introduction = [
             "Hello and welcome to each of you!",
