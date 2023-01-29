@@ -1,12 +1,14 @@
-from boto3 import Session
-from botocore.exceptions import BotoCoreError, ClientError
-from contextlib import closing
+"""Module for calling on AWS Polly"""
+
 import os
 import sys
 import json
 import subprocess
-from tempfile import gettempdir
 import time
+from pathlib import Path
+from contextlib import closing
+from boto3 import Session
+from botocore.exceptions import BotoCoreError, ClientError
 
 # Create a client using the credentials and region defined in the [adminuser]
 # section of the AWS credentials file (~/.aws/credentials).
@@ -14,34 +16,41 @@ session = Session(profile_name="default")
 polly = session.client("polly")
 
 english_speaker_map = {
-    "en-US" :['Kevin', 'Salli', 'Matthew', 'Kimberly', 'Kendra', 'Justin', 'Joey', 'Joanna', 'Ivy'],
-    "en-NZ" :['Aria'],
-    "en-ZA" :['Ayanda'],
-    "en-GB" :['Emma', 'Brian', 'Amy', 'Arthur'],
-    "en-AU" :['Olivia'],
-    "en-IN" :['Kajal'],
+    "en-US": ['Kevin', 'Salli', 'Matthew', 'Kimberly', 'Kendra', 'Justin', 'Joey', 'Joanna', 'Ivy'],
+    "en-NZ": ['Aria'],
+    "en-ZA": ['Ayanda'],
+    "en-GB": ['Emma', 'Brian', 'Amy', 'Arthur'],
+    "en-AU": ['Olivia'],
+    "en-IN": ['Kajal'],
 }
 
+
 class PollySpeak():
+    """ Synthesizes speech with AWS Polly
+
+    Possible english speakers include:
+        US English en-US {'Kevin', 'Salli', 'Matthew', 'Kimberly', 'Kendra', 'Justin', 'Joey', 'Joanna', 'Ivy'}
+        New Zealand English en-NZ {'Aria'}
+        South African English en-ZA {'Ayanda'}
+        British English en-GB {'Emma', 'Brian', 'Amy', 'Arthur'}
+        Australian English en-AU {'Olivia'}
+        Indian English en-IN {'Kajal'}
     """
-    US English en-US {'Kevin', 'Salli', 'Matthew', 'Kimberly', 'Kendra', 'Justin', 'Joey', 'Joanna', 'Ivy'}
-    New Zealand English en-NZ {'Aria'}
-    South African English en-ZA {'Ayanda'}
-    British English en-GB {'Emma', 'Brian', 'Amy', 'Arthur'}
-    Australian English en-AU {'Olivia'}
-    Indian English en-IN {'Kajal'}
-    """
-    def __init__(self) -> None:
+
+    def __init__(self, save_path:str="./output/temp.mp3") -> None:
         self.engine = "neural"
         self.audio_format = "mp3"
         self.polly_client = polly
-        pass
+        self.path = Path(__file__).parent
+        self.save_path = os.path.join(self.path, save_path)
 
     def synthesize(self, text: str, speaker_id: str = ""):
+        """Turns text into audio and visemes"""
+
         for key, names in english_speaker_map.items():
-            if speaker_id in names: 
-                lang_code=key
-                voice=speaker_id
+            if speaker_id in names:
+                lang_code = key
+                voice = speaker_id
         try:
             kwargs = {
                 'Engine': self.engine,
@@ -54,7 +63,8 @@ class PollySpeak():
             response = self.polly_client.synthesize_speech(**kwargs)
             print("got response", response)
             audio_stream = response['AudioStream']
-            output = os.path.join("./output", "speech2.mp3")
+            output = self.save_path
+
             with closing(audio_stream) as stream:
                 with open(output, "wb") as file:
                     file.write(stream.read())
@@ -62,37 +72,35 @@ class PollySpeak():
             kwargs['OutputFormat'] = 'json'
             kwargs['SpeechMarkTypes'] = ['viseme']
             response = self.polly_client.synthesize_speech(**kwargs)
-            visemes = [json.loads(v) for v in
-                        response['AudioStream'].read().decode().split() if v]
+            visemes = [json.loads(viseme) for viseme in
+                       response['AudioStream'].read().decode().split() if viseme]
             viseme_list = []
             time_list = []
-            for v in visemes:
-                viseme_list.append(v["value"])
-                time_list.append(v["time"])
+            for viseme in visemes:
+                viseme_list.append(viseme["value"])
+                time_list.append(viseme["time"])
             sleep_times = []
             t_before = 0
-            for i in range(len(time_list)):
-                next_t = time_list[i]
-                w = float(next_t) - float(t_before)
-                sleep_times.append(w/1000)
+            for next_t in time_list:
+                wait_seconds = float(next_t) - float(t_before)
+                sleep_times.append(wait_seconds/1000)
                 t_before = next_t
-        except ClientError as e:
-            print(e)
+        except ClientError as exc:
+            print(exc)
             raise
         else:
             return audio_stream, viseme_list, sleep_times
 
 
+def main():
+    """Testing the integrated functionality of PollySpeak"""
 
-
-
-if __name__ == "__main__":
-    s = PollySpeak()
-    example_text = "Please call Stella.  Ask her to bring these things with her from the store:  Six spoons of fresh snow peas, five thick slabs of blue cheese, and maybe a snack for her brother Bob.  We also need a small plastic snake and a big toy frog for the kids.  She can scoop these things into three red bags, and we will go meet her Wednesday at the train station."
+    s = PollySpeak(save_path="./output/temp.mp3")
+    example = "Please call Stella.  Ask her to bring these things with her from the store:  Six spoons of fresh snow peas, five thick slabs of blue cheese, and maybe a snack for her brother Bob.  We also need a small plastic snake and a big toy frog for the kids.  She can scoop these things into three red bags, and we will go meet her Wednesday at the train station."
 
     try:
         # Request speech synthesis
-        audio_stream, viseme_list, time_list = s.synthesize(example_text,"Aria")
+        _, viseme_list, sleep_times = s.synthesize(example, "Aria")
     except (BotoCoreError, ClientError) as error:
         # The service returned an error, exit gracefully
         print(error)
@@ -100,17 +108,16 @@ if __name__ == "__main__":
 
     # Play the audio using the platform's default player
     if sys.platform == "win32":
-        os.startfile(output)
+        os.startfile("./output/temp.mp3")
     else:
         # The following works on macOS and Linux. (Darwin = mac, xdg-open = linux).
         opener = "open" if sys.platform == "darwin" else "xdg-open"
-        output = os.path.join("./output", "speech2.mp3")
-        
 
-        subprocess.call([opener, output])
-        for i in range(len(time_list)):
-            time.sleep(time_list[i])
-            print(time_list[i], viseme_list[i])
+        subprocess.call([opener, "./output/temp.mp3"])
+        for ind, sleep in enumerate(sleep_times):
+            time.sleep(sleep)
+            print(sleep, viseme_list[ind])
 
 
-
+if __name__ == "__main__":
+    main()

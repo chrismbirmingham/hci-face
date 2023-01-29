@@ -1,5 +1,6 @@
-# tts backends
+"""TTS Backends
+"""
 
-from .viseme_generator import *
-from .coqui_tts import *
-from .aws_polly_tts import *
+from .aws_polly_tts import PollySpeak
+from .coqui_tts import CoquiSpeak
+from .viseme_generator import VisemeGenerator
