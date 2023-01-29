@@ -89,7 +89,7 @@ def style_wav_uri_to_dict(style_wav: str) -> Union[str, dict]:
     return None
 
 
-class CoquiSpeak():
+class CoquiSpeak:
     """Setup Model and perform synthesis
 
     Speakers of note for the vits model:

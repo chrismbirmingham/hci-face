@@ -1,0 +1,5 @@
+id,seek,start,end,text,tokens,temperature,avg_logprob,compression_ratio,no_speech_prob
+0,0,0.0,7.08, Hello and welcome to the HCI face repository. This is an example of using the,"[2425, 293, 2928, 281, 264, 389, 25240, 1851, 25841, 13, 639, 307, 364, 1365, 295, 1228, 264]",0.0,-0.23784615776755594,1.5780346820809248,0.05391305685043335
+1,0,7.08,12.16, recording functionality. Welcome you to this repository. I hope that you can,"[6613, 14980, 13, 4027, 291, 281, 341, 25841, 13, 286, 1454, 300, 291, 393]",0.0,-0.23784615776755594,1.5780346820809248,0.05391305685043335
+2,0,12.16,15.96, contribute and also that you can make great use of it for whatever you need it for.,"[10586, 293, 611, 300, 291, 393, 652, 869, 764, 295, 309, 337, 2035, 291, 643, 309, 337, 13]",0.0,-0.23784615776755594,1.5780346820809248,0.05391305685043335
+3,1596,15.96,45.8, Thank you so much for stopping by.,"[50364, 1044, 291, 370, 709, 337, 12767, 538, 13, 51856]",0.0,-0.5248129584572532,0.8095238095238095,0.005553155671805143

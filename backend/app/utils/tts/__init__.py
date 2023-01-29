@@ -1,3 +1,5 @@
-# tts module
+"""tts module
 
-from backends import *
+"""
+
+from .speaker import Speaker

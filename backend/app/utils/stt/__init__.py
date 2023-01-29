@@ -1,3 +1,4 @@
-# stt module
+""" stt module
+"""
 
-from .backends.whisper_stt import *
+from .transcriber import Transcriber
