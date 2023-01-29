@@ -60,7 +60,7 @@ class VisemeGenerator:
 
 if __name__ == "__main__":
     text = ["Hello, world! Welcome to the arena?"]
-    vg = VisemeGenerator("./.phoneme-viseme_map.csv")
+    vg = VisemeGenerator("./resources/.phoneme-viseme_map.csv")
     visemes,phonemes = vg.get_visemes(text, True)
 
     print(len(visemes), len(phonemes))
