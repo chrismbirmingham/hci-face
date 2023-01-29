@@ -74,14 +74,14 @@ def style_wav_uri_to_dict(style_wav: str) -> Union[str, dict]:
 
 
 
-class Speak():
+class CoquiSpeak():
     def __init__(self) -> None:
         # parse the args
         args, unknown = create_argparser().parse_known_args()
 
         self.path = Path(__file__).parent  
 
-        manager = ModelManager(os.path.join(self.path,".coqui_tts_models.json"))
+        manager = ModelManager(os.path.join(self.path,"resources/.coqui_tts_models.json"))
 
         # if args.list_models:
         #     manager.list_models()

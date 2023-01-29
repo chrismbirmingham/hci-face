@@ -1,3 +1,3 @@
 # stt module
 
-from .whisper_stt import *
+from .backends.whisper_stt import *
