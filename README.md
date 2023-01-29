@@ -116,15 +116,13 @@ These modules are imported into the app/api.py and can be replaced with private/
 
 ### Front End 
 - [ ] Different visuals presets  
-    - [ ] Additional idle behaviors
-        - Breathing, Thinking
-- [ ] organize consistent styles and colors *
-- [ ] Improve accuracy of lip synch *
-- [ ] Export faces from AU form for custom expressions
+    - [ ] Additional idle behaviors such as breathing, thinking, etc.
+- [ ] Improve accuracy of lip sync for Coqui*
+    - _Lip sync seems effective for polly_
+- [ ] Allow exporting faces from AU form for custom expressions
 - [ ] Seperate left and right control for facial expressions
 
 ### Back End
-- [ ] [Add Amazon Polly Support](https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/python/example_code/polly/polly_wrapper.py)
 - [ ] finish face control api (AU and left-right control) 
 
 
@@ -136,7 +134,7 @@ These modules are imported into the app/api.py and can be replaced with private/
 - [ ] Philosophy Teacher
 - [ ] Meditation Leader
 - [ ] Basic Q&A
-- [ ] Deploy backend to the cloud
+- [ ] Deploy to the cloud
 
 ### General
 - [ ] Improve Documentation (start a read the docs)*
@@ -145,4 +143,6 @@ These modules are imported into the app/api.py and can be replaced with private/
     - [ ] How to customize responses
     - [ ] How to add a new API service
     - [ ] Organize dependency requirements
+- [ ] Support for multi-page WoZ controlls
+    - _Possibly merge face and WoZ back together?_
 
