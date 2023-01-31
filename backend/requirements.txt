@@ -38,8 +38,8 @@ yarl==1.7.2
 
 fastapi
 uvicorn
-pyaudio
 pyannote-audio
+#pyaudio # Install from stt utils
 pydub
 transformers>=4.19.0
 git+https://github.com/openai/whisper.git
