@@ -16,13 +16,13 @@ export default function FacilitatorControls ({do_tts, participantSpeaker, condit
     <div id="controls">
   
       <div hidden={condition}><p>Condition: Director</p>
-        Recommended Statement:<button style={{backgroundColor:"Chartreuse"}} onClick={() => do_tts(participantSpeaker+". "+facilitatorResponse)}>{participantSpeaker+". "+facilitatorResponse}</button>
+        Recommended Statement:<button style={{backgroundColor:"Chartreuse"}} onClick={() => do_tts(participantSpeaker+" "+facilitatorResponse)}>{participantSpeaker+" "+facilitatorResponse}</button>
         <br></br> Ignore Recommendations: 
         <button onClick={() => get_facilitator_speech_preset("director","disclosure")}>Request Disclosure</button>--
         <button onClick={() => get_facilitator_speech_preset("director","response")}>Request Response</button>
       </div>
       <div hidden={!condition}><p>Condition: Role Model</p>
-        Recommended Statement:<button style={{backgroundColor:"Chartreuse"}} onClick={() => do_tts(participantSpeaker+". "+facilitatorResponse)}>{participantSpeaker+". "+facilitatorResponse}</button>
+        Recommended Statement:<button style={{backgroundColor:"Chartreuse"}} onClick={() => do_tts(participantSpeaker+" "+facilitatorResponse)}>{participantSpeaker+" "+facilitatorResponse}</button>
         <br></br> Ignore Recommendations: 
         <button onClick={() => get_facilitator_speech_preset("role_model","disclosure")}>Make Disclosure</button>--
         <button onClick={() => get_facilitator_speech_preset("role_model","response")}>Say Response</button>
