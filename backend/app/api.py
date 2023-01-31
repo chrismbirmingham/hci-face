@@ -278,7 +278,12 @@ async def create_upload_file(uploadedFile: UploadFile):
     audio_clip = AudioSegment.from_file(data_bytes, codec='opus')
     l.log_sound(audio_clip)
     transcription = stt.transcribe_clip(audio_clip)
-    global TEXT_QUEUE
-    TEXT_QUEUE["human_speech"].append(transcription)
-    l.log(f"Speech Detected: {transcription}")
+    hallucination = False
+    for option in common_hallucinations:
+        if transcription in option:
+            hallucination=True
+    if not hallucination:
+        global TEXT_QUEUE
+        TEXT_QUEUE["human_speech"].append(transcription)
+        l.log(f"Speech Detected: {transcription}")
     return {"filename": "temp.wav"}
