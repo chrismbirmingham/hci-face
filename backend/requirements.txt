@@ -38,7 +38,6 @@ yarl==1.7.2
 
 fastapi
 uvicorn
-pyaudio
 pyannote-audio
 pydub
 transformers>=4.19.0
