@@ -1,9 +1,9 @@
 site_name: HCI-FACE
-site_url: https://example.com/
+site_url: https://tbd.com/
 nav:
 - Home: index.md
 - Backend: backend.md
-# - Tutorials: tutorials/
+- Tutorials: tutorials/
 - Reference: reference/
 theme: 
     name: material
@@ -12,25 +12,23 @@ theme:
     - navigation.tabs.sticky
     - navigation.indexes
     - navigation.sections
-    - toc.integrate
+    - navigation.tracking
+    - navigation.expand
 plugins:
 - mkdocstrings
 - literate-nav:
     nav_file: SUMMARY.md
-# - section-index
 - search
 - gen-files:
     scripts:
     - docs/gen_ref_pages.py
 
-
-# markdown_extensions:
-#     toc:
-#         permalink: true
-#     admonition: {}
-
-# markdown_extensions:
-#   - admonition
-#   - codehilite
-#   - mkautodoc
-# - Code Reference: reference/
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true

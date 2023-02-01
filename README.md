@@ -1,5 +1,5 @@
-![Visual of Face](frontend/face/public/demo.png?raw=true "HCI-FACE")
-
+![Visual of Face](https://raw.githubusercontent.com/chrismbirmingham/hci-face/main/frontend/face/public/demo.png "HCI-FACE")
+This repository contains all you need to create an interactive conversational bot. With a customizable animated face (left) and a customizable set of controls (right) and everything you need to do interactive conversation (not pictured), HCI-FACE is everything you need.
 # HCI-FACE
 ## Human-Computer Interaction Facial Animation and Conversation Engine
 
@@ -124,6 +124,7 @@ These modules are imported into the app/api.py and can be replaced with private/
 
 ### Back End
 - [ ] finish face control api (AU and left-right control) 
+- [ ] Setup accessible non-cuda version
 
 
 ### Long Term Goals

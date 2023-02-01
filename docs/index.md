@@ -1,3 +1,4 @@
-# HCI FACE
+# Welcome to the HCI-FACE Documentation
 
-Welcome to the docs for HCI-FACE
+
+--8<-- "README.md"
