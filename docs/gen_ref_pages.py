@@ -8,14 +8,14 @@ import mkdocs_gen_files
 nav = mkdocs_gen_files.Nav()
 
 path = Path(__file__).parent
-print(path)
+# print(path)
 
 for path in sorted(Path("backend/app").rglob("*.py")):
-    print("Documenting file:", path)
+    # print("Documenting file:", path)
     module_path = path.relative_to("backend/app").with_suffix("")
-    print("In Module:", module_path)
+    # print("In Module:", module_path)
     doc_path = path.relative_to("backend/app").with_suffix(".md")
-    print("doc_path:", doc_path)
+    # print("doc_path:", doc_path)
     full_doc_path = Path("docs/reference", doc_path)
     # reference_doc_path = Path("reference", doc_path)
     # print("full_doc_path:", full_doc_path)
@@ -36,13 +36,13 @@ for path in sorted(Path("backend/app").rglob("*.py")):
         print(val_err)
 
     folder_path = full_doc_path.parent
-    print("Folder is:", folder_path)
+    # print("Folder is:", folder_path)
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
 
     with open(full_doc_path, "w") as fd:
         ident = "backend.app."+".".join(parts)
-        print(f"::: {ident}")
+        # print(f"::: {ident}")
         fd.write(f"::: {ident}")
 
     mkdocs_gen_files.set_edit_path(full_doc_path, path)
