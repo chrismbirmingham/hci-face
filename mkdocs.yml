@@ -1,0 +1,36 @@
+site_name: HCI-FACE
+site_url: https://example.com/
+nav:
+- Home: index.md
+- Backend: backend.md
+# - Tutorials: tutorials/
+- Reference: reference/
+theme: 
+    name: material
+    features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.indexes
+    - navigation.sections
+    - toc.integrate
+plugins:
+- mkdocstrings
+- literate-nav:
+    nav_file: SUMMARY.md
+# - section-index
+- search
+- gen-files:
+    scripts:
+    - docs/gen_ref_pages.py
+
+
+# markdown_extensions:
+#     toc:
+#         permalink: true
+#     admonition: {}
+
+# markdown_extensions:
+#   - admonition
+#   - codehilite
+#   - mkautodoc
+# - Code Reference: reference/
