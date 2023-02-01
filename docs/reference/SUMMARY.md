@@ -1,0 +1,28 @@
+* [api](api.md)
+* facilitator
+    * [facilitator_bot](facilitator/facilitator_bot.md)
+    * [facilitator_logic](facilitator/facilitator_logic.md)
+* utils
+    * chatbot
+        * backends
+            * [chatgpt](utils/chatbot/backends/chatgpt.md)
+            * [zero_shot](utils/chatbot/backends/zero_shot.md)
+        * [responder](utils/chatbot/responder.md)
+    * recording
+        * [logger](utils/recording/logger.md)
+    * stt
+        * backends
+            * [pyannote_diarization](utils/stt/backends/pyannote_diarization.md)
+            * [record_mic](utils/stt/backends/record_mic.md)
+            * [whisper_stt](utils/stt/backends/whisper_stt.md)
+        * [transcriber](utils/stt/transcriber.md)
+    * tts
+        * backends
+            * [aws_polly_tts](utils/tts/backends/aws_polly_tts.md)
+            * [coqui_tts](utils/tts/backends/coqui_tts.md)
+            * resources
+                * aws_example_code
+                    * [polly_lipsync](utils/tts/backends/resources/aws_example_code/polly_lipsync.md)
+                    * [polly_wrapper](utils/tts/backends/resources/aws_example_code/polly_wrapper.md)
+            * [viseme_generator](utils/tts/backends/viseme_generator.md)
+        * [speaker](utils/tts/speaker.md)
