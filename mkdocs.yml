@@ -1,10 +1,15 @@
 site_name: HCI-FACE
 site_url: https://tbd.com/
+repo_url: https://github.com/chrismbirmingham/hci-face
+dev_addr: 127.0.0.2:8001
 nav:
 - Home: index.md
 - Backend: backend.md
+- Troubleshooting: troubleshooting.md
 - Tutorials: tutorials/
 - Reference: reference/
+watch:
+- backend
 theme: 
     name: material
     features:
@@ -14,14 +19,17 @@ theme:
     - navigation.sections
     - navigation.tracking
     - navigation.expand
+    palette: 
+        primary: green
+        accent: light blue
 plugins:
 - mkdocstrings
 - literate-nav:
     nav_file: SUMMARY.md
 - search
-- gen-files:
-    scripts:
-    - docs/gen_ref_pages.py
+# - gen-files:
+#     scripts:
+#     - docs/gen_ref_pages.py
 
 markdown_extensions:
   - pymdownx.highlight:

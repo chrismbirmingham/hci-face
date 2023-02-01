@@ -124,7 +124,7 @@ def main():
         $ python -m app.facilitator.facilitator_bot
 
         Will run until killed with ctrl+c"""
-    bot = FacilitatorChat(chat_backend="gpt", classifier_backend="llm")
+    bot = FacilitatorChat(chat_backend="gpt", classifier_backend="gpt")
 
     print(bot.facilitator_prompt)
     print("What would you like to start your conversation with?")

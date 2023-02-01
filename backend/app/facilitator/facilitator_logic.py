@@ -1,164 +1,181 @@
-"""All of the core logic for facilitation is here"""
+"""All of the core logic for facilitation is here.
+
+These classes are meant to be used together to process
+input text and return an appropriate facilitator response.
+"""
 
 import random
 
 class StatementClassification():
-    """Gets process statement for all classification categories"""
+    """Gets process statement for all classification categories
+
+    There are two ways of getting classification, you can use and explicit classifier
+    with a template and a list of classes, or you can use a generator and prompt it
+    to answer the questions in the form of sentences.
+    
+    attributes:
+        disclosure (bool)
+        response (bool)
+        sentiment (str)
+        disclosure_category (str)
+        response_category (str)
+        emotion (str)
+        reaction (str)
+        clarifying (str)
+        classification_obj
+
+    """
     def __init__(self) -> None:
+        start_hypothesis = "This is an example of someone"
+        start_question = "Was the first sentence an example of someone"
         self.disclosure = False
         self.response = False
+        self.sentiment = "neutral"
+        self.disclosure_category = "experience"
+        self.response_category = "reaction"
+        self.emotion = "happy"
+        self.reaction = "support"
+        self.clarifying = "summarizing"
 
-        self.valence = "neutral" # neutral, positive, or negative
-        self.disclosure_category = "experience" # experience, opinion, suggestion, or emotion
-        self.response_category = "reaction" # reaction or clarifying
-        self.emotion = "happy" # happy, sad, fear, anger, or surprise
-        self.reaction = "support" # support, concern, agreement, encouragement, well wishes, sympathy, a suggestion, a disagreement
 
-        self.classification_questions =  [# combined to minimize latency
-            ["disc_vs_response", "Was the prior sentence a self disclosure or a response to someone else? "],
-            
-            ["disclosure_categories", "Was the first sentence sharing an opinion, a suggestion, an emotion, or an experience? "],
-            ["reaction", "Was the first sentence showing support, concern, agreement, encouragement, well wishes, sympathy, a suggestion, a disagreement, or an attack? "],
-            ["response_categories", "Was the first sentence a reaction or a question? "],
-
-            ["sentiment", "Was the sentiment positive, negative, or neutral? "],
-            ["emotions", "Was the emotion happy, sad, fear, anger, disgust, or surprise? "],
-
-            # "clarifying", "Was this an example of someone questioning, summarizing, testing their understanding, or seeking information?"],
-        ]
-        self.joined_questions = " \n".join([f"{idx+1}. {q[1]}" for idx, q in enumerate(self.classification_questions)])
-        self.classification_prompts = {
+        self.classification_obj = {
             "disc_vs_resp" : {
-                "hypothesis_template" : "This is an example of someone {}",
-                "classes" : ["making a self disclosure", "responding to someone else"]},
-            "disclosure_categories" : {
-                "hypothesis_template" : "This is an example of someone expressing {}",
-                "classes" : ["an opinion", "a suggestion", "an emotion", "an experience"]},
+                "hypothesis_template" : start_hypothesis + " {}",
+                "question_template" : start_question + " {}",
+                "full text classes" : ["making a self disclosure", "making a response to someone else"],
+                "single word classes" : ["disclosure", "response"],
+                "current class": ""},
+            "disclosure_category" : {
+                "hypothesis_template" : start_hypothesis + " expressing {}",
+                "question_template" : start_question + " expressing {}",
+                "full text classes" : ["an opinion", "a suggestion", "an emotion", "an experience"],
+                "single word classes" : ["opinion", "suggestion", "emotion", "experience"],
+                "current class": ""},
             "sentiment" : {
-                "hypothesis_template" : "This is an example of someone expressing a {} sentiment",
-                "classes" : ["positive", "negative", "neutral"]},
-            "emotions" : {
-                "hypothesis_template" : "This is an example of someone expressing the emotion {}",
-                "classes" : ["happiness", "sadness", "fear", "disgust", "anger", "surprise"]},
-            "response_categories" : {
-                "hypothesis_template" : "This is an example of someone {}",
-                "classes" : ["expressing a reaction", "asking a question"]},
+                "hypothesis_template" : start_hypothesis + " expressing a {} sentiment",
+                "question_template" : start_question + " expressing a {} sentiment",
+                "full text classes" : ["positive", "negative", "neutral"],
+                "single word classes" : ["positive", "negative", "neutral"],
+                "current class": ""},
+            "emotion" : {
+                "hypothesis_template" : start_hypothesis + " expressing the emotion {}",
+                "question_template" : start_question + " expressing the emotion {}",
+                "full text classes" : ["happiness", "sadness", "fear", "disgust",
+                                        "anger", "surprise"],
+                "single word classes" : ["happiness", "sadness", "fear", "disgust",
+                                        "anger", "surprise"],
+                "current class": ""},
+            "response_category" : {
+                "hypothesis_template" : start_hypothesis + " {}",
+                "question_template" : start_question + " {}",
+                "full text classes" : ["expressing a reaction", "asking a question"],
+                "single word classes" : ["reaction", "question"],
+                "current class": ""},
             "reaction" : {
-                "hypothesis_template" : "This is an example of someone showing {}",
-                "classes" : ["support", "concern", "agreement", "encouragment", "well wishes", "sympathy", "a suggestion", "disagreement", "an attack"]},
-            # "clarifying" : {
-            #     "hypothesis_template" : "This is an example of someone {}",
-            #     "classes" : ["questioning", "summarizing", "testing their understanding", "seeking information"]}
+                "hypothesis_template" : start_hypothesis + " showing {}",
+                "question_template" : start_question + " showing {}",
+                "full text classes" : ["support", "concern", "agreement", "encouragment",
+                                        "well wishes","sympathy", "a suggestion",
+                                        "disagreement", "an attack"],
+                "single word classes" : ["support", "concern", "agreement", "encouragment",
+                                        "well wishes","sympathy", "suggestion",
+                                        "disagreement", "attack"],
+                "current class": ""},
+            "clarifying" : {
+                "hypothesis_template" : start_hypothesis + " {}",
+                "question_template" : start_question + " {}",
+                "full text classes" : ["questioning", "summarizing", "testing their understanding",
+                                       "seeking information"],
+                "single word classes" : ["questioning", "summarizing", "testing", "seeking"],
+                "current class": ""},
         }
 
-    def classify_gpt(self, chatbot, statement):
-        """Process sentence classifications from chatgpt"""
-        response_sentences = chatbot.classifier.answer_questions(statement, self.joined_questions)
-        answers = response_sentences.split("\n")
+
+    def classify_gpt(self, chatbot, statement: str):
+        """Generate query for openai and process result
+
+            Args:
+                chatbot (obj): class instance with classifier.answer_questions method
+                statement (str): input statement to be classified
+            """
+        question_list = []
+        for _,val in self.classification_obj.items():
+            ftc = val["full text classes"]
+            classes_str = ", ".join(ftc[:-1]) + f", or {ftc[-1]}"
+            question_list.append(val["question_template"].replace("{}", classes_str))
+        print(question_list)
+        joined_questions = " \n".join([f"{idx+1}. {q}" for idx, q in enumerate(question_list)])
+
+        response_sentences = chatbot.classifier.answer_questions(statement, joined_questions)
+        answers = response_sentences.split("\n")[1:]
+        answers = [a.lower() for a in answers]
         print(answers)
-        # response_sentences = response_sentences.replace("\n", "")
-        assert len(answers) >= len(self.classification_questions), f"Did not get answers {len(answers)} to requested questions {len(self.classification_questions)}"
+        assert len(answers) == len(self.classification_obj), (f"Did not get answers {len(answers)}"
+                                        f"to requested questions {len(self.classification_obj)}")
 
-        self.response = "response" in answers[0]
-        self.disclosure = "disclosure" in answers[0]
-        # print(self.classification_questions[0][1], answers[0], f"response: {self.response}; disclosure:{self.disclosure}")
+        ind = 0
+        for k,val in self.classification_obj.items():
+            for possible_class in val["single word classes"]:
+                if possible_class in answers[ind]:
+                    self.classification_obj[k]["current class"] = possible_class
+            ind += 1
 
-        for dis in ["experience", "opinion", "suggestion", "emotion", "neither"]:
-            if dis in answers[1]:
-                self.disclosure_category = dis
-        # print(self.classification_questions[1][1], answers[1], self.disclosure_category)
+    def classify_llm(self, chatbot, statement: str):
+        """Generate query for huggingfacce classifier and process result
 
-        for rea in ["support", "concern", "agreement", "encouragement", "wishes", "sympathy", "suggestion", "disagreement", "neither"]:
-            if rea in answers[2]:
-                self.reaction = rea
-        # print(self.classification_questions[2][1], answers[2], self.reaction)
+            Args:
+                chatbot (obj): class instance with classify method
+                statement (str): input statement to be classified
+            """
+        for k,val in self.classification_obj.items():
+            classes = chatbot.classifier.classify(statement,
+                                                   val["full text classes"],
+                                                   question=val["hypothesis_template"])
+            for possible_class in val["single word classes"]:
+                if possible_class in classes[0]:
+                    self.classification_obj[k]["current class"] = possible_class
 
-        for res in ["reaction", "question", "neither"]:
-            if res in answers[3]:
-                self.response_category = res
-        # print(self.classification_questions[3][1], answers[3], self.response_category)
+    def get_classifications(self) -> str:
+        """Process classifications into a string.
+        
+        Also into the parent class object.
 
-        for val in ["positive", "negative", "neutral", "neither"]:
-            if val in answers[4]:
-                self.valence = val
-        # print(self.classification_questions[4][1], answers[4], self.valence)
-        found_emotion=False
-        for emo in ["happy", "sad", "fear", "anger", "surprise", "disgust", "neither", "confusion", "joy", "guilt", "interest"]:
-            if emo in answers[5]:
-                found_emotion=True
-                self.emotion = emo
-        if not found_emotion:
-            words = answers[5].split(" ")
-            self.emotion = words[-1]
-        # print(self.classification_questions[5][1], answers[5], self.emotion)
+        Returns:
+            str: text of the classes that have been identified.
+        """
+        classifications = ", ".join(val["current class"] for _,val in self.classification_obj.items())
+        self.disclosure = self.classification_obj["disc_vs_resp"] == "disclosure"
+        self.response = self.classification_obj["disc_vs_resp"] == "response"
 
-        return
-
-    def classify_llm(self, chatbot, statement):
-        """Process sentence classifications with llm"""
-        prompt = self.classification_prompts["disc_vs_resp"]
-        classes = chatbot.classifier.classify(statement, prompt["classes"], question=prompt["hypothesis_template"])
-        if "disclosure" in classes[0]:
-            self.disclosure =True
-        if "resp" in classes[0]:
-            self.response = True
-        prompt = self.classification_prompts["disclosure_categories"]
-        classes = chatbot.classifier.classify(statement, prompt["classes"], question=prompt["hypothesis_template"])
-        for dis in ["experience", "opinion", "suggestion", "emotion", "neither"]:
-            if dis in classes[0]:
-                self.disclosure_category = dis
-        prompt = self.classification_prompts["sentiment"]
-        classes = chatbot.classifier.classify(statement, prompt["classes"], question=prompt["hypothesis_template"])
-        for val in ["positive", "negative", "neutral", "neither"]:
-            if val in classes[0]:
-                self.valence = val
-        prompt = self.classification_prompts["emotions"]
-        classes = chatbot.classifier.classify(statement, prompt["classes"], question=prompt["hypothesis_template"])
-        for emo in ["happy", "sad", "fear", "anger", "surprise", "disgust", "neither", "confusion", "joy", "guilt", "interest"]:
-            if emo in classes[0]:
-                self.emotion = emo
-        prompt = self.classification_prompts["response_categories"]
-        classes = chatbot.classifier.classify(statement, prompt["classes"], question=prompt["hypothesis_template"])
-        for res in ["reaction", "question", "neither"]:
-            if res in classes[0]:
-                self.response_category = res
-        prompt = self.classification_prompts["reaction"]
-        classes = chatbot.classifier.classify(statement, prompt["classes"], question=prompt["hypothesis_template"])
-        for reaction in ["support", "concern", "agreement", "encouragement", "wishes", "sympathy", "suggestion", "disagreement", "neither"]:
-            if reaction in classes[0]:
-                self.reaction = reaction
-        return
-
-    def get_classifications(self):
-        """Returns classifications as a string"""
-        # return "Dummy response"
-        classifications = "Not response or disclosure?"
-        if self.response:
-            classifications = "response, " + ", ".join([self.response_category, self.reaction, self.valence, self.emotion, self.disclosure_category])
-        if self.disclosure:
-            classifications = "disclosure, " + ", ".join([self.disclosure_category, self.valence, self.emotion, self.response_category, self.reaction])
-        if not self.disclosure and not self.response:
-            classifications = "neither, " + ", ".join([self.disclosure_category, self.valence, self.emotion, self.response_category, self.reaction])
-
+        self.sentiment = self.classification_obj["sentiment"]["current class"]
+        self.disclosure_category = self.classification_obj["disclosure_category"]["current class"]
+        self.response_category = self.classification_obj["response_category"]["current class"]
+        self.emotion = self.classification_obj["emotion"]["current class"]
+        self.reaction = self.classification_obj["reaction"]["current class"]
+        self.clarifying = self.classification_obj["clarifying"]["current class"]
         return classifications
 
 
 class RoleModelFacilitator():
-    """
-    As a Role Model the robot will participate in the same way as a peer would. 
-        The robot will make disclosures that fit within the topics discussed by the 
-        support group, with constructed disclosures formed to include a realistic context 
-        and how the robot feels about the context. The robot will make empathetic statements 
+    """ Class for generating role model facilitation responses.
+
+        As a Role Model the robot will participate in the same way as a peer would.
+        The robot will make disclosures that fit within the topics discussed by the
+        support group, with constructed disclosures formed to include a realistic context
+        and how the robot feels about the context. The robot will make empathetic statements
         that show it understands the nature of what the robot is going through.
-    Sympathy - express sorrow, concern, pitty (focused on your own emotions)
-    Empathy - express knowledge of what you are going through, 
-            imagine what it would be like for them,
-            makes you feel heard, understood, and a bit better (Try to feel what you are going through)
-    Compassion - suffer with you and try and help,
-            actively listen, do kind things, loving, try to understand you, help selflessly
-    """
+
+        note: Sympathy vs Empathy vs Compassion
+            Sympathy - express sorrow, concern, pitty (focused on your own emotions)
+
+            Empathy - express knowledge of what you are going through,
+                    imagine what it would be like for them,
+                    makes you feel heard, understood, and a bit better
+                    (Try to feel what you are going through)
+
+            Compassion - suffer with you and try and help,
+                    actively listen, do kind things, loving, try to understand you, help selflessly"""
     def __init__(self) -> None:
-        # support, concern, agreement, encouragement, well wishes, sympathy,
         self.disclosure_responses = {
             "sympathy expressions":{ # Reifies, expresses agreement,
                 "positive":[
@@ -252,9 +269,13 @@ class RoleModelFacilitator():
         """Returns a suggested response according to how the user statement was classified"""
         responses = []
         if code.disclosure:
-            symp_response = random.choice(self.disclosure_responses["sympathy expressions"][code.valence])
-            emp_response = random.choice(self.disclosure_responses["empathy expressions"][code.disclosure_category]).replace("_", code.emotion)
-            print(f"Disclosure-->{code.valence}-->{code.disclosure_category}-->{code.emotion}")
+            symp_response = random.choice(
+                self.disclosure_responses["sympathy expressions"][code.sentiment])
+            emp_response = random.choice(
+                self.disclosure_responses["empathy expressions"][code.disclosure_category]).replace(
+                                                                                "_", code.emotion)
+                
+            print(f"Disclosure-->{code.sentiment}-->{code.disclosure_category}-->{code.emotion}")
             responses = [symp_response, emp_response]
         elif code.response:
             follow_up = random.choice([True,False])
@@ -279,22 +300,27 @@ class RoleModelFacilitator():
         return response_string
 
 class DirectorFacilitator():
-    """
-    Conversational topics for a healthy support group:
-    challenges, successes, failures
-    family, friends, coworkers
-    motivation, goals, emotions
-    health, illness, ability, disability
-    sleep, exercise, eating
-    Relevant Emotions:
-    happiness, sadness, grief, boredom, isolation, fear, anger, frustration
+    """ Class for generating director facilitation responses.
+    
+    The director style doesn't engage directly with participants
+    but instead focuses on encouraging participants to respond to 
+    one another.
+    
+    note: Conversational topics for a healthy support group:
+        challenges, successes, failures
+        family, friends, coworkers
+        motivation, goals, emotions
+        health, illness, ability, disability
+        sleep, exercise, eating
+    note: Relevant Emotions:
+        happiness, sadness, grief, boredom, isolation, fear, anger, frustration
     """
     def __init__(self) -> None:
         self.topics = [
-            "life challenges", "successes", "failures", 
-            "family", "friends", "coworkers", 
-            "finding motivation", "setting goals", "managing emotions", 
-            "health", "illness", "ability", "disability", 
+            "life challenges", "successes", "failures",
+            "family", "friends", "coworkers",
+            "finding motivation", "setting goals", "managing emotions",
+            "health", "illness", "ability", "disability",
             "getting quality sleep", "getting enough exercise", "healthy eating"
         ]
         self.disclosure_transitions = [
@@ -348,7 +374,7 @@ class DirectorFacilitator():
             responses.append(topic_sentence)
             disc_elicitation = random.choice(self.disclosure_elicitation)
             responses.append(disc_elicitation)
-            # print(f"Disclosure-->{code.valence}-->{code.disclosure_category}-->{code.emotion}")
+            # print(f"Disclosure-->{code.sentiment}-->{code.disclosure_category}-->{code.emotion}")
 
         response_string = ". ".join(responses)
         return response_string
@@ -404,4 +430,3 @@ class FacilitatorPresets():
             "survey_return": " ".join(survey_return),
         }
 
-        

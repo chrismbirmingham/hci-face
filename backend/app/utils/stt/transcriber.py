@@ -18,7 +18,13 @@ class Transcriber:
     """
 
     def __init__(self, model_size: str = "medium", save_dir: str = None) -> None:
-
+        self.common_hallucinations = ["        you",
+            "       You",
+            "          Thanks for watching!",
+            "  Thank you for watching!",
+            "        THANK YOU FOR WATCHING!",
+            "Thanks for watching! Don't forget to like, comment and subscribe!"
+            "   THANKS FOR WATCHING!"]
         if not save_dir:
             save_dir = tempfile.mkdtemp()
         self.save_dir = save_dir
@@ -28,6 +34,9 @@ class Transcriber:
     def transcribe_clip(self, audio_clip):
         """Transcribe bytes of an audio clip"""
         text_transcribed = self.stt.transcribe_clip(audio_clip)
+        for option in self.common_hallucinations:
+            if text_transcribed in option:
+                return ""
         return text_transcribed
 
     def transcribe_file(self, file_name, diarize=False):
