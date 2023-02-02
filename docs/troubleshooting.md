@@ -19,5 +19,12 @@ Pyaudio is based on PortAudio which allows for cross system audio.
 
 If you have trouble installing pyaudio, I recommend following (these directions)[https://people.csail.mit.edu/hubert/pyaudio/].
 
-#### CUDA
-Make sure you have CUDA correctly installed and configured. A non-cuda configuration of HCI-FACE is coming soom.
+#### pyannote requires an authorization token:
+1. visit hf.co/pyannote/speaker-diarization and hf.co/pyannote/segmentation 
+  and accept user conditions (only if requested)
+2. visit hf.co/settings/tokens to create an access token (only if you had to go through 1.)
+
+#### CUDA & GPU Requirements
+Because of cloud supported models, CUDA is optional. CUDA is only required for the zero_shot module in the chatbot utility. For the coqui tts module gpu acceleration is optional and is currently off by default.
+
+If you would like to use HCI-FACE with GPU support and are running into issues with CUDA or NVIDIA drivers, I typically recommend purging your system and installing them from scratch.

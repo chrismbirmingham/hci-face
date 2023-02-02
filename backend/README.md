@@ -1,6 +1,8 @@
 # HCI-FACE Backend
 
-This backend provides an API for stt, tts, and chatbot functionality to the HCI-FACE.  
+This backend provides an API for stt, tts, and chatbot functionality to the HCI-FACE. 
+
+## Getting Started
 
 To start up the api, run:
 ```

@@ -1,1 +1,4 @@
 pyaudio
+git+https://github.com/openai/whisper.git
+pydub
+pyannote-audio

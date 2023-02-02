@@ -1,10 +1,17 @@
-# HCI-FACE Backend
+--8<-- "backend/README.md"
 
-This backend provides an API for stt, tts, and chatbot functionality to the HCI-FACE.  
+Detailed descriptions of each module can be found in the Modules Section.
 
-To start up the api, run:
-```
-python -m main
-```
+Full code references are included in the Reference Section.
+## Tasks
+--8<-- "README.md:backendtodo"
 
-The stt, tts, and chatbot functionality is placed into the utils folder. Each can be used and tested individually.
+## Roadmap
+### Chatbot
+--8<-- "backend/app/utils/chatbot/README.md:chatbotroadmap"
+### STT
+--8<-- "backend/app/utils/stt/README.md:sttroadmap"
+### TTS
+--8<-- "backend/app/utils/tts/README.md:ttsroadmap"
+### Recording
+--8<-- "backend/app/utils/recording/README.md:recordingroadmap"

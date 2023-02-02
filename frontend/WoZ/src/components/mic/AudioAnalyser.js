@@ -15,6 +15,7 @@ export default function AudioAnalyser ({audio, setHearing, rmsThresh, bufferSize
   
   const crossRMSCallback = useCallback(val => {
     setHearing(val);
+    // eslint-disable-next-line
     rmsOverThresh = val
   }, [rmsOverThresh])
 

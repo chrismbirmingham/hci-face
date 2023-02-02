@@ -3,11 +3,13 @@ site_url: https://tbd.com/
 repo_url: https://github.com/chrismbirmingham/hci-face
 dev_addr: 127.0.0.2:8001
 nav:
-- Home: index.md
+- Overview: index.md
+- Frontend: frontend.md
 - Backend: backend.md
-- Troubleshooting: troubleshooting.md
+- Modules: modules/
 - Tutorials: tutorials/
-- Reference: reference/
+- Troubleshooting: troubleshooting.md
+- Backend Reference: reference/
 watch:
 - backend
 theme: 
@@ -27,9 +29,9 @@ plugins:
 - literate-nav:
     nav_file: SUMMARY.md
 - search
-# - gen-files:
-#     scripts:
-#     - docs/gen_ref_pages.py
+- gen-files:
+    scripts:
+    - docs/gen_ref_pages.py
 
 markdown_extensions:
   - pymdownx.highlight:

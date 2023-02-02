@@ -1,0 +1,1 @@
+--8<-- "backend/app/utils/stt/README.md"

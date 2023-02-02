@@ -1,4 +1,4 @@
-# HCI-FACE Utility Modules
+## HCI-FACE Utility Module Logic
 
 The basic components of a control loop are Sense-Plan-Act (repeat). For a conversational agent, we map the basic control loop as follows:
 

@@ -1,4 +1,12 @@
-"""Module for calling on AWS Polly"""
+#!/usr/bin/env python3
+"""Module for calling on AWS Polly
+
+warning: Requires AWS setup for polly.
+    Create a client using the credentials and region defined in the [adminuser]
+    section of the AWS credentials file (~/.aws/credentials).
+
+Will play the speech live.
+"""
 
 import io
 import os
@@ -11,8 +19,7 @@ from contextlib import closing
 from boto3 import Session
 from botocore.exceptions import BotoCoreError, ClientError
 
-# Create a client using the credentials and region defined in the [adminuser]
-# section of the AWS credentials file (~/.aws/credentials).
+
 session = Session(profile_name="default")
 polly = session.client("polly")
 
@@ -30,7 +37,8 @@ class PollySpeak():
     """ Synthesizes speech with AWS Polly
 
     Possible english speakers include:
-        US English en-US {'Kevin', 'Salli', 'Matthew', 'Kimberly', 'Kendra', 'Justin', 'Joey', 'Joanna', 'Ivy'}
+        US English en-US {'Kevin', 'Salli', 'Matthew', 'Kimberly', 'Kendra',
+                            'Justin', 'Joey', 'Joanna', 'Ivy'}
         New Zealand English en-NZ {'Aria'}
         South African English en-ZA {'Ayanda'}
         British English en-GB {'Emma', 'Brian', 'Amy', 'Arthur'}
@@ -38,15 +46,17 @@ class PollySpeak():
         Indian English en-IN {'Kajal'}
     """
 
-    def __init__(self, save_path:str="./output/temp.wav") -> None:
+    def __init__(self, default_path: str = "./output/temp.wav") -> None:
         self.engine = "neural"
         self.audio_format = "mp3"
         self.polly_client = polly
         self.path = Path(__file__).parent
-        self.save_path = os.path.join(self.path, save_path)
+        self.save_path = os.path.join(self.path, default_path)
 
-    def synthesize(self, text: str, speaker_id: str = ""):
+    def synthesize(self, text: str, speaker_id: str = "", save_path: str = None):
         """Turns text into audio and visemes"""
+        if save_path:
+            self.save_path = save_path
         lang_code = None
         for key, names in english_speaker_map.items():
             if speaker_id in names:
@@ -99,12 +109,16 @@ class PollySpeak():
 def main():
     """Testing the integrated functionality of PollySpeak"""
 
-    s = PollySpeak(save_path="./output/temp.mp3")
-    example = "Please call Stella.  Ask her to bring these things with her from the store:  Six spoons of fresh snow peas, five thick slabs of blue cheese, and maybe a snack for her brother Bob.  We also need a small plastic snake and a big toy frog for the kids.  She can scoop these things into three red bags, and we will go meet her Wednesday at the train station."
+    speaker = PollySpeak(default_path="./output/temp.mp3")
+    example = ("Please call Stella.  Ask her to bring these things with her from the store: "
+               "Six spoons of fresh snow peas, five thick slabs of blue cheese, "
+               "and maybe a snack for her brother Bob.  We also need a small plastic snake "
+               "and a big toy frog for the kids.  She can scoop these things into three red bags, "
+               "and we will go meet her Wednesday at the train station.")
 
     try:
         # Request speech synthesis
-        _, viseme_list, sleep_times = s.synthesize(example, "Aria")
+        _, viseme_list, sleep_times = speaker.synthesize(example, "Aria")
     except (BotoCoreError, ClientError) as error:
         # The service returned an error, exit gracefully
         print(error)

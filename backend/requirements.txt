@@ -4,6 +4,8 @@ anyio==3.5.0
 asgiref==3.5.0
 async-timeout==4.0.2
 attrs==21.4.0
+boto3==1.26.59
+botocore==1.29.59
 certifi==2021.10.8
 charset-normalizer==2.0.12
 click==8.0.4
@@ -39,7 +41,7 @@ yarl==1.7.2
 fastapi
 uvicorn
 pyannote-audio
-#pyaudio # Install from stt utils
+#pyaudio # Follow directions in utils/stt
 pydub
 transformers>=4.19.0
 git+https://github.com/openai/whisper.git
@@ -47,3 +49,18 @@ TTS
 sse-starlette
 openai
 phonemizer
+
+mkapi==1.0.14
+mkdocs==1.4.2
+mkdocs-autorefs==0.4.1
+mkdocs-gen-files==0.4.0
+mkdocs-ivory==0.4.6
+mkdocs-literate-nav==0.6.0
+mkdocs-material==9.0.9
+mkdocs-material-extensions==1.1.1
+mkdocs-monorepo-plugin==1.0.4
+mkdocs-rtd-dropdown==1.0.2
+mkdocs-same-dir==0.1.2
+mkdocs-section-index==0.3.5
+mkdocstrings==0.20.0
+mkdocstrings-python==0.8.3

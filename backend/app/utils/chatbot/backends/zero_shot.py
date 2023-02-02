@@ -1,4 +1,18 @@
-"""This is a tool for using models to do zero shot classification and text generation"""
+#!/usr/bin/env python3
+"""This module for using models to do zero shot classification and text generation
+
+This implements a wrapper on huggingface generator and classifier pipelines.
+
+warning: Generation models are big and must be stored locally.
+    The generative models are expected to be stored in the MODEL_DICT.
+    When you use them for the first time they will be downloaded and
+    stored in the 'pt_path' please change this to a location that makes
+    sense on your local machine.
+    
+warning: Large models need RAM and GPU support to run efficiently
+    Classification may or may not work depending on your model choice, but
+    generative models will need a great deal of computational power.
+"""
 
 import os
 import torch
@@ -56,7 +70,7 @@ MODEL_DICT = {# Note these should be changed to the location on your local machi
 
 def get_classifier(task, model, device=0):
     """Helper function returns a classifier
-    classifier returns dict of labels, scores, and sequence"""
+        classifier returns dict of labels, scores, and sequence"""
 
     classifier = pipeline(task,
                           device=device,

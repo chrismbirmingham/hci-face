@@ -1,4 +1,11 @@
-"""Uses the Pyannot Diarization Module
+"""Simple wrapper for the pyannote diarization pipeline.
+
+warn: pyannote requires an authorization token
+    1. visit hf.co/pyannote/speaker-diarization and hf.co/pyannote/segmentation
+    and accept user conditions (only if requested)
+    2. visit hf.co/settings/tokens to create an access token (only if you had to go through 1.)
+    3. add the key to your local environment
+        - On linux add it to your bashrc: export PYANNOTE_AUTH={paste your key here}
 
 """
 
@@ -19,8 +26,9 @@ class PyannoteDiarize:
             save_dir=tempfile.mkdtemp()
 
         self.diarization_path = os.path.join(save_dir, "diarization.csv")
-        self.diarization_pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization", use_auth_token="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")
-   
+        self.diarization_pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization",
+                                    use_auth_token=os.getenv("PYANNOTE_KEY"))
+
 
     def diarize_file(self, file_path=None):
         """Diarize a file or the file that has been saved"""
@@ -37,7 +45,7 @@ class PyannoteDiarize:
 
     def save_csv(self, diarization, filename="diarization.csv"):
         """Save diarization to csv"""
-        with open(filename,'w') as diraization_file:
+        with open(filename, 'w') as diraization_file:
             writer = csv.writer(diraization_file)
             writer.writerow(diarization[0].keys())
             for segment in diarization:

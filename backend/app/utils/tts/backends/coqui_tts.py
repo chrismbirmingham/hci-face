@@ -1,6 +1,10 @@
+#!/usr/bin/env python3
 """ Open Source Module wrapping coqui's library for text to speech.
 
-TODO this file is still in need of a fair amount of cleanup
+This is a functional but messy wrapper of coqui's TTS library for
+speech synthesis.
+
+TODO this file is still in need of a large amount of cleanup
 """
 
 import os
@@ -61,7 +65,7 @@ def create_argparser():
     parser.add_argument("--port", type=int, default=5002,
                         help="port to listen on.")
     parser.add_argument("--use_cuda", type=convert_boolean,
-                        default=True, help="true to use CUDA.")
+                        default=False, help="true to use CUDA.")
     parser.add_argument("--debug", type=convert_boolean,
                         default=False, help="true to enable Flask debug mode.")
     parser.add_argument("--show_details", type=convert_boolean,

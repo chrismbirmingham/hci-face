@@ -1,4 +1,4 @@
-"""Uses the Whisper Model from OpenAI to transcribe audio
+"""Module wraps the Whisper Model from OpenAI to transcribe audio
 
 The whisper model provides state of the art results at a passable speed.
 """
@@ -8,34 +8,41 @@ import tempfile
 import csv
 import argparse
 import whisper
+from pydub import AudioSegment
+
 
 class WhisperSTT:
-    """ Helper class which processes audio clips or files
-
+    """ Helper class which transcribes audio clips or files
     """
 
     def __init__(self, model_size: str = "medium", save_dir: str = None) -> None:
-
-        if not save_dir:
-            save_dir = tempfile.mkdtemp()
-
-        self.default_wave_path = os.path.join(save_dir, "test.wav")
-        self.transcription_path = os.path.join(save_dir, "transcription.csv")
         self.audio_model = whisper.load_model(model_size)
 
-    def transcribe_clip(self, audio_clip):
-        """Transcribe bytes of an audio clip"""
-        audio_clip.export(self.default_wave_path, format="wav")
-        result = self.audio_model.transcribe(self.default_wave_path, language='english')
+        if not save_dir:
+            self.save_dir = tempfile.mkdtemp()
+        else:
+            self.save_dir = save_dir
+
+    def transcribe_clip(self, audio_clip: AudioSegment) -> str:
+        """Transcribes audio segment
+
+            Args:
+                audio_clip (AudioSegment): bytes read from a file containing speech
+
+            Returns:
+                str: the transcribed text. """
+        default_wave_path = os.path.join(self.save_dir, "temp.wav")
+        audio_clip.export(default_wave_path, format="wav")
+        result = self.audio_model.transcribe(default_wave_path, language='english')
         return result["text"]
 
-    def transcribe_file(self, file_name=None):
+    def transcribe_file(self, file_path: str, csv_name: str="transcription_test.csv") -> dict:
         """Transcribe a file"""
-        if file_name:
-            self.default_wave_path = file_name
+        result = self.audio_model.transcribe(file_path, language='english')
 
-        result = self.audio_model.transcribe(self.default_wave_path, language='english')
-        self.save_csv(result["segments"], self.transcription_path)
+        transcription_path = os.path.join(self.save_dir, csv_name)
+
+        self.save_csv(result["segments"], transcription_path)
         return result
 
     def save_csv(self, segments, filename="speech_segments.csv"):
@@ -63,9 +70,7 @@ def main():
     transcriber = WhisperSTT(model_size=args.model, save_dir="output")
     print("loading complete")
 
-    filename = args.filename
-
-    result = transcriber.transcribe_file(file_name=filename)
+    result = transcriber.transcribe_file(args.filename)
     print(result['text'])
 
 

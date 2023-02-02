@@ -1,7 +1,7 @@
 ![Visual of Face](https://raw.githubusercontent.com/chrismbirmingham/hci-face/main/frontend/face/public/demo.png "HCI-FACE")
 This repository contains all you need to create an interactive conversational bot. With a customizable animated face (left) and a customizable set of controls (right) and everything you need to do interactive conversation (not pictured), HCI-FACE is everything you need.
-# HCI-FACE
-## Human-Computer Interaction Facial Animation and Conversation Engine
+## About HCI-FACE
+### Human-Computer Interaction Facial Animation and Conversation Engine
 
 _Also Known As: OSCAR, your Open Source Communication AnimatoR_
 
@@ -48,7 +48,7 @@ cd backend
 pip install -r requirements.txt
 ```
 
-If you have trouble installing pyaudio, I recommend following (these directions)[https://people.csail.mit.edu/hubert/pyaudio/].
+If you have trouble installing pyaudio, I recommend following [these directions](https://people.csail.mit.edu/hubert/pyaudio/).
 
 This may take a while, depending on your internet connection.  
 
@@ -115,17 +115,21 @@ These modules are imported into the app/api.py and can be replaced with private/
 
 
 ### Front End 
+<!-- --8<-- [start:frontendtodo]  -->
 - [ ] Different visuals presets  
     - [ ] Additional idle behaviors such as breathing, thinking, etc.
 - [ ] Improve accuracy of lip sync for Coqui*
     - _Lip sync seems effective for polly_
 - [ ] Allow exporting faces from AU form for custom expressions
 - [ ] Seperate left and right control for facial expressions
+- [ ] Support for multi-page WoZ controlls
+    - _Possibly merge face and WoZ back together?_
+<!-- --8<-- [end:frontendtodo]  -->
 
 ### Back End
+<!-- --8<-- [start:backendtodo] -->
 - [ ] finish face control api (AU and left-right control) 
-- [ ] Setup accessible non-cuda version
-
+<!-- --8<-- [end:backendtodo] -->
 
 ### Long Term Goals
 - [ ] Interaction Lab greeter
@@ -137,13 +141,10 @@ These modules are imported into the app/api.py and can be replaced with private/
 - [ ] Basic Q&A
 - [ ] Deploy to the cloud
 
-### General
-- [ ] Improve Documentation (start a read the docs)*
+### Docs
+- [ ] Make tutorials
     - [ ] How to Customizing the bot appearance * 
     - [ ] How to contribute
     - [ ] How to customize responses
     - [ ] How to add a new API service
     - [ ] Organize dependency requirements
-- [ ] Support for multi-page WoZ controlls
-    - _Possibly merge face and WoZ back together?_
-

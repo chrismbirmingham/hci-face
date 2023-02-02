@@ -1,12 +1,20 @@
-"""Helper function for recording a microphone to a file"""
+"""Module for recording a microphone to a file
+
+Recording settings are set internally to match whisper format.
+"""
 
 import argparse
 import wave
 import pyaudio
 
 
-def record_mic(filename, seconds=200):
-    """Helper function for recording a microphone to a file"""
+def record_mic(filename: str, seconds: int = 200) -> None:
+    """Simple helper function for recording audio to a file.
+
+    Args:
+        filename (str): Where to save audio to.
+        seconds (int, optional): How long to record. Defaults to 200.
+    """
     chunk = 1024  # Record in chunks of 1024 samples
     sample_format = pyaudio.paInt16  # 16 bits per sample
     channels = 2
@@ -23,7 +31,7 @@ def record_mic(filename, seconds=200):
 
     frames = []  # Initialize array to store frames
 
-    # Store data in chunks for 3 seconds
+    # Store data in chunks
     for _ in range(0, int(framerate / chunk * seconds)):
         data = stream.read(chunk)
         frames.append(data)

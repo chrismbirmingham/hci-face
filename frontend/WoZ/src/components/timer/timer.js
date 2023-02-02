@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 
 
 export default function Timer ({timerDeadline}) {
+    // eslint-disable-next-line
 	const [date, setDate] = useState("")
     const Ref = useRef(null);
 	const [color, setColor] = useState('Green');
@@ -37,13 +38,14 @@ export default function Timer ({timerDeadline}) {
 
 
     const runTimer = useCallback(e => {
-        console.log("run timer")
+        // console.log("run timer")
         if (Ref.current) clearInterval(Ref.current);
         const id = setInterval(() => {
             // console.log("Update Timer Display", playTimerVar)
             updateTimerDisplay(e);
         }, 1000)
         Ref.current = id;
+    // eslint-disable-next-line
     },[])
 
     useEffect(() => {
