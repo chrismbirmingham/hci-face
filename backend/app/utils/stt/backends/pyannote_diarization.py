@@ -27,7 +27,7 @@ class PyannoteDiarize:
 
         self.diarization_path = os.path.join(save_dir, "diarization.csv")
         self.diarization_pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization",
-                                    use_auth_token=os.getenv("PYANNOTE_KEY"))
+                                    use_auth_token=os.getenv("PYANNOTE_AUTH"))
 
 
     def diarize_file(self, file_path=None):

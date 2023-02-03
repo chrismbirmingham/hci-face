@@ -159,6 +159,7 @@ async def stream_viseme(request: Request):
                 yield response
             if len(VISEME_DELAYS)>0:
                 sleep_delay = VISEME_DELAYS.pop(0)
+                l.log(f"Sleep Delay: {sleep_delay}", printnow=True)
                 await asyncio.sleep(sleep_delay)
             else:await asyncio.sleep(.05)
 
@@ -193,6 +194,8 @@ async def stream_face(request: Request) -> EventSourceResponse:
             global FACE_CONTROL_QUEUE
             # Checks for new messages and return them to client if any
             for key, msg_queue in FACE_CONTROL_QUEUE.items():
+                if key == 'viseme':
+                    continue
                 if len(msg_queue) >0:
                     data = msg_queue.pop(0)
                     l.log(f"face control message: {data}")
@@ -269,7 +272,9 @@ def get_speech(text: str, speaker_id: str = "") -> StreamingResponse:
     global FACE_CONTROL_QUEUE
     global VISEME_DELAYS
 
-    audio_stream, visemes, delays = tts.synthesize(text, speaker_id)
+    audio_stream, visemes, delays = tts.synthesize(text,
+                                                   speaker_id,
+                                                   save_path = LOGS_DIR+"/temp.wav")
     VISEME_DELAYS += delays
     FACE_CONTROL_QUEUE["viseme"] += visemes
 
@@ -277,7 +282,7 @@ def get_speech(text: str, speaker_id: str = "") -> StreamingResponse:
 
 @app.get("/api/bot_response")
 def run_generate_response(text: str, speaker: str,
-                      reset_conversation: bool, 
+                      reset_conversation: bool,
                       director_condition: bool
     ) -> PlainTextResponse:
     """Takes input text and generates possible bot responses
@@ -329,7 +334,7 @@ def run_generate_response(text: str, speaker: str,
 @app.get("/api/facilitator_presets")
 def get_response(mode: str, query: str) -> PlainTextResponse:
     """Returns text presets based on WoZ input
-    
+
         Mostly useful for controlling the robot during study interactions.
         Does not use the text_stream as reponse is usually directly output.
 
@@ -343,7 +348,8 @@ def get_response(mode: str, query: str) -> PlainTextResponse:
         Returns:
             PlainTextResponse: Text for the faciliatator to say."""
     l.log(f"/api/facilitator_presets: {mode}, {query}")
-    if mode == "facilitator": to_say = presets.responses[query]
+    if mode == "facilitator":
+        to_say = presets.responses[query]
     if mode == "director":
         if query == "disclosure":
             to_say = random.choice(df.disclosure_elicitation)
@@ -420,6 +426,7 @@ def return_gesture() -> PlainTextResponse:
         gesture = GESTURE_QUEUE.pop()
         l.log(f"/api/next_gesture: {gesture}")
     else: gesture=""
+    l.log(f"/api/next_gesture: {gesture}")
     return PlainTextResponse(gesture)
 
 @app.post("/api/audio")
@@ -434,6 +441,7 @@ async def run_transcribe_audio(uploaded_file: UploadFile) -> dict:
 
         Returns:
             dict: name of the saved audio file."""
+    l.log("/api/audio: temp.wav")
     contents = uploaded_file.file.read()
     data_bytes = io.BytesIO(contents)
     audio_clip = AudioSegment.from_file(data_bytes, codec='opus')

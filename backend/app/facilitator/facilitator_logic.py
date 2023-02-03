@@ -394,7 +394,7 @@ class FacilitatorPresets():
         ]
         group_introductions = [
             "To begin with, I'd like to start with a round of introductions.",
-            "Please share your name, what brings you here today, and where you are from."
+            "Please share your name, what brings you here today, and where you are from.",
             "As I said before, I am Q.T., I am here to learn how to be a support group facilitator. and I am from USC in los angeles.",
             "Who would like to go first?",
         ]

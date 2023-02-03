@@ -2,7 +2,7 @@
 This is a record of all the errors that have cropped up and how they were fixed.
 
 #### Address already in use
-If the address of the mkdocs is already in use, you can change the dev_addr parameter in mkdocs.yml
+If the address of the mkdocs is already in use, you can change the dev_addr parameter in mkdocs.ym
 
 
 ## Frontend Troubleshooting
@@ -11,6 +11,13 @@ If the address of the mkdocs is already in use, you can change the dev_addr para
 The npm package may not be installed, particularly if you deleted it or switched branches.
 
 Fix: Reinstall with ```npm install``` before attempting to start again
+
+#### The visemes don't appear to run as long as the audio
+This is probably caused by more than one client to the viseme stream. Make sure you have only one face open.
+
+#### No expressions or visemes appear as directed
+Make sure the face is requesting messages from your computer's IP. You can find this with ifconfig and update
+the server_ip in face/src/app.js
 
 ## Backend Troubleshooting
 

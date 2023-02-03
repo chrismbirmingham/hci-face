@@ -78,9 +78,9 @@ export default function useRecorder() {
         const audioFile = new File([audioBlob], "audiofile.wav", {
           type: "audio/mpeg",
         })
-        // console.log("Uploading recording")
+        console.log("Uploading recording")
         const formData = new FormData();
-        formData.append('uploadedFile', audioFile);
+        formData.append('uploaded_file', audioFile);
         if (audioBlob.size >0){
           fetch('//localhost:8000/api/audio', {
             headers: { Accept: "application/json" },
