@@ -49,7 +49,7 @@ from app.facilitator import FacilitatorChat, RoleModelFacilitator
 from app.facilitator import DirectorFacilitator, FacilitatorPresets
 
 
-LOGS_DIR = "./logs/testing"
+LOGS_DIR = "./logs/final_testing3"
 FACE_CONTROL_QUEUE = {
     "expression":[],
     "behavior":[],
@@ -149,7 +149,7 @@ async def stream_viseme(request: Request):
             # Checks for new messages and return them to client if any
             if len(FACE_CONTROL_QUEUE["viseme"]) > 0:
                 msg = FACE_CONTROL_QUEUE["viseme"].pop(0)
-                l.log(f"Viseme msg: {msg}", printnow=True)
+                # l.log(f"Viseme msg: {msg}", printnow=True)
                 response = {
                         "event": "viseme",
                         "id": "message_id",
@@ -159,7 +159,7 @@ async def stream_viseme(request: Request):
                 yield response
             if len(VISEME_DELAYS)>0:
                 sleep_delay = VISEME_DELAYS.pop(0)
-                l.log(f"Sleep Delay: {sleep_delay}", printnow=True)
+                # l.log(f"Sleep Delay: {sleep_delay}", printnow=True)
                 await asyncio.sleep(sleep_delay)
             else:await asyncio.sleep(.05)
 
@@ -183,7 +183,7 @@ async def stream_face(request: Request) -> EventSourceResponse:
         Yields:
             Iterator[EventSourceResponse]: Strings for a face behavior or
                 expression"""
-    l.log("/api/face_stream: request recieved.")
+    # l.log("/api/face_stream: request recieved.")
     async def event_generator():
         while True:
             # If client closes connection, stop sending events
@@ -271,10 +271,10 @@ def get_speech(text: str, speaker_id: str = "") -> StreamingResponse:
 
     global FACE_CONTROL_QUEUE
     global VISEME_DELAYS
-
+    dt_string = l.get_date_str()
     audio_stream, visemes, delays = tts.synthesize(text,
                                                    speaker_id,
-                                                   save_path = LOGS_DIR+"/temp.wav")
+                                                   save_path = f"{LOGS_DIR}/{dt_string}.wav")
     VISEME_DELAYS += delays
     FACE_CONTROL_QUEUE["viseme"] += visemes
 
@@ -426,7 +426,7 @@ def return_gesture() -> PlainTextResponse:
         gesture = GESTURE_QUEUE.pop()
         l.log(f"/api/next_gesture: {gesture}")
     else: gesture=""
-    l.log(f"/api/next_gesture: {gesture}")
+    # l.log(f"/api/next_gesture: {gesture}")
     return PlainTextResponse(gesture)
 
 @app.post("/api/audio")

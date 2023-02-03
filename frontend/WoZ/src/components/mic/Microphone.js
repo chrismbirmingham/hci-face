@@ -5,8 +5,8 @@ import useRecorder from "./useRecorder";
 export default function Mic ({isRecording}) {
   const [listening, setListen] = useState(false);
   const [audio, setAudio] = useState(null)
-  const [rmsThresh, setRMSThresh] = useState(.005)
-  const [bufferSize, setBufferSize] = useState(20)
+  const [rmsThresh, setRMSThresh] = useState(.01)
+  const [bufferSize, setBufferSize] = useState(30)
   const [hearing, setHearing] = useState(false)
   const { recorderState, ...handlers } = useRecorder(); 
   // eslint-disable-next-line

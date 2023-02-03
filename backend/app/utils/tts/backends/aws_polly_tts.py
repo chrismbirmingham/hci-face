@@ -78,7 +78,7 @@ class PollySpeak():
             print("got response", response)
             audio_stream = response['AudioStream']
             output = self.save_path
-            with closing(audio_stream) as stream:                
+            with closing(audio_stream) as stream:
                 with open(output, "wb") as file:
                     file.write(stream.read())
             outstream = io.open(output, 'rb', buffering=0)
