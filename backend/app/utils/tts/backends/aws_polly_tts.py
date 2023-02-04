@@ -75,7 +75,7 @@ class PollySpeak():
                 kwargs['LanguageCode'] = lang_code
 
             response = self.polly_client.synthesize_speech(**kwargs)
-            print("got response", response)
+            # print("got response", response)
             audio_stream = response['AudioStream']
             output = self.save_path
             with closing(audio_stream) as stream:

@@ -103,13 +103,13 @@ class StatementClassification():
             ftc = val["full text classes"]
             classes_str = ", ".join(ftc[:-1]) + f", or {ftc[-1]}"
             question_list.append(val["question_template"].replace("{}", classes_str))
-        print(question_list)
+        # print(question_list)
         joined_questions = " \n".join([f"{idx+1}. {q}" for idx, q in enumerate(question_list)])
 
         response_sentences = chatbot.classifier.answer_questions(statement, joined_questions)
         answers = response_sentences.split("\n")[1:]
         answers = [a.lower() for a in answers]
-        print(answers)
+        # print(answers)
         assert len(answers) == len(self.classification_obj), (f"Did not get answers {len(answers)}"
                                         f"to requested questions {len(self.classification_obj)}")
 
@@ -121,7 +121,7 @@ class StatementClassification():
             ind += 1
 
     def classify_llm(self, chatbot, statement: str):
-        """Generate query for huggingfacce classifier and process result
+        """Generate query for huggingface classifier and process result
 
             Args:
                 chatbot (obj): class instance with classify method
@@ -137,15 +137,15 @@ class StatementClassification():
 
     def get_classifications(self) -> str:
         """Process classifications into a string.
-        
+
         Also into the parent class object.
 
         Returns:
             str: text of the classes that have been identified.
         """
         classifications = ", ".join(val["current class"] for _,val in self.classification_obj.items())
-        self.disclosure = self.classification_obj["disc_vs_resp"] == "disclosure"
-        self.response = self.classification_obj["disc_vs_resp"] == "response"
+        self.disclosure = self.classification_obj["disc_vs_resp"]["current class"] == "disclosure"
+        self.response = self.classification_obj["disc_vs_resp"]["current class"] == "response"
 
         self.sentiment = self.classification_obj["sentiment"]["current class"]
         self.disclosure_category = self.classification_obj["disclosure_category"]["current class"]
@@ -173,8 +173,8 @@ class RoleModelFacilitator():
                     makes you feel heard, understood, and a bit better
                     (Try to feel what you are going through)
 
-            Compassion - suffer with you and try and help,
-                    actively listen, do kind things, loving, try to understand you, help selflessly"""
+            Compassion - suffer with you and try and help, actively listen, do kind things, loving,
+            try to understand you, help selflessly"""
     def __init__(self) -> None:
         self.disclosure_responses = {
             "sympathy expressions":{ # Reifies, expresses agreement,
@@ -197,7 +197,7 @@ class RoleModelFacilitator():
                     "Thank you."
                 ],
             },
-            "empathy expressions":{ # Reflects understanding, 
+            "empathy expressions":{ # Reflects understanding,
                 "opinion":[
                     "I get where that thought comes from.",
                     "I feel that as well.",
@@ -275,14 +275,14 @@ class RoleModelFacilitator():
                 self.disclosure_responses["empathy expressions"][code.disclosure_category]).replace(
                                                                                 "_", code.emotion)
                 
-            print(f"Disclosure-->{code.sentiment}-->{code.disclosure_category}-->{code.emotion}")
+            print(f"(RM) Disclosure-->{code.sentiment}-->{code.disclosure_category}-->{code.emotion}")
             responses = [symp_response, emp_response]
         elif code.response:
             follow_up = random.choice([True,False])
             if follow_up:
                 reaction_response = random.choice(self.response_responses[code.response_category]).replace("_", code.reaction)
                 responses = [reaction_response]
-                print(f"Response-->{code.response_category}-->{code.reaction}")
+                print(f"(RM) Response-->{code.response_category}-->{code.reaction}")
             else: # make disclosure
                 emotion = random.choice(list(self.disclosures.keys()))
                 transition =random.choice(self.transition_to_disclosure).replace("[EMOTION]", emotion)
@@ -331,8 +331,8 @@ class DirectorFacilitator():
         ]
         self.topic_sentences = [
             "Let's talk about [TOPIC].",
-            "Does anyone have any thoughts to share on [TOPIC]",
-            "I'd love to hear your thoughts on [TOPIC]"
+            "Does anyone have any thoughts to share on [TOPIC].",
+            "I'd love to hear your thoughts on [TOPIC]."
         ]
         self.disclosure_elicitation = [
             "Is anyone willing to share any thoughts, feelings, or experiences?",
@@ -345,7 +345,7 @@ class DirectorFacilitator():
             "Thanks.",
             "I appreciate you sharing with us.",
             "I appreciate that.",
-            "Thank you for you open sharing with us.",
+            "Thank you for your willingness to share openly with us.",
             "I am glad you shared that with us."
 
         ]
@@ -366,7 +366,7 @@ class DirectorFacilitator():
             responses.append(transition)
             resp_elicitation = random.choice(self.response_elicitation)
             responses.append(resp_elicitation)
-            # print(f"Response-->{code.response_category}-->{code.reaction}")
+            print(f"(Dir) Response-->{code.response_category}-->{code.reaction}")
         else:# code.response:
             transition = random.choice(self.disclosure_transitions)
             responses.append(transition)
@@ -374,9 +374,9 @@ class DirectorFacilitator():
             responses.append(topic_sentence)
             disc_elicitation = random.choice(self.disclosure_elicitation)
             responses.append(disc_elicitation)
-            # print(f"Disclosure-->{code.sentiment}-->{code.disclosure_category}-->{code.emotion}")
+            print(f"(Dir) Disclosure-->{code.sentiment}-->{code.disclosure_category}-->{code.emotion}")
 
-        response_string = ". ".join(responses)
+        response_string = " ".join(responses)
         return response_string
 
 class FacilitatorPresets():

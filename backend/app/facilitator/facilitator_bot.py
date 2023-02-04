@@ -50,10 +50,11 @@ class FacilitatorChat():
             chat_backend=chat_backend, classifier_backend=classifier_backend)
 
         self.facilitator_prompt = ("The following is a conversation with an AI assistant that "
-                                   "can have meaningful conversations with users. The assistant is helpful, "
-                                   "empathic, and friendly. Its objective is to make the user feel better by "
-                                   "feeling heard. With each response, the AI assistant prompts the user to "
-                                   "continue the conversation naturally.")
+                                   "can have meaningful conversations with users. The assistant "
+                                   "is helpful, empathic, and friendly. Its objective is to make "
+                                   "the user feel better by feeling heard. With each response, the "
+                                   "AI assistant prompts the user to continue the conversation "
+                                   "naturally.")
 
         self.classification_processor = StatementClassification()
         self.rm_facilitator = RoleModelFacilitator()
@@ -82,7 +83,7 @@ class FacilitatorChat():
 
     def get_facilitator_response(self, director_condition: bool = False) -> str:
         """Gets facilitator response for either Role Model or Director condition
-            
+
             based on the respective facilitator logic
 
             Args:
@@ -91,6 +92,7 @@ class FacilitatorChat():
 
             Returns:
                 str: Recommended response to come from the facilitator."""
+
         if director_condition:
             response = self.d_facilitator.decision_tree(
                 self.classification_processor)
@@ -107,7 +109,8 @@ class FacilitatorChat():
             Args:
                 statement (str): Input statement the bot will respond to.
                 speaker (str, optional): Name of the speaker. Defaults to "Human".
-                reset_conversation (bool, optional): Resets the conversation to the beginning prompt. Defaults to False.
+                reset_conversation (bool, optional): Resets the conversation to the 
+                    beginning prompt. Defaults to False.
 
             Returns:
                 str: Text of the bot response"""
@@ -128,6 +131,8 @@ def main():
 
     print(bot.facilitator_prompt)
     print("What would you like to start your conversation with?")
+    
+    director_condition = False
     while True:
         identified_speaker = input("Speaker: ")
 
@@ -136,11 +141,16 @@ def main():
             continue
 
         user_input = input("Says: ")
+        if user_input == "switch":
+            director_condition = not director_condition
+        if director_condition: print("Director Condition")
+        else: print("Role Model Condition")
         classifications = bot.get_classifications(user_input)
-        facilitator_response = bot.get_facilitator_response(False)
+        print(f"Classes: {classifications}")
+        facilitator_response = bot.get_facilitator_response(director_condition)
+        print(f"Tree: {facilitator_response}")
         bot_response = bot.get_bot_response(user_input, identified_speaker)
-        print(
-            f"Tree: {facilitator_response}\nBot: {bot_response}\nClasses: {classifications}")
+        print(f"Bot: {bot_response}")
 
         keep = input("keep response? (n/y tree or bot)")
         if "n" in keep:

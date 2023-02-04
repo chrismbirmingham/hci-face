@@ -49,7 +49,7 @@ from app.facilitator import FacilitatorChat, RoleModelFacilitator
 from app.facilitator import DirectorFacilitator, FacilitatorPresets
 
 
-LOGS_DIR = "./logs/final_testing3"
+LOGS_DIR = "./logs/pilot1"
 FACE_CONTROL_QUEUE = {
     "expression":[],
     "behavior":[],
@@ -357,7 +357,7 @@ def get_response(mode: str, query: str) -> PlainTextResponse:
             to_say = random.choice(df.response_elicitation)
     if mode == "role_model":
         if query == "disclosure":
-            emotion = random.choice(rmf.disclosures.keys())
+            emotion = random.choice(list(rmf.disclosures.keys()))
             transition =random.choice(rmf.transition_to_disclosure).replace("[EMOTION]", emotion)
             disclosure = random.choice(rmf.disclosures[emotion])
             re_transition = random.choice(rmf.transition_back_to_group)

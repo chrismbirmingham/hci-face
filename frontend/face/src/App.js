@@ -8,7 +8,7 @@ import doBehavior from './helpers/Behaviors';
 
 
 // Update these as needed
-const server_ip = "192.168.1.150" // Set server IP (can be found with ifconfig on host)
+const server_ip = "192.168.1.151" // Set server IP (can be found with ifconfig on host)
 const form=false // display form input if manually controlling action units
 
 const App = ({ classes }) => {

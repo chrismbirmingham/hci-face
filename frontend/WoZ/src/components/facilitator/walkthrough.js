@@ -4,7 +4,7 @@ import getDeadTime from "../timer/utils"
 export default function Walkthrough ({setWalkthroughToggle, do_tts, setTimerDeadline, switch_condition}) {
     function do_invitation() {
         get_preset("facilitator", "invitation")
-        setTimerDeadline(getDeadTime(5))
+        setTimerDeadline(getDeadTime(25))
         setWalkthroughToggle(true)
     }
 
