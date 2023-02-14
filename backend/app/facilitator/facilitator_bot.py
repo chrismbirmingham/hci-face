@@ -109,11 +109,15 @@ class FacilitatorChat():
             Args:
                 statement (str): Input statement the bot will respond to.
                 speaker (str, optional): Name of the speaker. Defaults to "Human".
-                reset_conversation (bool, optional): Resets the conversation to the 
+                reset_conversation (bool, optional): Resets the conversation to the
                     beginning prompt. Defaults to False.
 
             Returns:
                 str: Text of the bot response"""
+        statement_sentences = statement.split(".")
+        if len(statement_sentences) > 3 and len(statement)>100:
+            statement_sentences  = statement_sentences[-3:]
+        statement = ".".join(statement_sentences)
         bot_response = self.chatbot.get_response(
             statement, speaker=speaker, reset_conversation=reset_conversation)
 
