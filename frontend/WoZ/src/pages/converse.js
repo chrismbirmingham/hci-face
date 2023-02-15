@@ -1,15 +1,10 @@
-import './App.css';
 import React, { useState, useEffect, useCallback } from "react";
-import Mic from './components/mic/Microphone';
-import Timer from './components/timer/timer';
-import getDeadTime from './components/timer/utils';
-import Walkthrough from './components/facilitator/walkthrough';
-import FacilitatorControls from './components/facilitator/controls';
-import SpeakerMonitor from './components/facilitator/speech';
-import RobotControls from './components/robotControls';
+import Mic from '../components/mic/Microphone';
+import RobotControls from '../components/robotControls';
+import Link from 'next/link';
 
 
-const App = ({ classes }) => {
+const WoZ = ({ classes }) => {
   // Variables with state
   const [beginConversation, setBeginConversation] = useState(true);
   const [textToSay, setTextToSay] = useState("This is an example of what I sound like when I am talking.");
@@ -22,7 +17,7 @@ const App = ({ classes }) => {
   const [condition, setCondition] = useState(false);
 
   const [speakerVoice, setSpeakerVoice] = useState("p270");
-  const [participantSpeaker, setParticipantSpeaker] = useState("");
+  const [participantSpeaker, setParticipantSpeaker] = useState("Chris");
   const [priorSpeaker, setPriorSpeaker] = useState("");
   const [latestSpeech, setLatestSpeech] = useState("");
   const [classifications, setClassifications] = useState("");
@@ -34,18 +29,16 @@ const App = ({ classes }) => {
   const [behavior, setBehavior] = useState("focused");
   
 	// The state for our timer
-  const [timerDeadline, setTimerDeadline] = useState("")
-	const [timerLength, setTimerLength] = useState('25');
+    const [timerDeadline, setTimerDeadline] = useState("")
+    const [timerLength, setTimerLength] = useState('25');
 
 
   // API calling functions
   function getTextStream() {
     const es = new EventSource("http://localhost:8000/api/text_stream");
     es.addEventListener('open', () => {
-      // console.log('SSE opened@!')
     });
 
-    // faceControls should handle vizemes, eyeAU, browAU, mouthAU
     es.addEventListener('human_speech', (e) => {
       let speech = e.data;
       if (speech.length>0){
@@ -60,7 +53,7 @@ const App = ({ classes }) => {
         setClassifications("");
         setBeginConversation(false);
 
-        if (full_speech.length > 20) {
+        if (full_speech.length > 2) {
           console.log(full_speech, full_speech.length)
           requestBotResponseCB(full_speech);
         }
@@ -70,16 +63,8 @@ const App = ({ classes }) => {
     es.addEventListener("bot_response", (e) => {
       let bot_says = e.data
       setBotResponse(bot_says);
-    });
-  
-    es.addEventListener("facilitator_response", (e) => {
-      let facilitator_says = e.data
-      setFacilitatorResponse(facilitator_says);
-    });
-  
-    es.addEventListener("classifications", (e) => {
-      let classifications = e.data
-      setClassifications(classifications);
+      setTranscribedData(oldData => ["bot:"+bot_says,  <br></br>, ...oldData ])
+      requestSpeech(bot_says)
     });
 
     es.addEventListener('error', (e) => {
@@ -149,52 +134,20 @@ const App = ({ classes }) => {
     requestFaceUpdate(name, "expression")
     console.log(name)
   }
-  function update_speaker(name){
-    console.log("Updated speaker to "+name)
-    setParticipantSpeaker(name)
-  }
 
-  function switch_condition(){setCondition(!condition)}
 
   useEffect(getTextStream, [requestBotResponseCB, latestSpeech, participantSpeaker, priorSpeaker]);
 
   return (
-    <div className="App">
-      <header className="App-header"></header>
+    <div className="WoZ">
+      <header className="WoZ-header"></header>
       <Mic isRecording={isRecording}/>
       <button onClick={() => ttsWrapper("Testing, 1, 2, 3. Can you all hear me?")}>Speech Test</button>
-      
-      <br></br>
-      <button id="toggle" onClick={() => setWalkthroughToggle(!showWalkthrough)}>Show/Hide Study Walkthrough: </button>
-      <div id="walkthrough" hidden={showWalkthrough}>
-        <Walkthrough 
-          setWalkthroughToggle={setWalkthroughToggle}
-          do_tts={ttsWrapper}
-          setTimerDeadline={setTimerDeadline}
-          switch_condition={switch_condition}/>
-      </div>
-
-      <br></br>
-      <Timer timerDeadline={timerDeadline} />
-
-      <SpeakerMonitor
-        update_speaker={update_speaker}
-        participantSpeaker={participantSpeaker}
-        latestSpeech={latestSpeech}
-        classifications={classifications}/>
-
-      <FacilitatorControls
-        do_tts={ttsWrapper}
-        participantSpeaker={participantSpeaker}
-        condition={condition}
-        botResponse={botResponse}
-        facilitatorResponse={facilitatorResponse}/>
-
 
       <button id="toggle" onClick={() => setFormToggle(!showForm)}>Show/Hide Form Input:</button>
       <RobotControls
         setTimerDeadline={setTimerDeadline}
-        getDeadTime={getDeadTime}
+        // getDeadTime={getDeadTime}
         showForm={showForm} 
         do_tts={ttsWrapper} 
         textToSay={textToSay} 
@@ -214,8 +167,9 @@ const App = ({ classes }) => {
         <h2>Transcribed Data:</h2>
         <p>{transcribedData}</p>
       </div>
+      <Link href="/">Back to home</Link>
     </div>
   );
 }
 
-export default App;
+export default WoZ;

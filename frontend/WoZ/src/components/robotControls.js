@@ -2,7 +2,7 @@ import React, {useState} from "react"
 
 export default function RobotControls ({setTimerDeadline, getDeadTime, showForm, do_tts, setTextToSay, textToSay, behavior, update_behavior, expression, update_expression, speakerVoice, setSpeakerVoice, viseme, update_viseme}) {
     const [customMinutes, setCustomMinutes] = useState("")
-
+    const expressions = ["anger", "joy", "sad", "fear", "disgust", "surprise", "neutral"]
 
     return(
 
@@ -22,10 +22,7 @@ export default function RobotControls ({setTimerDeadline, getDeadTime, showForm,
         <select value={expression} 
             multiple={false}
             onChange={(e) => update_expression(e.target.value)}>
-            <option value="joy">joy</option>
-            <option value="sad">sad</option>
-            <option value="surprise">surprise</option>
-            <option value="neutral">neutral</option>
+            {expressions.map((X) => <option>{X}</option>)}
             </select>
         </label>
         <label> Coqui Voice:
