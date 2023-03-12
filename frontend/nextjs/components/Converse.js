@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Mic from '../components/mic/Microphone';
-import { getTextStream } from "@lib/eventsources";
-import {requestBotResponse, requestSpeech} from "@lib/requests"
+import Mic from '@components/mic/Microphone';
+import { getTextStream } from "@lib/apiEventSources";
+import {requestBotResponse, requestSpeech} from "@lib/apiRequests"
 
 const Converse = ({ classes }) => {
   // Variables with state

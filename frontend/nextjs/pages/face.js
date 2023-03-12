@@ -1,5 +1,5 @@
 import React from "react";
-import Face from "../components/Face";
+import Face from "@components/Face";
 
 export default function DisplayFace() {
 
