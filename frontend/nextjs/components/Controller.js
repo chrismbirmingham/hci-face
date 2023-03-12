@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import RobotControls from './Forms/robotControls';
 import getDeadTime from './timer/utils';
-import {requestFaceUpdate, requestSpeech} from "@lib/apiRequests"
+import {requestFaceUpdate, requestSpeech} from "@helpers/apiRequests"
 
 
 const Controller = ({ classes }) => {

@@ -6,7 +6,7 @@
       "@data/*": ["data/*"],
       "@utils/*": ["utils/*"],
       "@layouts/*": ["layouts/*"],
-      "@lib/*": ["lib/*"],
+      "@helpers/*": ["helpers/*"],
       "@styles/*": ["styles/*"],
       "@hooks/*": ["hooks/*"],
       "@constants/*": ["constants/*"]

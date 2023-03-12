@@ -1,8 +1,8 @@
 import React, { useReducer, useState, useEffect, useCallback } from "react";
 import Head from './faces/Head';
-import getExpresionAUs from '@lib/AUtransformers/Expressions';
-import doBehavior from '@lib/AUtransformers/Behaviors';
-import {sourceVisemes, sourceFaceCommands} from "@lib/apiEventSources";
+import getExpresionAUs from '@helpers/AUtransformers/Expressions';
+import doBehavior from '@helpers/AUtransformers/Behaviors';
+import {sourceVisemes, sourceFaceCommands} from "@helpers/apiEventSources";
 import {positions, initialBrowAU, initialEyeAU, initialMouthAU} from "@constants/initialface"
 
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Mic from '@components/mic/Microphone';
-import { getTextStream } from "@lib/apiEventSources";
+import { getTextStream } from "@helpers/apiEventSources";
 
 
 const Transcriber = ({ classes }) => {

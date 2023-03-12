@@ -1,0 +1,41 @@
+import React from "react"
+
+const server_ip = "127.0.0.1"
+
+
+function requestFaceUpdate(name, type){
+    const name_text = name
+    const type_text = type
+    return fetch(`http://`+server_ip+`:8000/api/face_presets?text=${encodeURIComponent(name_text)}&update_type=${encodeURIComponent(type_text)}`, { cache: 'no-cache' })
+        .then(response => response.text())
+        .then(message => {console.log(message)})
+}
+
+function requestBotResponse(human_input, beginConversation, participantSpeaker) {
+    const text = human_input
+    const speaker = participantSpeaker
+    if (text) {
+      return fetch(`http://`+server_ip+`:8000/api/bot_response?text=${encodeURIComponent(text)}&speaker=${encodeURIComponent(speaker)}&reset_conversation=${encodeURIComponent(beginConversation)}&director_condition=${encodeURIComponent(false)}`, { cache: 'no-cache' })
+        .then(response => response.text())
+        .then(message => {console.log(message); return message})
+    }
+}
+function requestSpeech(text, setIsRecording, speakerVoice){
+    const speaker_id = [speakerVoice]
+    const style_wav = ""
+    fetch(`http://`+server_ip+`:8000/api/speech?text=${encodeURIComponent(text)}&speaker_id=${encodeURIComponent(speaker_id)}&style_wav=${encodeURIComponent(style_wav)}`, { cache: 'no-cache' })
+    .then(function (res) {
+        if (!res.ok) throw Error(res.statusText)
+        return res.blob()
+    }).then(function (blob) {
+        const audioUrl = URL.createObjectURL(blob)
+        const audio = new Audio(audioUrl)
+        setIsRecording(false)
+        audio.play();
+        audio.addEventListener('ended', () => {setIsRecording(true)});
+    }).catch(function (err) {
+    })
+}
+
+
+export {requestFaceUpdate, requestBotResponse, requestSpeech}
