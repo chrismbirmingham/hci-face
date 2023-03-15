@@ -53,6 +53,24 @@ class ChatGPT:
 
         self.conversation[-1] += api_response
         return api_response
+    
+    def get_conversation_response(self, speaker_id, statement, bot_id="AI", prompt=None, history: list=None):
+        """Calls the API with a conversation to get the next bot response"""
+        
+        if prompt:
+            self.conversation = [prompt]
+        if history:
+            for h in history:
+                self.conversation.append(h)
+        self.conversation.append(f"{speaker_id}: {statement}")
+        self.conversation.append(f"{bot_id}: ")
+        
+        input_prompt = "\n".join(self.conversation)
+        api_response = self.query_API(input_prompt)["choices"][0]["text"]
+        api_response = api_response.replace("\n", '')
+
+        self.conversation[-1] += api_response
+        return api_response
 
     def classify(self, statement, classes, question="Should the prior statement be classified as"):
         """Classify with an input question"""

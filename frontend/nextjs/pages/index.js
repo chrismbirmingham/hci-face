@@ -22,6 +22,7 @@ export default function Home() {
         See face on <a href="/face">this page!</a>
         Control face with <a href="/control">this page!</a>
         Converse face with <a href="/converse">this page!</a>
+        Have a conversation with <a href="/conversation">this page!</a>
 
       </main>
 

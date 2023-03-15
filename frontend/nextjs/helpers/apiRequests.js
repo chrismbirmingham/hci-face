@@ -36,6 +36,35 @@ function requestSpeech(text, setIsRecording, speakerVoice){
     }).catch(function (err) {
     })
 }
+function get_preset(mode, query, do_tts) {
+    return fetch(`//localhost:8000/api/presets?mode=${encodeURIComponent(mode)}&query=${encodeURIComponent(query)}`, { cache: 'no-cache' })
+    .then(response => response.text())
+    .then(message => {console.log(message); do_tts(message)})
+}
+function set_gesture(name){
+    return fetch(`//localhost:8000/api/qt_gesture?text=${encodeURIComponent(name)}`, { cache: 'no-cache' })
+    .then(response => response.text())
+    .then(message => {console.log(message)})
+}
 
+function requestConversationResponse(speaker, speech, prompt, history, setBotResponse) {
+    const obj = { 
+        speaker: speaker,
+        speech: speech,
+        prompt: prompt,
+        history: history,
+    };
+    console.log(obj)
 
-export {requestFaceUpdate, requestBotResponse, requestSpeech}
+    fetch("//localhost:8000/api/conversation", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(obj)
+    })
+    .then(response => response.text())
+    .then(message => {console.log("Conversation recieved: "+message); setBotResponse(message)})
+}
+
+export {requestFaceUpdate, requestBotResponse, requestSpeech, set_gesture, get_preset, requestConversationResponse }

@@ -31,6 +31,7 @@ const Converse = ({ classes }) => {
     requestBotResponse(latestSpeech, beginConversation, participantSpeaker)
     setBeginConversation(false)
   }
+  
   function respondToBotSpeech () {
     console.log("Bot response: " + botResponse)
     ttsWrapper(botResponse)

@@ -1,19 +1,13 @@
 import React from "react"
 import getDeadTime from "../timer/utils"
+import { get_preset } from "@helpers/apiRequests"
 
 export default function Walkthrough ({setWalkthroughToggle, do_tts, setTimerDeadline, switch_condition}) {
     function do_invitation() {
-        get_preset("facilitator", "invitation")
+        get_preset("facilitator", "invitation", do_tts)
         setTimerDeadline(getDeadTime(25))
         setWalkthroughToggle(true)
     }
-
-      /////// Fetch Speech ///////
-  function get_preset(mode, query) {
-    return fetch(`//localhost:8000/api/facilitator_presets?mode=${encodeURIComponent(mode)}&query=${encodeURIComponent(query)}`, { cache: 'no-cache' })
-    .then(response => response.text())
-    .then(message => {console.log(message); do_tts(message)})
-  }
 
     
     return(

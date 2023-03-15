@@ -44,9 +44,11 @@ from sse_starlette.sse import EventSourceResponse
 from dotenv import load_dotenv
 from pydub import AudioSegment
 
-from app.utils import Speaker, Logger, Transcriber
+from app.utils import Speaker, Logger, Transcriber, Responder
 from app.facilitator import FacilitatorChat, RoleModelFacilitator
 from app.facilitator import DirectorFacilitator, FacilitatorPresets
+from typing import Union
+from pydantic import BaseModel
 
 
 LOGS_DIR = "./logs/pilot1"
@@ -83,6 +85,7 @@ bot = FacilitatorChat(chat_backend="gpt", classifier_backend="llm")
 rmf = RoleModelFacilitator()
 df = DirectorFacilitator()
 presets = FacilitatorPresets()
+chatbot = Responder()
 
 
 l.log("Conneting API")
@@ -108,9 +111,16 @@ app.add_middleware(
         allow_headers=["*"]
 )
 
+class Conversation(BaseModel):
+    speaker: str
+    speech: str
+    prompt: Union[str, None] = None 
+    history: Union[list, None] = None
+
+
 @app.get("/", tags=["root"])
 async def read_root() -> dict:
-    return {"message": "Welcome to your bot fastapi."}
+    return {"message": "Welcome to fastapi for HCI-Face."}
 
 @app.get('/api/viseme_stream')
 async def stream_viseme(request: Request):
@@ -261,7 +271,7 @@ def get_speech(text: str, speaker_id: str = "") -> StreamingResponse:
         saying this text.
 
         Args:
-            text (str): Text to e synthesized
+            text (str): Text to be synthesized
             speaker_id (str, optional): ID of the voice to be used. Defaults to "".
 
         Returns:
@@ -279,6 +289,26 @@ def get_speech(text: str, speaker_id: str = "") -> StreamingResponse:
     FACE_CONTROL_QUEUE["viseme"] += visemes
 
     return StreamingResponse(audio_stream, media_type="audio/wav")
+
+@app.post("/api/conversation")
+def run_conversation(conversation: Conversation):
+    """Takes a conversation as input and gets the bot rosponse
+
+    Args:
+        conversation (Conversation): Speaker and speech (history and prompt optional)
+
+    Returns:
+        PlainTextResponse: Defaults to generative bot response."""
+    print(conversation)
+    bot_response = chatbot.bot.get_conversation_response(
+            conversation.speaker,
+            conversation.speech,
+            bot_id="AI",
+            prompt=conversation.prompt,
+            history=conversation.history
+        )
+    return PlainTextResponse(bot_response)
+
 
 @app.get("/api/bot_response")
 def run_generate_response(text: str, speaker: str,
@@ -331,7 +361,7 @@ def run_generate_response(text: str, speaker: str,
 
     return PlainTextResponse(bot_response)
 
-@app.get("/api/facilitator_presets")
+@app.get("/api/presets")
 def get_response(mode: str, query: str) -> PlainTextResponse:
     """Returns text presets based on WoZ input
 

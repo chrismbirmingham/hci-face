@@ -1,17 +1,13 @@
 import React from "react"
+import { set_gesture, get_preset } from "@helpers/apiRequests"
+
 
 export default function FacilitatorControls ({do_tts, participantSpeaker, condition, botResponse, facilitatorResponse}) {
   /////// Fetch Speech ///////
-  function get_facilitator_speech_preset(mode, query) {
-    return fetch(`//localhost:8000/api/facilitator_presets?mode=${encodeURIComponent(mode)}&query=${encodeURIComponent(query)}`, { cache: 'no-cache' })
-    .then(response => response.text())
-    .then(message => {console.log(message); do_tts(message)})
+  function get_facilitator_speech_preset (mode, query) {
+    get_preset(mode, query, do_tts)
   }
-  function set_gesture(name){
-    return fetch(`//localhost:8000/api/qt_gesture?text=${encodeURIComponent(name)}`, { cache: 'no-cache' })
-      .then(response => response.text())
-      .then(message => {console.log(message)})
-  }
+
   return(
     <div id="controls">
   
