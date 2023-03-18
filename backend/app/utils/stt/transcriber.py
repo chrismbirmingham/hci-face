@@ -21,7 +21,8 @@ import csv
 import argparse
 from pydub import AudioSegment
 from pyannote.core.segment import Segment
-from .backends import record_mic, WhisperSTT, PyannoteDiarize
+from .backends import WhisperSTT, PyannoteDiarize
+# from .backends import record_mic
 
 
 class Transcriber:
