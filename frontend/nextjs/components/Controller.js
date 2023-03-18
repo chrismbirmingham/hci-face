@@ -15,7 +15,7 @@ const Controller = ({ classes }) => {
   const [expression, setExpression] = useState("");
   const [behavior, setBehavior] = useState("focused");
   const [textToSay, setTextToSay] = useState("This is an example of what I sound like when I am talking.");
-  const [isRecording, setIsRecording] = useState(false);
+  const [audioPlaying, setAudioPlaying] = useState(false);
 
   function update_behavior(name){
     setBehavior(name)
@@ -35,7 +35,7 @@ const Controller = ({ classes }) => {
 
   function ttsWrapper(text) {
     console.log("Will say"+text)
-    requestSpeech(text, setIsRecording, speakerVoice)
+    requestSpeech(text, setAudioPlaying, speakerVoice)
     return false
   }
 

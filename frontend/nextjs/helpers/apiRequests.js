@@ -20,7 +20,7 @@ function requestBotResponse(human_input, beginConversation, participantSpeaker) 
         .then(message => {console.log(message); return message})
     }
 }
-function requestSpeech(text, setIsRecording, speakerVoice){
+function requestSpeech(text, setAudioPlaying, speakerVoice){
     const speaker_id = [speakerVoice]
     const style_wav = ""
     fetch(`http://`+server_ip+`:8000/api/speech?text=${encodeURIComponent(text)}&speaker_id=${encodeURIComponent(speaker_id)}&style_wav=${encodeURIComponent(style_wav)}`, { cache: 'no-cache' })
@@ -30,9 +30,9 @@ function requestSpeech(text, setIsRecording, speakerVoice){
     }).then(function (blob) {
         const audioUrl = URL.createObjectURL(blob)
         const audio = new Audio(audioUrl)
-        setIsRecording(false)
+        setAudioPlaying(true)
         audio.play();
-        audio.addEventListener('ended', () => {setIsRecording(true)});
+        audio.addEventListener('ended', () => {setAudioPlaying(false)});
     }).catch(function (err) {
     })
 }

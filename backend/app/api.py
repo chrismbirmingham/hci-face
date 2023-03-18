@@ -478,6 +478,8 @@ async def run_transcribe_audio(uploaded_file: UploadFile) -> dict:
     l.log_sound(audio_clip)
     transcription = stt.transcribe_clip(audio_clip)
     if len(transcription) > 0:
+        if transcription[0] == " ":
+            transcription = transcription[1:] + " "
         global TEXT_QUEUE
         TEXT_QUEUE["human_speech"].append(transcription)
         l.log(f"Speech Detected: {transcription}")

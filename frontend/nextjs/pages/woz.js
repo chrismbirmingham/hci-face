@@ -16,7 +16,7 @@ const WoZ = ({ classes }) => {
   const [botResponse, setBotResponse] = useState("This is the bot response");
   const [facilitatorResponse, setFacilitatorResponse] = useState("This is the Facilitator response");
 
-  const [isRecording, setIsRecording] = useState(true);
+  const [audioPlaying, setAudioPlaying] = useState(true);
   const [showForm, setFormToggle] = useState(false);
   const [showWalkthrough, setWalkthroughToggle] = useState(false);
   const [condition, setCondition] = useState(false);
@@ -116,9 +116,9 @@ const WoZ = ({ classes }) => {
     }).then(function (blob) {
         const audioUrl = URL.createObjectURL(blob)
         const audio = new Audio(audioUrl)
-        setIsRecording(false)
+        setAudioPlaying(false)
         audio.play();
-        audio.addEventListener('ended', () => {setIsRecording(true)});
+        audio.addEventListener('ended', () => {setAudioPlaying(true)});
     }).catch(function (err) {
   })
   }
@@ -161,7 +161,7 @@ const WoZ = ({ classes }) => {
   return (
     <div className="WoZ">
       <header className="WoZ-header"></header>
-      <Mic isRecording={isRecording}/>
+      <Mic audioPlaying={audioPlaying}/>
       <button onClick={() => ttsWrapper("Testing, 1, 2, 3. Can you all hear me?")}>Speech Test</button>
       
       <br></br>

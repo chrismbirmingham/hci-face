@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Mic from '@components/mic/Microphone';
+import AutoMic from '@components/mic/AutoMic';
 import { getTextStream } from "@helpers/apiEventSources";
 
 
 const Transcriber = ({ classes }) => {
   const [transcribedData, setTranscribedData] = useState([]);
-  const [isRecording, setIsRecording] = useState(false);
+  const [audioPlaying, setAudioPlaying] = useState(false);
   const [latestSpeech, setLatestSpeech] = useState("");
   const [botResponse, setBotResponse] = useState("This is the bot response");
 
@@ -20,7 +21,7 @@ const Transcriber = ({ classes }) => {
   return (
     <div className="WoZ">
       <header className="WoZ-header"></header>
-      <Mic isRecording={isRecording}/>
+      <AutoMic audioPlaying={audioPlaying}/>
       <label>Editable transcript of what has been said:<br></br>
             <textarea 
             cols={100}

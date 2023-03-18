@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Mic from '@components/mic/Microphone';
+import AutoMic from '@components/mic/AutoMic';
 import { getTextStream } from "@helpers/apiEventSources";
 import {requestConversationResponse, requestSpeech} from "@helpers/apiRequests"
 
 const Conversation = ({ classes }) => {
   // Variables with state
   const [conversationHistory, setConversationHistory] = useState([""]);
-  const [isRecording, setIsRecording] = useState(true);
+  const [audioPlaying, setAudioPlaying] = useState(false);
   const [latestSpeech, setLatestSpeech] = useState("");
   const [prompt, setPrompt] = useState("The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.\n");
-  const [botResponse, setBotResponse] = useState("This is a test");
+  const [botResponse, setBotResponse] = useState("");
   
   
   const [beginConversation, setBeginConversation] = useState(true);
@@ -18,27 +19,25 @@ const Conversation = ({ classes }) => {
 
 
 
-  /////// Play Speech ///////
-  function ttsWrapper(text) {
-    console.log("Will say"+text)
-    setConversationHistory(oldData => ["bot: "+text, ...oldData ])
-    requestSpeech(text, setIsRecording, speakerVoice)
-    return false
-  }
-
   function respondToHumanSpeech () {
-    console.log("STT process: ", latestSpeech, " from ", speaker)
-    setConversationHistory(oldData => [speaker+":"+latestSpeech, ...oldData ]);
-    requestConversationResponse(speaker, latestSpeech, prompt, conversationHistory, setBotResponse)
-    setBeginConversation(false)
+    if (latestSpeech !== "") {
+      console.log("STT process: ", latestSpeech, " from ", speaker)
+      setConversationHistory(oldData => [speaker+": "+latestSpeech, ...oldData ]);
+      requestConversationResponse(speaker, latestSpeech, prompt, conversationHistory, setBotResponse)
+      setBeginConversation(false)
+    }
   }
   
   function respondToBotSpeech () {
-    console.log("Bot response: " + botResponse)
-    ttsWrapper(botResponse)
+    if (botResponse !== "") {
+      console.log("Bot response: " + botResponse)
+      setConversationHistory(oldData => ["bot: "+botResponse, ...oldData ])
+      requestSpeech(botResponse, setAudioPlaying, speakerVoice)
+    }
   }
 
   useEffect(() => {getTextStream(setLatestSpeech, setBotResponse)}, []);
+
   useEffect(respondToHumanSpeech,[latestSpeech])
   useEffect(respondToBotSpeech,[botResponse])
 
@@ -46,7 +45,8 @@ const Conversation = ({ classes }) => {
   return (
     <div className="Conversation">
       <header className="Conversation-header"></header>
-      <Mic isRecording={isRecording}/>
+      {audioPlaying? <p>Audio is playing</p>: <AutoMic/> }
+      <Mic/>
       <label>Enter the starting prompt: <br></br>
             <textarea 
             cols={100}

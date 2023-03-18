@@ -17,12 +17,13 @@ export default function Home() {
         <h1 className="title">
             Pages:
         </h1>
-        See WoZ on <a href="/woz">this page!</a>
-        See recorder on <a href="/recording">this page!</a>
-        See face on <a href="/face">this page!</a>
-        Control face with <a href="/control">this page!</a>
-        Converse face with <a href="/converse">this page!</a>
-        Have a conversation with <a href="/conversation">this page!</a>
+        <br></br>See WoZ on <a href="/woz">this page!</a>
+        <br></br>See recorder on <a href="/recording">this page!</a>
+        <br></br>See face on <a href="/face">this page!</a>
+        <br></br>Play faces on <a href="/playfaces">this page!</a>
+        <br></br>Control face with <a href="/control">this page!</a>
+        <br></br>Converse face with <a href="/converse">this page!</a>
+        <br></br>Have a conversation with <a href="/conversation">this page!</a>
 
       </main>
 

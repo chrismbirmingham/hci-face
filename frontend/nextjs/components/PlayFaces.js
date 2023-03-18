@@ -4,9 +4,9 @@ import getExpresionAUs from '@helpers/AUtransformers/Expressions';
 import doBehavior from '@helpers/AUtransformers/Behaviors';
 import {sourceVisemes, sourceFaceCommands} from "@helpers/apiEventSources";
 import {positions, initialBrowAU, initialEyeAU, initialMouthAU} from "@constants/initialface"
+import {EyeForm, BrowForm, MouthForm} from '@components/Forms/Form';
 
-
-const Face = ({ classes }) => {
+const PlayFaces = ({ classes }) => {
   const [behavior, setBehavior] = useState("focused");
   const [display, setDisplay] = useState("qt");
 
@@ -20,6 +20,8 @@ const Face = ({ classes }) => {
   function eyeUpdater (AU) { updateEyeAU({ ...eyeAU, ...AU })}
 
   const eyeUpdaterWrapper = useCallback(eyeUpdater,[eyeAU])
+
+  const faces = ["qt", "default", "cordial", "qt_head"]
 
   // Unclear if behaviors belong here tbh
   function runBehaviors() {
@@ -44,9 +46,9 @@ const Face = ({ classes }) => {
     <div className="Face">
       <header className="Face-header"></header>
       
-      <div id="robot-container">
+      <div style={{"float":"left","width":"20%"}} id="robot-container">
         <div id="bot" className="neutral">
-          <Head face={display} position={positions} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
+            {faces.map((f) => <Head face={f} position={positions} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />)}
         </div>
       </div>
     <label>Face:
@@ -59,8 +61,13 @@ const Face = ({ classes }) => {
         <option value="qt_head">qt_head</option>
         </select>
     </label>
+    <div style={{"float":"right"}} id="AU control">
+        <EyeForm v={eyeAU} f={eyeUpdaterWrapper}/>
+        <BrowForm v={browAU} f={browUpdater}/>
+        <MouthForm v={mouthAU} f={mouthUpdater}/>
+    </div>
     </div>
   );
 }
 
-export default Face;
+export default PlayFaces;

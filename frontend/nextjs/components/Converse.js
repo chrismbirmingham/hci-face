@@ -6,7 +6,7 @@ import {requestBotResponse, requestSpeech} from "@helpers/apiRequests"
 const Converse = ({ classes }) => {
   // Variables with state
   const [transcribedData, setTranscribedData] = useState([""]);
-  const [isRecording, setIsRecording] = useState(true);
+  const [audioPlaying, setAudioPlaying] = useState(true);
   const [latestSpeech, setLatestSpeech] = useState("");
   const [botResponse, setBotResponse] = useState("");
   
@@ -21,7 +21,7 @@ const Converse = ({ classes }) => {
   function ttsWrapper(text) {
     console.log("Will say"+text)
     setTranscribedData(oldData => ["bot: "+text, <br></br>, ...oldData ])
-    requestSpeech(text, setIsRecording, speakerVoice)
+    requestSpeech(text, setAudioPlaying, speakerVoice)
     return false
   }
 
@@ -45,7 +45,7 @@ const Converse = ({ classes }) => {
   return (
     <div className="Converse">
       <header className="Converse-header"></header>
-      <Mic isRecording={isRecording}/>
+      <Mic audioPlaying={audioPlaying}/>
       <div id="transcription">
         <h2>Transcribed Data:</h2>
         <p>{transcribedData}</p>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { startRecording, saveRecording } from "./recorder-controls";
+// import { startRecording, saveRecording } from "./recorder-controls";
 
 const initialState = {
   recordingMinutes: 0,
@@ -9,6 +9,33 @@ const initialState = {
   mediaRecorder: null,
   audio: null,
 };
+
+async function startRecording(setRecorderState) {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    // console.log("setting the stream")
+    setRecorderState((prevState) => {
+      return {
+        ...prevState,
+        initRecording: true,
+        mediaStream: stream,
+      };
+    });
+    // console.log("stream set")
+  } catch (err) {
+    // console.log(err);
+  }
+}
+
+export function saveRecording(recorder) {
+  // console.log("saving the recording")
+  // console.log(recorder)
+  if (recorder && recorder.state !== "inactive") {
+    recorder.stop();
+    // console.log("Should be stopped")
+  }
+  // recorder.stop();
+}
 
 export default function useRecorder() {
   const [recorderState, setRecorderState] = useState(initialState);
@@ -81,12 +108,14 @@ export default function useRecorder() {
         console.log("Uploading recording")
         const formData = new FormData();
         formData.append('uploaded_file', audioFile);
-        if (audioBlob.size >0){
+        if (audioBlob.size >1000){
           fetch('//localhost:8000/api/audio', {
-            headers: { Accept: "application/json" },
+            headers: { Accept: "application/json",
+          },
             method: "POST", body: formData
           });
         }
+        else {console.log("not uploading, blob size"+audioBlob.size)}
 
         chunks = [];
         // console.log("set up initial state")

@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useCallback} from 'react';
+import React, {useEffect, useRef} from 'react';
 
-export default function AudioAnalyser ({audio, setHearing, rmsThresh, bufferSize}) {
+export default function AudioVisualizer ({audio, rmsThresh, bufferSize}) {
   const audioContext = new window.AudioContext()
   const analyser = new AnalyserNode(audioContext);
   const source = audioContext.createMediaStreamSource(audio);
@@ -12,12 +12,6 @@ export default function AudioAnalyser ({audio, setHearing, rmsThresh, bufferSize
   const rmshistory = []
   var rmsOverThresh = false
   hearingRef.current = false
-  
-  const crossRMSCallback = useCallback(val => {
-    setHearing(val);
-    // eslint-disable-next-line
-    rmsOverThresh = val
-  }, [rmsOverThresh])
 
 
   const draw = () => {
@@ -25,15 +19,15 @@ export default function AudioAnalyser ({audio, setHearing, rmsThresh, bufferSize
     analyser.getByteTimeDomainData(dataArray);
 
     const canvas = canvasRef.current;
-    const height = canvas.height;
+    const height = canvas.height-10;
     const width = canvas.width;
     const sliceWidth = (width * 1.0) / bufferLength;
     
     const context = canvas.getContext('2d');
-    context.clearRect(0, 0, width, height);
+    context.clearRect(0, 0, width, canvas.height);
 
     context.lineWidth = 2;
-    context.strokeStyle = '#FFF';
+    context.strokeStyle = '#000';
     
     context.beginPath();
     context.moveTo(0, height);
@@ -56,29 +50,23 @@ export default function AudioAnalyser ({audio, setHearing, rmsThresh, bufferSize
     if (rmshistory.length>bufferSize) {rmshistory.shift()}
     let rmsmean = rmshistory.reduce((acum, val) => (acum + val))/rmshistory.length
 
-    context.moveTo(width, (height) - (rmsThresh) * height*5);
-    context.lineTo(0, (height) - (rmsThresh) * height*5);
+    // context.moveTo(width, (height) - (rmsThresh) * height*5);
+    // context.lineTo(0, (height) - (rmsThresh) * height*5);
 
-    let thresholdSurpassed = false
-    if (rmsmean>rmsThresh || rms>rmsThresh) {
+    // let thresholdSurpassed = false
+    if (rmsmean>rmsThresh) {
       context.strokeStyle = 'green';
-      thresholdSurpassed = true
+      // thresholdSurpassed = true
     }
-    context.moveTo(0, (height) - (rms) * height*5)
-    context.lineTo(x, (height) - (rmsmean) * height*5)
-
-    if (!rmsOverThresh && thresholdSurpassed) {
-      crossRMSCallback(thresholdSurpassed)
-    }
-    if (rmsOverThresh && !thresholdSurpassed){
-      crossRMSCallback(thresholdSurpassed)
+    if (rms>rmsThresh) {
+      context.strokeStyle = 'pink';
+      // thresholdSurpassed = true
     }
 
     context.stroke();  
     refID.current = requestAnimationFrame(draw);
 
   }
-
 
   useEffect(() => {
     refID.current = requestAnimationFrame(draw);
@@ -93,4 +81,4 @@ export default function AudioAnalyser ({audio, setHearing, rmsThresh, bufferSize
       <canvas width="300" height="50" ref={canvasRef} />
     </div>
     )
-}
+  }
