@@ -44,9 +44,9 @@ from sse_starlette.sse import EventSourceResponse
 from dotenv import load_dotenv
 from pydub import AudioSegment
 
-from app.utils import Speaker, Logger, Transcriber, Responder
-from app.facilitator import FacilitatorChat, RoleModelFacilitator
-from app.facilitator import DirectorFacilitator, FacilitatorPresets
+from app.utils import Speaker, Logger#, Transcriber, Responder
+# from app.facilitator import FacilitatorChat, RoleModelFacilitator
+# from app.facilitator import DirectorFacilitator, FacilitatorPresets
 from typing import Union
 from pydantic import BaseModel
 
@@ -77,15 +77,15 @@ l.log("Beginning Setup")
 load_dotenv()
 l.log("Setting Up TTS")
 tts = Speaker(backend="polly")
-l.log("TTS Set Up Complete, Setting up STT")
-stt = Transcriber(model_size="small")
+# l.log("TTS Set Up Complete, Setting up STT")
+# stt = Transcriber(model_size="small")
 
-l.log("STT Set Up Complete, Setting up Bots")
-bot = FacilitatorChat(chat_backend="gpt", classifier_backend="llm")
-rmf = RoleModelFacilitator()
-df = DirectorFacilitator()
-presets = FacilitatorPresets()
-chatbot = Responder()
+# l.log("STT Set Up Complete, Setting up Bots")
+# bot = FacilitatorChat(chat_backend="gpt", classifier_backend="llm")
+# rmf = RoleModelFacilitator()
+# df = DirectorFacilitator()
+# presets = FacilitatorPresets()
+# chatbot = Responder()
 
 
 l.log("Conneting API")
@@ -277,7 +277,7 @@ def get_speech(text: str, speaker_id: str = "") -> StreamingResponse:
         Returns:
             StreamingResponse: Audio stream of the voice saying the text."""
     l.log(f"/api/speech: {text}, {speaker_id}")
-    bot.chatbot.accept_response(text)
+    # bot.chatbot.accept_response(text)
 
     global FACE_CONTROL_QUEUE
     global VISEME_DELAYS
@@ -290,118 +290,118 @@ def get_speech(text: str, speaker_id: str = "") -> StreamingResponse:
 
     return StreamingResponse(audio_stream, media_type="audio/wav")
 
-@app.post("/api/conversation")
-def run_conversation(conversation: Conversation):
-    """Takes a conversation as input and gets the bot rosponse
+# @app.post("/api/conversation")
+# def run_conversation(conversation: Conversation):
+#     """Takes a conversation as input and gets the bot rosponse
 
-    Args:
-        conversation (Conversation): Speaker and speech (history and prompt optional)
+#     Args:
+#         conversation (Conversation): Speaker and speech (history and prompt optional)
 
-    Returns:
-        PlainTextResponse: Defaults to generative bot response."""
-    print(conversation)
-    bot_response = chatbot.bot.get_conversation_response(
-            conversation.speaker,
-            conversation.speech,
-            bot_id="AI",
-            prompt=conversation.prompt,
-            history=conversation.history
-        )
-    return PlainTextResponse(bot_response)
+#     Returns:
+#         PlainTextResponse: Defaults to generative bot response."""
+#     print(conversation)
+#     bot_response = chatbot.bot.get_conversation_response(
+#             conversation.speaker,
+#             conversation.speech,
+#             bot_id="AI",
+#             prompt=conversation.prompt,
+#             history=conversation.history
+#         )
+#     return PlainTextResponse(bot_response)
 
 
-@app.get("/api/bot_response")
-def run_generate_response(text: str, speaker: str,
-                      reset_conversation: bool,
-                      director_condition: bool
-    ) -> PlainTextResponse:
-    """Takes input text and generates possible bot responses
+# @app.get("/api/bot_response")
+# def run_generate_response(text: str, speaker: str,
+#                       reset_conversation: bool,
+#                       director_condition: bool
+#     ) -> PlainTextResponse:
+#     """Takes input text and generates possible bot responses
 
-        Possible bot responses include generative responses from the chatbot
-        as well as controlled responses from the facilitator. The classifications
-        used for generating the facilitator response are added as well.
-        Additionally, the emotion that was found in the text is mirrored by
-        the robots expression if it is in the subset of possible expressions (joy
-        sad, surprise)
+#         Possible bot responses include generative responses from the chatbot
+#         as well as controlled responses from the facilitator. The classifications
+#         used for generating the facilitator response are added as well.
+#         Additionally, the emotion that was found in the text is mirrored by
+#         the robots expression if it is in the subset of possible expressions (joy
+#         sad, surprise)
 
-        warning:
-            All of this text is returned asynchronously through the text_stream.
-            The default response is set to the bot response.
+#         warning:
+#             All of this text is returned asynchronously through the text_stream.
+#             The default response is set to the bot response.
 
-        Args:
-            text (str): Input said by a human.
-            speaker (str): Identify of the speaker
-            reset_conversation (bool): Whether or not to restart the conversation.
-            director_condition (bool): Flag for controlling what type of
-                facilitator is used.
+#         Args:
+#             text (str): Input said by a human.
+#             speaker (str): Identify of the speaker
+#             reset_conversation (bool): Whether or not to restart the conversation.
+#             director_condition (bool): Flag for controlling what type of
+#                 facilitator is used.
 
-        Returns:
-            PlainTextResponse: Defaults to generative bot response."""
-    l.log(f"/api/bot_response: '{text}', from {speaker}, "
-          f"reset_conversation: {reset_conversation}, director_condition: {director_condition}")
+#         Returns:
+#             PlainTextResponse: Defaults to generative bot response."""
+#     l.log(f"/api/bot_response: '{text}', from {speaker}, "
+#           f"reset_conversation: {reset_conversation}, director_condition: {director_condition}")
 
-    global TEXT_QUEUE
+#     global TEXT_QUEUE
 
-    classifications = bot.get_classifications(text)
-    TEXT_QUEUE["classifications"].append(classifications)
+#     classifications = bot.get_classifications(text)
+#     TEXT_QUEUE["classifications"].append(classifications)
 
-    if bot.classification_processor.emotion in ["joy", "sad", "surprise"]:
-        l.log(f"Setting face to: {bot.classification_processor.emotion}")
-        FACE_CONTROL_QUEUE["expression"].append(bot.classification_processor.emotion)
-    else:
-        l.log("Setting face to: neutral")
-        FACE_CONTROL_QUEUE["expression"].append("neutral")
+#     if bot.classification_processor.emotion in ["joy", "sad", "surprise"]:
+#         l.log(f"Setting face to: {bot.classification_processor.emotion}")
+#         FACE_CONTROL_QUEUE["expression"].append(bot.classification_processor.emotion)
+#     else:
+#         l.log("Setting face to: neutral")
+#         FACE_CONTROL_QUEUE["expression"].append("neutral")
 
-    facilitator_response = bot.get_facilitator_response(director_condition)
-    TEXT_QUEUE["facilitator_response"].append(facilitator_response)
+#     facilitator_response = bot.get_facilitator_response(director_condition)
+#     TEXT_QUEUE["facilitator_response"].append(facilitator_response)
 
-    bot_response= bot.get_bot_response(text, speaker, reset_conversation)
-    TEXT_QUEUE["bot_response"].append(bot_response)
-    bot.chatbot.reject_response()
+#     bot_response= bot.get_bot_response(text, speaker, reset_conversation)
+#     TEXT_QUEUE["bot_response"].append(bot_response)
+#     bot.chatbot.reject_response()
 
-    return PlainTextResponse(bot_response)
+#     return PlainTextResponse(bot_response)
 
-@app.get("/api/presets")
-def get_response(mode: str, query: str) -> PlainTextResponse:
-    """Returns text presets based on WoZ input
+# @app.get("/api/presets")
+# def get_response(mode: str, query: str) -> PlainTextResponse:
+#     """Returns text presets based on WoZ input
 
-        Mostly useful for controlling the robot during study interactions.
-        Does not use the text_stream as reponse is usually directly output.
+#         Mostly useful for controlling the robot during study interactions.
+#         Does not use the text_stream as reponse is usually directly output.
 
-        Args:
-            mode (str): What mode the facilitator is in. Possibilities include
-                role_model - for when the robot is leading a session as a role model,
-                direcctor - for when the robot is leading a session as a director,
-                and facilitator - for when the robot is not in either condition yet.
-            query (str): Key for looking up matching text response.
+#         Args:
+#             mode (str): What mode the facilitator is in. Possibilities include
+#                 role_model - for when the robot is leading a session as a role model,
+#                 direcctor - for when the robot is leading a session as a director,
+#                 and facilitator - for when the robot is not in either condition yet.
+#             query (str): Key for looking up matching text response.
 
-        Returns:
-            PlainTextResponse: Text for the faciliatator to say."""
-    l.log(f"/api/facilitator_presets: {mode}, {query}")
-    if mode == "facilitator":
-        to_say = presets.responses[query]
-    if mode == "director":
-        if query == "disclosure":
-            to_say = random.choice(df.disclosure_elicitation)
-        if query == "response":
-            to_say = random.choice(df.response_elicitation)
-    if mode == "role_model":
-        if query == "disclosure":
-            emotion = random.choice(list(rmf.disclosures.keys()))
-            transition =random.choice(rmf.transition_to_disclosure).replace("[EMOTION]", emotion)
-            disclosure = random.choice(rmf.disclosures[emotion])
-            re_transition = random.choice(rmf.transition_back_to_group)
-            responses = [transition, disclosure, re_transition]
-            to_say = " ".join(responses)
-        if query == "response":
-            print("getting response")
-            to_say = random.choice(rmf.disclosure_responses["sympathy expressions"]["neutral"])
-            print(to_say)
-            to_say2 = random.choice(rmf.disclosure_responses["clarification requests"])
-            print(to_say,to_say2)
-            to_say = to_say + ". " + to_say2
-    l.log(f"facilitator_presets response: {to_say}")
-    return PlainTextResponse(to_say)
+#         Returns:
+#             PlainTextResponse: Text for the faciliatator to say."""
+#     l.log(f"/api/facilitator_presets: {mode}, {query}")
+#     if mode == "facilitator":
+#         to_say = presets.responses[query]
+#     if mode == "director":
+#         if query == "disclosure":
+#             to_say = random.choice(df.disclosure_elicitation)
+#         if query == "response":
+#             to_say = random.choice(df.response_elicitation)
+#     if mode == "role_model":
+#         if query == "disclosure":
+#             emotion = random.choice(list(rmf.disclosures.keys()))
+#             transition =random.choice(rmf.transition_to_disclosure).replace("[EMOTION]", emotion)
+#             disclosure = random.choice(rmf.disclosures[emotion])
+#             re_transition = random.choice(rmf.transition_back_to_group)
+#             responses = [transition, disclosure, re_transition]
+#             to_say = " ".join(responses)
+#         if query == "response":
+#             print("getting response")
+#             to_say = random.choice(rmf.disclosure_responses["sympathy expressions"]["neutral"])
+#             print(to_say)
+#             to_say2 = random.choice(rmf.disclosure_responses["clarification requests"])
+#             print(to_say,to_say2)
+#             to_say = to_say + ". " + to_say2
+#     l.log(f"facilitator_presets response: {to_say}")
+#     return PlainTextResponse(to_say)
 
 @app.get("/api/face_presets")
 def add_to_face(text: str, update_type: str) -> PlainTextResponse:
@@ -459,28 +459,28 @@ def return_gesture() -> PlainTextResponse:
     # l.log(f"/api/next_gesture: {gesture}")
     return PlainTextResponse(gesture)
 
-@app.post("/api/audio")
-async def run_transcribe_audio(uploaded_file: UploadFile) -> dict:
-    """Perform speech to text on audio file
+# @app.post("/api/audio")
+# async def run_transcribe_audio(uploaded_file: UploadFile) -> dict:
+#     """Perform speech to text on audio file
 
-        transcribes audio from file and adds transcribed text to
-        human_speech in the text queue.
+#         transcribes audio from file and adds transcribed text to
+#         human_speech in the text queue.
 
-        Args:
-            uploaded_file (UploadFile): Recorded audio.
+#         Args:
+#             uploaded_file (UploadFile): Recorded audio.
 
-        Returns:
-            dict: name of the saved audio file."""
-    l.log("/api/audio: temp.wav")
-    contents = uploaded_file.file.read()
-    data_bytes = io.BytesIO(contents)
-    audio_clip = AudioSegment.from_file(data_bytes, codec='opus')
-    l.log_sound(audio_clip)
-    transcription = stt.transcribe_clip(audio_clip)
-    if len(transcription) > 0:
-        if transcription[0] == " ":
-            transcription = transcription[1:] + " "
-        global TEXT_QUEUE
-        TEXT_QUEUE["human_speech"].append(transcription)
-        l.log(f"Speech Detected: {transcription}")
-    return {"filename": "temp.wav"}
+#         Returns:
+#             dict: name of the saved audio file."""
+#     l.log("/api/audio: temp.wav")
+#     contents = uploaded_file.file.read()
+#     data_bytes = io.BytesIO(contents)
+#     audio_clip = AudioSegment.from_file(data_bytes, codec='opus')
+#     l.log_sound(audio_clip)
+#     transcription = stt.transcribe_clip(audio_clip)
+#     if len(transcription) > 0:
+#         if transcription[0] == " ":
+#             transcription = transcription[1:] + " "
+#         global TEXT_QUEUE
+#         TEXT_QUEUE["human_speech"].append(transcription)
+#         l.log(f"Speech Detected: {transcription}")
+#     return {"filename": "temp.wav"}

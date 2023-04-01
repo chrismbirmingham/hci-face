@@ -9,7 +9,7 @@ chosen at runtime by selecting the speaker_identifier.
 """
 
 import argparse
-from .backends import PollySpeak, CoquiSpeak, VisemeGenerator
+from .backends import PollySpeak, VisemeGenerator #CoquiSpeak
 
 
 class Speaker:
@@ -23,8 +23,8 @@ class Speaker:
         self.backend = backend
         if self.backend == "polly":
             self.speaker = PollySpeak()
-        if self.backend == "coqui":
-            self.speaker = CoquiSpeak()
+        # if self.backend == "coqui":
+        #     self.speaker = CoquiSpeak()
         self.viseme_generator = VisemeGenerator()
 
     def synthesize(self, input_text: str, speaker_identifier: str,
