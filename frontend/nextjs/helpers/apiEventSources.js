@@ -1,11 +1,10 @@
 import React from "react"
 import getAUs from '@helpers/AUtransformers/Visemes';
 import getExpresionAUs from '@helpers/AUtransformers/Expressions';
+import {server_ip} from '@constants/serverip'
 
-
-const server_ip = "0.0.0.0"
 function sourceVisemes (mouthUpdater) {
-    const es = new EventSource("http://"+server_ip+":8000/api/viseme_stream");
+    const es = new EventSource(server_ip+"/api/viseme_stream");
     es.addEventListener('open', () => {});
 
     // faceControls should handle vizemes, eyeAU, browAU, mouthAU
@@ -24,7 +23,9 @@ function sourceVisemes (mouthUpdater) {
   }
 
 function sourceFaceCommands (mouthUpdater, browUpdater, eyeUpdaterWrapper, setBehavior) {
-    const es = new EventSource("http://"+server_ip+":8000/api/face_stream");
+  let full_ip = server_ip+"/api/face_stream"
+  console.log(full_ip)
+    const es = new EventSource(full_ip);
     es.addEventListener('open', () => {});
 
     // faceControls should handle emotion, eyeAU, browAU, mouthAU
@@ -45,7 +46,7 @@ function sourceFaceCommands (mouthUpdater, browUpdater, eyeUpdaterWrapper, setBe
 }
 
 function getTextStream(setLatestSpeech, setBotResponse) {
-  const es = new EventSource("http://"+server_ip+":8000/api/text_stream");
+  const es = new EventSource(server_ip+"/api/text_stream");
   es.addEventListener('open', () => {
   });
 
