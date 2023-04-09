@@ -18,7 +18,12 @@ from pathlib import Path
 from contextlib import closing
 from boto3 import Session
 from botocore.exceptions import BotoCoreError, ClientError
-
+try:
+    from viseme_generator import VisemeGenerator
+    from audio_viseme_player import play_audio_viseme
+except ImportError:
+    from .audio_viseme_player import play_audio_viseme
+    from .viseme_generator import VisemeGenerator
 
 session = Session(profile_name="default")
 polly = session.client("polly")
@@ -52,6 +57,7 @@ class PollySpeak():
         self.polly_client = polly
         self.path = Path(__file__).parent
         self.save_path = os.path.join(self.path, default_path)
+        self.viseme_generator = VisemeGenerator()
 
     def synthesize(self, text: str, speaker_id: str = "", save_path: str = None):
         """Turns text into audio and visemes"""
@@ -75,7 +81,6 @@ class PollySpeak():
                 kwargs['LanguageCode'] = lang_code
 
             response = self.polly_client.synthesize_speech(**kwargs)
-            # print("got response", response)
             audio_stream = response['AudioStream']
             output = self.save_path
             with closing(audio_stream) as stream:
@@ -103,13 +108,14 @@ class PollySpeak():
             print(exc)
             raise
         else:
-            return outstream, viseme_list, sleep_times
+            visemes = self.viseme_generator.convert_aws_visemes(viseme_list)
+            return outstream, visemes, sleep_times
 
 
 def main():
     """Testing the integrated functionality of PollySpeak"""
-
-    speaker = PollySpeak(default_path="./output/temp.mp3")
+    default_path="./output/temp.mp3"
+    speaker = PollySpeak(default_path=default_path)
     example = ("Please call Stella.  Ask her to bring these things with her from the store: "
                "Six spoons of fresh snow peas, five thick slabs of blue cheese, "
                "and maybe a snack for her brother Bob.  We also need a small plastic snake "
@@ -117,24 +123,12 @@ def main():
                "and we will go meet her Wednesday at the train station.")
 
     try:
-        # Request speech synthesis
-        _, viseme_list, sleep_times = speaker.synthesize(example, "Aria")
+        _, visemes, delays = speaker.synthesize(example, "Aria")
     except (BotoCoreError, ClientError) as error:
-        # The service returned an error, exit gracefully
         print(error)
         sys.exit(-1)
 
-    # Play the audio using the platform's default player
-    if sys.platform == "win32":
-        os.startfile("./output/temp.mp3")
-    else:
-        # The following works on macOS and Linux. (Darwin = mac, xdg-open = linux).
-        opener = "open" if sys.platform == "darwin" else "xdg-open"
-
-        subprocess.call([opener, "./output/temp.mp3"])
-        for ind, sleep in enumerate(sleep_times):
-            time.sleep(sleep)
-            print(sleep, viseme_list[ind])
+    play_audio_viseme(default_path, visemes, delays)
 
 
 if __name__ == "__main__":

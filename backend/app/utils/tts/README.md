@@ -19,9 +19,9 @@ To use coqui TTS you will just need to pip install TTS, through more information
 To generate speech it is easiest to use the speaker module.
 
 To run this file directly, do so from the utils directory:
-``` py
+``` bash
     cd backend/app/utils/
-    python -m tts.speaker
+    python -m tts.speaker --savepath=./tts/backends/output/temp.wav
 ```
 
 ### Backend Components
@@ -43,6 +43,4 @@ will need a fair amount of work, but that should not change the fundamental modu
     - This will bee done in conjunction with the frontend, to improve the accuracy and number
     of visemes provided. Additional work needs to be done to improve the timing of the
     custom viseme generation.
-- [ ] Coqui documentation
-    - The current module is a mess, I'll clean it up and standardize the documentation.
 <!-- --8<-- [end:ttsroadmap] -->

@@ -9,7 +9,10 @@ chosen at runtime by selecting the speaker_identifier.
 """
 
 import argparse
-from .backends import PollySpeak, VisemeGenerator #CoquiSpeak
+try:
+    from .backends import play_audio_viseme
+except ImportError:
+    from backends import play_audio_viseme
 
 
 class Speaker:
@@ -22,10 +25,17 @@ class Speaker:
     def __init__(self, backend="polly") -> None:
         self.backend = backend
         if self.backend == "polly":
-            self.speaker = PollySpeak()
-        # if self.backend == "coqui":
-        #     self.speaker = CoquiSpeak()
-        self.viseme_generator = VisemeGenerator()
+            try:
+                from .backends import PollySpeak as SpeakerBackend
+            except ImportError:
+                from backends import PollySpeak as SpeakerBackend
+        if self.backend == "coqui":
+            try:
+                from .backends import CoquiSpeak as SpeakerBackend
+            except ImportError:
+                from backends import CoquiSpeak as SpeakerBackend
+
+        self.speaker = SpeakerBackend()
 
     def synthesize(self, input_text: str, speaker_identifier: str,
                    save_path: str = "./tts/backends/output/temp.wav") -> tuple:
@@ -34,29 +44,15 @@ class Speaker:
             Args:
                 input_text (str): input text to say
                 speaker_identifier (str): key for speaker voice
-                save_path (str, optional): path to save wav file. Defaults to "./tts/backends/output/temp.wav".
+                save_path (str, optional): path to save wav file. Defaults to 
+                                            "./tts/backends/output/temp.wav".
 
             Returns:
                 tuple: the audio stream, the visemes, and the viseme timings"""
-        if self.backend == "polly":
-            results = self.speaker.synthesize(input_text,
-                                              speaker_id=speaker_identifier,
-                                              save_path=save_path)
-            audio_stream, visemes, delays = results
-
-            visemes = self.viseme_generator.convert_aws_visemes(visemes)
-
-        if self.backend == "coqui":
-            results = self.speaker.synthesize_wav(input_text,
-                                                  speaker_id=speaker_identifier)
-            audio_stream, speaking_time = results
-
-            # Visemes must be generated and timed manually for coqui
-            visemes = self.viseme_generator.get_visemes(input_text)
-            viseme_length = (speaking_time) / (len(visemes)+1)
-            delays = [viseme_length for i in range(len(visemes))]
-
-        return audio_stream, visemes, delays
+        results = self.speaker.synthesize(input_text,
+                                            speaker_id=speaker_identifier,
+                                            save_path=save_path)
+        return results
 
 
 def main():
@@ -72,16 +68,15 @@ def main():
     parser.add_argument("--text", default="This is what I sound like",
                         help="Text to say")
     parser.add_argument("--speakerid", default="Kevin",
-                        help="location of file to transcribe")
-    parser.add_argument("--savepath", default="./tts/backends/output/temp.wav",
+                        help="speaker id to use (backend dependent)")
+    parser.add_argument("--savepath", default="backends/output/temp.wav",
                     help="location of file to save audio")
 
     args = parser.parse_args()
+
     speaker = Speaker(backend=args.backend)
     _, visemes, delays = speaker.synthesize(args.text, args.speakerid, save_path=args.savepath)
-    visemes_delays = zip(visemes,delays)
-    for i in visemes_delays:
-        print(i)
+    play_audio_viseme(args.savepath, visemes, delays)
 
 if __name__ == "__main__":
     main()
