@@ -48,6 +48,13 @@ cd backend
 pip install -r requirements.txt
 ```
 
+For trouble with torch audio try:
+
+```
+sudo apt-get install libsndfile1.
+sudo apt-get install espeak -y
+```
+
 If you have trouble installing pyaudio, I recommend following [these directions](https://people.csail.mit.edu/hubert/pyaudio/).
 
 This may take a while, depending on your internet connection.  
