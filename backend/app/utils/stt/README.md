@@ -1,10 +1,22 @@
 # Speech To Text
 
-We use a downloaded copy of the whisper speech-to-text model and pyannote to diarize the output. 
+Originally, I thought it would be pretty cool to build a robust speech to text module on top of the recently released whisper module, and to pair that with a cloud api for when running on edge devices. I did all of this, and then realized that the [python speech_recognition module](https://github.com/Uberi/speech_recognition) had already done a better and more complete job than I could ever hope to acomplish. 
 
 ## Installation
 
-To run this sub package directly you will need to have pyaudio, whisper and pyannote installed. Please follow the directions from [MIT for pyaudio](https://people.csail.mit.edu/hubert/pyaudio/), the directions from [openai for whisper](https://github.com/openai/whisper), and [these directions for pyanote](https://github.com/pyannote/pyannote-audio)
+See the instructions [here for installing the speech_recognition module](https://github.com/Uberi/speech_recognition). 
+
+For our purposes, this tl;dr should suffice:
+```bash
+pip install SpeechRecognition
+pip install google-cloud-speech
+pip install git+https://github.com/openai/whisper.git soundfile
+
+```
+
+For simplicity I will be starting with just two of the Recognizers provided, the local whisper model and the google speech recognizer.
+
+
 
 ## Getting Started
 
@@ -16,9 +28,6 @@ To run this file directly, do so from the utils directory:
     python -m stt.transcriber --filename [path/to/file]
 ```
 
-### Backend Components
-
-The backend components (whisper, diarization, and recording) are available as self contained modules for individual usage as well.
 
 ## Details
 
@@ -26,14 +35,17 @@ Whisper has a variety of model sizes and model types. Currently we default to th
 
 For full details on all modules please see the References in the documentation.
 
+The google api only supports files up to 20MB so longer recordings may fail.
+
+Whisper gives punctuation, basic punctuation has been added to google.
+
+
+
 ## Roadmap
 <!-- --8<-- [start:sttroadmap] -->
 The current STT module is stable, but future plans include:
 
+
 - [ ] Live diarization
-    - Diarization is currently only available for transcribing full audio files. Future work will enable integrate the stt more closely with the conversation, so that speakers can be tracked while they are transcribed from audio clips.
-- [ ] Stream handling
-    - Stream segmentation has been moved to the frontend for now. Future work will enable command line support for transcribing live streams.
-- [ ] Cloud STT & Diarization
-    - Currently the stt module is entirely local, as it doesn't require heavy computational resources or a GPU. In the future we will add support for cloud transcription to better support use on lightweight/edge devices.
+    - The diarization has been removed for now, future plans will bring it back with better support.
 <!-- --8<-- [end:sttroadmap] -->
