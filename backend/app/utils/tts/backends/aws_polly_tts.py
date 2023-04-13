@@ -79,7 +79,6 @@ class PollySpeak():
                 'VoiceId': voice}
             if lang_code is not None:
                 kwargs['LanguageCode'] = lang_code
-
             response = self.polly_client.synthesize_speech(**kwargs)
             audio_stream = response['AudioStream']
             output = self.save_path
@@ -105,7 +104,7 @@ class PollySpeak():
                 sleep_times.append(wait_seconds/1000)
                 t_before = next_t
         except ClientError as exc:
-            print(exc)
+            print("Client error: ", exc)
             raise
         else:
             visemes = self.viseme_generator.convert_aws_visemes(viseme_list)

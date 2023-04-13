@@ -36,9 +36,12 @@ class VisemeGenerator:
                 if len(viseme_dict) < 1:
                     if self.log:
                         print(f"Viseme for: {ipa} NOT FOUND")
-            viseme = viseme_dict["SimpleViseme"].values[0]
+            if ipa == "sil":
+                viseme = "IDLE"
+            else:
+                viseme = viseme_dict["SimpleViseme"].values[0]
         except Exception as exc:
-            print(exc)
+            print(f"Get viseme [{ipa}] failed: {exc}")
             viseme = "IDLE"
         return viseme
 
