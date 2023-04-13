@@ -9,8 +9,9 @@ import EyeCordial from './cordial/eyes';
 import MouthQT from "./qt/mouth";
 import BrowQT from "./qt/brow";
 import EyeQT from './qt/eyes';
+import { useEffect } from "react";
 
-function Head({face, position, eyeAU, browAU, mouthAU}){
+function HeadDisplay({face, position, eyeAU, browAU, mouthAU}){
     position.faceColor = "#CCC" // "#D7E4F5"
     position.right_eye.faceColor = position.faceColor
     position.left_eye.faceColor = position.faceColor
@@ -19,6 +20,10 @@ function Head({face, position, eyeAU, browAU, mouthAU}){
     let x_0 = -50.9
     let y_0 = -30.5
     let viewBox = x_0 + " " + y_0  + " " +  width  + " " + height
+
+    useEffect (() => {
+    },[eyeAU, browAU, mouthAU]
+    )
 
     return (
       <div id="head">
@@ -71,4 +76,4 @@ function Head({face, position, eyeAU, browAU, mouthAU}){
     )
 }
 
-export default Head
+export default HeadDisplay

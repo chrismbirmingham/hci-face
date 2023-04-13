@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-// import { startRecording, saveRecording } from "./recorder-controls";
+import {server_ip, localhostip} from '@constants/serverip'
 
 const initialState = {
   recordingMinutes: 0,
@@ -13,7 +13,6 @@ const initialState = {
 async function startRecording(setRecorderState) {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    // console.log("setting the stream")
     setRecorderState((prevState) => {
       return {
         ...prevState,
@@ -21,18 +20,13 @@ async function startRecording(setRecorderState) {
         mediaStream: stream,
       };
     });
-    // console.log("stream set")
   } catch (err) {
-    // console.log(err);
   }
 }
 
 export function saveRecording(recorder) {
-  // console.log("saving the recording")
-  // console.log(recorder)
   if (recorder && recorder.state !== "inactive") {
     recorder.stop();
-    // console.log("Should be stopped")
   }
   // recorder.stop();
 }
@@ -85,22 +79,18 @@ export default function useRecorder() {
   }, [recorderState.mediaStream]);
 
   useEffect(() => { //if recorderState.mediaRecorder changes, set recorder to it
-    // console.log("mediaRecorder state changed")
     const recorder = recorderState.mediaRecorder;
-    // console.log("new state: ", recorder)
     let chunks = [];
 
     if (recorder && recorder.state === "inactive") {
-      // console.log("recorder was innactive, starting")
       recorder.start();
 
       recorder.ondataavailable = (e) => {
-        // console.log("recorder data available, pushing data on chunks")
         chunks.push(e.data);
       };
 
       recorder.onstop = () => {
-        // console.log("Stopping Recording", chunks)
+        console.log("Stopping Recording", chunks)
         const audioBlob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
         const audioFile = new File([audioBlob], "audiofile.wav", {
           type: "audio/mpeg",
@@ -109,23 +99,24 @@ export default function useRecorder() {
         const formData = new FormData();
         formData.append('uploaded_file', audioFile);
         if (audioBlob.size >1000){
-          fetch('//localhost:8000/api/audio', {
+          fetch(server_ip+'/api/audio', {
             headers: { Accept: "application/json",
-          },
+            },
             method: "POST", body: formData
-          });
+            });
         }
         else {console.log("not uploading, blob size"+audioBlob.size)}
 
         chunks = [];
-        // console.log("set up initial state")
         setRecorderState((prevState) => {
-          if (prevState.mediaRecorder)
+          if (prevState.mediaRecorder) {
             return {
               ...initialState,
               audio: window.URL.createObjectURL(audioBlob),
             };
-          else return initialState;
+          } else {
+            return initialState;
+          }
         });
       };
     }
@@ -138,13 +129,10 @@ export default function useRecorder() {
   return {
     recorderState,
     startRecording: () => {
-      // console.log("Hitting start recording"); 
       startRecording(setRecorderState)},
     cancelRecording: () => {
-      // console.log("Hitting cancel recording");
       setRecorderState(initialState)},
     saveRecording: () => {
-      // console.log("Hitting save recording");
       saveRecording(recorderState.mediaRecorder)},
   };
 }

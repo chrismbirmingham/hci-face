@@ -1,33 +1,34 @@
 import Head from 'next/head';
-import styles from '../styles/Home.module.css';
+// import styles from '../styles/Home.module.css';
 // import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className={styles.container}>
+    <div className='text-6xl text-green-600 p-2'>
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        <h1 className={styles.title}>
+      <main className='text-6xl text-green-600 p-2'>
+        <div className='text-4xl text-green-600 p-2'>
           Welcome to HCI Face!
-        </h1>
-        <h1 className="title">
+        </div>
+        <h3 className="title">
             Pages:
-        </h1>
-        <br></br>See WoZ on <a href="/woz">this page!</a>
-        <br></br>See recorder on <a href="/recording">this page!</a>
-        <br></br>See face on <a href="/face">this page!</a>
-        <br></br>Play faces on <a href="/playfaces">this page!</a>
-        <br></br>Control face with <a href="/control">this page!</a>
-        <br></br>Converse face with <a href="/converse">this page!</a>
-        <br></br>Have a conversation with <a href="/conversation">this page!</a>
+        </h3>
+        <br></br>Make your own transcription on <a href="/transcription">this page!</a>
+        <br></br>Puppet the face with <a href="/puppeteering">this page!</a>
+        <br></br>Have a text conversation on <a href="/text_conversation">this page!</a>
+        <br></br>Interact with a robot on <a href="/multimodal_interaction">this page!</a>
+        <br></br>
+        <br></br>Show just the face on <a href="/face">this page!</a>
+        <br></br>Play with Action units on <a href="/playfaces">this page!</a>
+        <br></br>Fine tune your mic with <a href="/mic_playground">this page!</a>
 
       </main>
 
-      <style jsx>{`
+      {/* <style jsx>{`
         main {
           padding: 5rem 0;
           flex: 1;
@@ -76,7 +77,7 @@ export default function Home() {
         * {
           box-sizing: border-box;
         }
-      `}</style>
+      `}</style> */}
     </div>
   )
 }

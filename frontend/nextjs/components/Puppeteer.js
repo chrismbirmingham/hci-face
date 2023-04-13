@@ -1,21 +1,16 @@
 import React, { useState } from "react";
 import RobotControls from './Forms/robotControls';
-import getDeadTime from './timer/utils';
 import {requestFaceUpdate, requestSpeech} from "@helpers/apiRequests"
 
 
-const Controller = ({ classes }) => {
+const Puppeteer = ({ setAudioPlaying=()=>{} }) => {
 
-  // Variables with state
-  const [timerDeadline, setTimerDeadline] = useState("")
-  const [timerLength, setTimerLength] = useState('25');
-  const [speakerVoice, setSpeakerVoice] = useState("p270");
-  // const [showForm, setFormToggle] = useState(false);
+  const [speakerVoice, setSpeakerVoice] = useState("Aria");
   const [viseme, setViseme] = useState("");
-  const [expression, setExpression] = useState("");
+  const [expression, setExpression] = useState("neutral");
   const [behavior, setBehavior] = useState("focused");
   const [textToSay, setTextToSay] = useState("This is an example of what I sound like when I am talking.");
-  const [audioPlaying, setAudioPlaying] = useState(false);
+  // const [audioPlaying, setAudioPlaying] = useState(false);
 
   function update_behavior(name){
     setBehavior(name)
@@ -45,8 +40,6 @@ const Controller = ({ classes }) => {
     <div className="Face">
       <header className="Face-header"></header>
       <RobotControls
-        setTimerDeadline={setTimerDeadline}
-        getDeadTime={getDeadTime}
         showForm={true} 
         do_tts={ttsWrapper} 
         textToSay={textToSay} 
@@ -58,11 +51,9 @@ const Controller = ({ classes }) => {
         speakerVoice={speakerVoice} 
         setSpeakerVoice={setSpeakerVoice} 
         viseme={viseme} 
-        update_viseme={update_viseme} 
-        timerLength={timerLength} 
-        setMinuteGoal={setTimerLength}/>
+        update_viseme={update_viseme} />
     </div>
   );
 }
 
-export default Controller;
+export default Puppeteer;

@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from "react";
-import Mic from '@components/mic/Microphone';
-import AutoMic from '@components/mic/AutoMic';
-import { getTextStream } from "@helpers/apiEventSources";
+import Microphone from '@components/Microphone';
+import { getTranscribedSpeech } from "@helpers/apiEventSources";
 
 
 const Transcriber = ({ classes }) => {
+  // The transcriber uses the Microphone component, which can
+  // be either a set of buttons or an automatic voice detector.
+  // The transcriber takes no arguments, updating the transcript
+  // through the use of a transcribed_speech Event Source
+  // TODO set text to component for UX management
   const [transcribedData, setTranscribedData] = useState([]);
-  const [audioPlaying, setAudioPlaying] = useState(false);
   const [latestSpeech, setLatestSpeech] = useState("");
-  const [botResponse, setBotResponse] = useState("This is the bot response");
 
   function updateTranscription () {
     setTranscribedData(oldData => [oldData+latestSpeech]);
   }
 
-  useEffect(() => {getTextStream(setLatestSpeech, setBotResponse)}, []);
+  useEffect(() => {getTranscribedSpeech(setLatestSpeech)}, []);
   useEffect(updateTranscription,[latestSpeech])
 
 
   return (
-    <div className="WoZ">
-      <header className="WoZ-header"></header>
-      <AutoMic audioPlaying={audioPlaying}/>
+    <div className="Transcriber">
+      <header className="Transcriber-header"></header>
+      <Microphone/>
       <label>Editable transcript of what has been said:<br></br>
             <textarea 
             cols={100}

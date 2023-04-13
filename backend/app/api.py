@@ -33,8 +33,8 @@ example: Typical usage
 """
 
 import asyncio
-import random
 import io
+from typing import Union
 
 from fastapi import FastAPI, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -43,15 +43,15 @@ from fastapi.responses import StreamingResponse, PlainTextResponse
 from sse_starlette.sse import EventSourceResponse
 from dotenv import load_dotenv
 from pydub import AudioSegment
-
-from app.utils import Speaker, Logger#, Transcriber, Responder
-# from app.facilitator import FacilitatorChat, RoleModelFacilitator
-# from app.facilitator import DirectorFacilitator, FacilitatorPresets
-from typing import Union
 from pydantic import BaseModel
 
+try:
+    from app.utils import Speaker, Logger, Transcriber, Responder
+except ImportError:
+    from utils import Speaker, Logger, Transcriber, Responder
 
-LOGS_DIR = "./logs/pilot1"
+
+LOGS_DIR = "./logs/development2"
 FACE_CONTROL_QUEUE = {
     "expression":[],
     "behavior":[],
@@ -61,7 +61,7 @@ FACE_CONTROL_QUEUE = {
     "brow_aus":[],
 }
 TEXT_QUEUE = {
-    "human_speech":[],
+    "transcribed_speech":[],
     "bot_response":[],
     "facilitator_response":[],
     "classifications":[],
@@ -73,24 +73,22 @@ RETRY_TIMEOUT = 15000  # milisecond
 
 
 l = Logger(folder=LOGS_DIR)
-l.log("Beginning Setup")
+l.log("Beginning Setup...")
 load_dotenv()
-l.log("Setting Up TTS")
+l.log("Setting Up TTS...")
 tts = Speaker(backend="polly")
-# l.log("TTS Set Up Complete, Setting up STT")
-# stt = Transcriber(model_size="small")
-
-# l.log("STT Set Up Complete, Setting up Bots")
-# bot = FacilitatorChat(chat_backend="gpt", classifier_backend="llm")
-# rmf = RoleModelFacilitator()
-# df = DirectorFacilitator()
-# presets = FacilitatorPresets()
-# chatbot = Responder()
+l.log("...TTS Set Up Done")
+l.log("Setting up STT...")
+stt = Transcriber(service="whisper", model_size="base")
+l.log("...STT Set Up Done")
+l.log("Setting up Bots...")
+chatbot = Responder()
+l.log("...Setting up Bots Done")
 
 
-l.log("Conneting API")
+l.log("Conneting API...")
 app = FastAPI(debug=True)
-l.log("Setup Complete")
+l.log("... All Setup Completed")
 
 
 origins = [
@@ -105,7 +103,7 @@ origins = [
 
 app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"]
@@ -119,11 +117,13 @@ class Conversation(BaseModel):
 
 
 @app.get("/", tags=["root"])
+@l.log_function
 async def read_root() -> dict:
     return {"message": "Welcome to fastapi for HCI-Face."}
 
 @app.get('/api/viseme_stream')
-async def stream_viseme(request: Request):
+@l.log_function
+async def stream_viseme(request: Request) -> EventSourceResponse:
     """Publishes visemes to a subscriber
 
         Publishes the viseme after the corresponding viseme delay.
@@ -146,7 +146,6 @@ async def stream_viseme(request: Request):
         Yields:
             Iterator[EventSourceResponse]: Strings for a viseme
                 (the desired shape of the mouth)"""
-    l.log("/api/visemes: request recieved.")
     async def event_generator():
         while True:
             global VISEME_DELAYS
@@ -176,6 +175,7 @@ async def stream_viseme(request: Request):
     return EventSourceResponse(event_generator())
 
 @app.get('/api/face_stream')
+@l.log_function
 async def stream_face(request: Request) -> EventSourceResponse:
     """Publishes face control messages to a subscriber
 
@@ -193,7 +193,6 @@ async def stream_face(request: Request) -> EventSourceResponse:
         Yields:
             Iterator[EventSourceResponse]: Strings for a face behavior or
                 expression"""
-    # l.log("/api/face_stream: request recieved.")
     async def event_generator():
         while True:
             # If client closes connection, stop sending events
@@ -221,8 +220,9 @@ async def stream_face(request: Request) -> EventSourceResponse:
 
     return EventSourceResponse(event_generator())
 
-@app.get('/api/text_stream')
-async def stream_text(request: Request):
+@app.get('/api/transcribed_speech')
+@l.log_function
+async def stream_transcription(request: Request) -> EventSourceResponse:
     """Publishes text messages to a subscriber
 
         Publishes messages as soon as they are added to the queue.
@@ -236,7 +236,6 @@ async def stream_text(request: Request):
 
         Yields:
             Iterator[EventSourceResponse]: Strings of text"""
-    l.log("/api/text: request recieved.")
     async def event_generator():
         while True:
             # If client closes connection, stop sending events
@@ -246,23 +245,63 @@ async def stream_text(request: Request):
 
             global TEXT_QUEUE
             # Checks for new messages and return them to client if any
-            for key, msg_queue in TEXT_QUEUE.items():
-                if len(msg_queue) >0:
-                    data = msg_queue.pop(0)
-                    l.log(f"Text message: {key}: {data}")
-                    response = {
-                            "event": key,
-                            "id": "message_id",
-                            "retry": RETRY_TIMEOUT,
-                            "data": data,
-                    }
-                    yield response
+            if len(TEXT_QUEUE["transcribed_speech"]) >0:
+                data = TEXT_QUEUE["transcribed_speech"].pop(0)
+                l.log(f"transcribed_speech: {data}")
+                response = {
+                        "event": "message",
+                        "id": "message_id",
+                        "retry": RETRY_TIMEOUT,
+                        "data": data,
+                }
+                yield response
 
             await asyncio.sleep(.03)
 
     return EventSourceResponse(event_generator())
 
-@app.get("/api/speech")
+@app.get('/api/bot_response')
+@l.log_function
+async def stream_bots(request: Request) -> EventSourceResponse:
+    """Publishes text messages to a subscriber
+
+        Publishes messages as soon as they are added to the queue.
+
+        Args:
+            request (Request): Request for event generator when
+                    API is called.
+
+        Returns:
+            EventSourceResponse: Server Sent Event (sse) source.
+
+        Yields:
+            Iterator[EventSourceResponse]: Strings of text"""
+    async def event_generator():
+        while True:
+            # If client closes connection, stop sending events
+            if await request.is_disconnected():
+                # print("Disconnected")
+                break
+
+            global TEXT_QUEUE
+            # Checks for new messages and return them to client if any
+            if len(TEXT_QUEUE["bot_response"]) >0:
+                data = TEXT_QUEUE["bot_response"].pop(0)
+                l.log(f"bot_response: {data}")
+                response = {
+                        "event": "message",
+                        "id": "message_id",
+                        "retry": RETRY_TIMEOUT,
+                        "data": data,
+                }
+                yield response
+
+            await asyncio.sleep(.03)
+
+    return EventSourceResponse(event_generator())
+
+@app.get("/api/bot_speech")
+@l.log_function
 def get_speech(text: str, speaker_id: str = "") -> StreamingResponse:
     """Synthesizes wav bytes from text, with a given speaker ID
 
@@ -276,9 +315,7 @@ def get_speech(text: str, speaker_id: str = "") -> StreamingResponse:
 
         Returns:
             StreamingResponse: Audio stream of the voice saying the text."""
-    l.log(f"/api/speech: {text}, {speaker_id}")
-    # bot.chatbot.accept_response(text)
-
+    # l.log(f"Function get_speech generating speech for: {text} with speaker: {speaker_id}")
     global FACE_CONTROL_QUEUE
     global VISEME_DELAYS
     dt_string = l.get_date_str()
@@ -290,120 +327,32 @@ def get_speech(text: str, speaker_id: str = "") -> StreamingResponse:
 
     return StreamingResponse(audio_stream, media_type="audio/wav")
 
-# @app.post("/api/conversation")
-# def run_conversation(conversation: Conversation):
-#     """Takes a conversation as input and gets the bot rosponse
+@app.post("/api/conversation")
+@l.log_function
+def run_conversation(conversation: Conversation):
+    """Takes a conversation as input and gets the bot rosponse
 
-#     Args:
-#         conversation (Conversation): Speaker and speech (history and prompt optional)
+    Args:
+        conversation (Conversation): Speaker and speech (history and prompt optional)
 
-#     Returns:
-#         PlainTextResponse: Defaults to generative bot response."""
-#     print(conversation)
-#     bot_response = chatbot.bot.get_conversation_response(
-#             conversation.speaker,
-#             conversation.speech,
-#             bot_id="AI",
-#             prompt=conversation.prompt,
-#             history=conversation.history
-#         )
-#     return PlainTextResponse(bot_response)
+    Returns:
+        PlainTextResponse: Defaults to generative bot response."""
+    print(conversation)
+    bot_response = chatbot.bot.get_conversation_response(
+            conversation.speaker,
+            conversation.speech,
+            bot_id="AI",
+            prompt=conversation.prompt,
+            history=conversation.history
+        )
+    print(bot_response)
+    return PlainTextResponse(bot_response)
 
 
-# @app.get("/api/bot_response")
-# def run_generate_response(text: str, speaker: str,
-#                       reset_conversation: bool,
-#                       director_condition: bool
-#     ) -> PlainTextResponse:
-#     """Takes input text and generates possible bot responses
 
-#         Possible bot responses include generative responses from the chatbot
-#         as well as controlled responses from the facilitator. The classifications
-#         used for generating the facilitator response are added as well.
-#         Additionally, the emotion that was found in the text is mirrored by
-#         the robots expression if it is in the subset of possible expressions (joy
-#         sad, surprise)
-
-#         warning:
-#             All of this text is returned asynchronously through the text_stream.
-#             The default response is set to the bot response.
-
-#         Args:
-#             text (str): Input said by a human.
-#             speaker (str): Identify of the speaker
-#             reset_conversation (bool): Whether or not to restart the conversation.
-#             director_condition (bool): Flag for controlling what type of
-#                 facilitator is used.
-
-#         Returns:
-#             PlainTextResponse: Defaults to generative bot response."""
-#     l.log(f"/api/bot_response: '{text}', from {speaker}, "
-#           f"reset_conversation: {reset_conversation}, director_condition: {director_condition}")
-
-#     global TEXT_QUEUE
-
-#     classifications = bot.get_classifications(text)
-#     TEXT_QUEUE["classifications"].append(classifications)
-
-#     if bot.classification_processor.emotion in ["joy", "sad", "surprise"]:
-#         l.log(f"Setting face to: {bot.classification_processor.emotion}")
-#         FACE_CONTROL_QUEUE["expression"].append(bot.classification_processor.emotion)
-#     else:
-#         l.log("Setting face to: neutral")
-#         FACE_CONTROL_QUEUE["expression"].append("neutral")
-
-#     facilitator_response = bot.get_facilitator_response(director_condition)
-#     TEXT_QUEUE["facilitator_response"].append(facilitator_response)
-
-#     bot_response= bot.get_bot_response(text, speaker, reset_conversation)
-#     TEXT_QUEUE["bot_response"].append(bot_response)
-#     bot.chatbot.reject_response()
-
-#     return PlainTextResponse(bot_response)
-
-# @app.get("/api/presets")
-# def get_response(mode: str, query: str) -> PlainTextResponse:
-#     """Returns text presets based on WoZ input
-
-#         Mostly useful for controlling the robot during study interactions.
-#         Does not use the text_stream as reponse is usually directly output.
-
-#         Args:
-#             mode (str): What mode the facilitator is in. Possibilities include
-#                 role_model - for when the robot is leading a session as a role model,
-#                 direcctor - for when the robot is leading a session as a director,
-#                 and facilitator - for when the robot is not in either condition yet.
-#             query (str): Key for looking up matching text response.
-
-#         Returns:
-#             PlainTextResponse: Text for the faciliatator to say."""
-#     l.log(f"/api/facilitator_presets: {mode}, {query}")
-#     if mode == "facilitator":
-#         to_say = presets.responses[query]
-#     if mode == "director":
-#         if query == "disclosure":
-#             to_say = random.choice(df.disclosure_elicitation)
-#         if query == "response":
-#             to_say = random.choice(df.response_elicitation)
-#     if mode == "role_model":
-#         if query == "disclosure":
-#             emotion = random.choice(list(rmf.disclosures.keys()))
-#             transition =random.choice(rmf.transition_to_disclosure).replace("[EMOTION]", emotion)
-#             disclosure = random.choice(rmf.disclosures[emotion])
-#             re_transition = random.choice(rmf.transition_back_to_group)
-#             responses = [transition, disclosure, re_transition]
-#             to_say = " ".join(responses)
-#         if query == "response":
-#             print("getting response")
-#             to_say = random.choice(rmf.disclosure_responses["sympathy expressions"]["neutral"])
-#             print(to_say)
-#             to_say2 = random.choice(rmf.disclosure_responses["clarification requests"])
-#             print(to_say,to_say2)
-#             to_say = to_say + ". " + to_say2
-#     l.log(f"facilitator_presets response: {to_say}")
-#     return PlainTextResponse(to_say)
 
 @app.get("/api/face_presets")
+@l.log_function
 def add_to_face(text: str, update_type: str) -> PlainTextResponse:
     """Sends desired expression, behavior, or viseme to the face
 
@@ -417,7 +366,6 @@ def add_to_face(text: str, update_type: str) -> PlainTextResponse:
 
         Returns:
             PlainTextResponse: returns the requested text."""
-    l.log(f"/api/face_presets: {text}, {update_type}")
     if update_type == "expression":
         FACE_CONTROL_QUEUE["expression"].append(text)
     if update_type == "behavior":
@@ -428,6 +376,7 @@ def add_to_face(text: str, update_type: str) -> PlainTextResponse:
     return PlainTextResponse(text)
 
 @app.get("/api/qt_gesture")
+@l.log_function
 def add_to_gesture(text: str) -> PlainTextResponse:
     """Add desired gesture to queue for the robot
 
@@ -438,11 +387,11 @@ def add_to_gesture(text: str) -> PlainTextResponse:
 
         Returns:
             PlainTextResponse: Returns the specified gesture."""
-    l.log(f"/api/qt_gestures: {text}")
     GESTURE_QUEUE.append(text)
     return PlainTextResponse(text)
 
 @app.get("/api/next_gesture")
+@l.log_function
 def return_gesture() -> PlainTextResponse:
     """Get next gesture from the queue.
 
@@ -456,31 +405,34 @@ def return_gesture() -> PlainTextResponse:
         gesture = GESTURE_QUEUE.pop()
         l.log(f"/api/next_gesture: {gesture}")
     else: gesture=""
-    # l.log(f"/api/next_gesture: {gesture}")
     return PlainTextResponse(gesture)
 
-# @app.post("/api/audio")
-# async def run_transcribe_audio(uploaded_file: UploadFile) -> dict:
-#     """Perform speech to text on audio file
+@app.post("/api/audio")
+@l.log_function
+async def run_transcribe_audio(uploaded_file: UploadFile) -> dict:
+    """Perform speech to text on audio file
 
-#         transcribes audio from file and adds transcribed text to
-#         human_speech in the text queue.
+        transcribes audio from file and adds transcribed text to
+        human_speech in the text queue.
 
-#         Args:
-#             uploaded_file (UploadFile): Recorded audio.
+        Args:
+            uploaded_file (UploadFile): Recorded audio.
 
-#         Returns:
-#             dict: name of the saved audio file."""
-#     l.log("/api/audio: temp.wav")
-#     contents = uploaded_file.file.read()
-#     data_bytes = io.BytesIO(contents)
-#     audio_clip = AudioSegment.from_file(data_bytes, codec='opus')
-#     l.log_sound(audio_clip)
-#     transcription = stt.transcribe_clip(audio_clip)
-#     if len(transcription) > 0:
-#         if transcription[0] == " ":
-#             transcription = transcription[1:] + " "
-#         global TEXT_QUEUE
-#         TEXT_QUEUE["human_speech"].append(transcription)
-#         l.log(f"Speech Detected: {transcription}")
-#     return {"filename": "temp.wav"}
+        Returns:
+            dict: name of the saved audio file."""
+    contents = uploaded_file.file.read()
+    data_bytes = io.BytesIO(contents)
+    audio_clip = AudioSegment.from_file(data_bytes, codec='opus')
+    l.log_sound(audio_clip)
+    audio_clip.export(f"temp.wav", format="wav")
+    # transcription = stt.transcribe_clip(audio_clip)
+    transcription = stt.transcribe_file("temp.wav")
+    if len(transcription) > 0:
+        if transcription[0] == " ":
+            transcription = transcription[1:] + " "
+        if transcription[-1] != " ":
+            transcription = transcription + " "
+        global TEXT_QUEUE
+        TEXT_QUEUE["transcribed_speech"].append(transcription)
+        l.log(f"Speech Detected: {transcription}")
+    return {"filename": "temp.wav"}

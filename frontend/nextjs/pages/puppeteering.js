@@ -1,13 +1,13 @@
 import React from "react";
 import Face from "@components/Face";
-import Controller from "@components/Controller";
+import Puppeteer from "@components/Puppeteer";
 
-export default function DisplayFace() {
+export default function Puppeteering() {
 
   return (
     <div>
       <Face />
-      <Controller />
+      <Puppeteer />
       <a href="/">Back to home</a>
     </div>
   );
