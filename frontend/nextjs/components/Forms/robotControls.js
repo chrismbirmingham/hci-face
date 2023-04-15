@@ -19,7 +19,7 @@ export default function RobotControls ({
     return(
 
     <div id="formcontent" hidden={!showForm}>
-        <h4>Robot Control Requires Backend</h4>
+        <h4 className="text-3xl font-bold p-2">Robot Control Requires Backend</h4>
         {set_dropdown("Behaviors", behavior, update_behavior, behaviors)}
         {set_dropdown("Expressions", expression, update_expression, expressions)}
         <label>Enter viseme to show:

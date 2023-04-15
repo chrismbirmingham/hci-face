@@ -49,7 +49,7 @@ const Face = ({ classes }) => {
   return (
     <div className="Face">
       <header className="Face-header"></header>
-      <div id="robot-container">
+      <div id="robot-container" className="max-w-4xl">
           <HeadDisplay face={display} position={positions} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
       </div>
     {set_dropdown("Face", display, setDisplay, faces)}

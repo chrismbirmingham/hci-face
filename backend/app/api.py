@@ -51,7 +51,7 @@ except ImportError:
     from utils import Speaker, Logger, Transcriber, Responder
 
 
-LOGS_DIR = "./logs/development2"
+LOGS_DIR = "./logs/development3"
 FACE_CONTROL_QUEUE = {
     "expression":[],
     "behavior":[],
@@ -168,8 +168,8 @@ async def stream_viseme(request: Request) -> EventSourceResponse:
                 yield response
             if len(VISEME_DELAYS)>0:
                 sleep_delay = VISEME_DELAYS.pop(0)
-                # l.log(f"Sleep Delay: {sleep_delay}", printnow=True)
-                await asyncio.sleep(sleep_delay)
+                l.log(f"Sleep Delay: {sleep_delay}", printnow=True)
+                await asyncio.sleep(sleep_delay*2)
             else:await asyncio.sleep(.05)
 
     return EventSourceResponse(event_generator())

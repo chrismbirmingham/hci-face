@@ -5,7 +5,6 @@ export default function about() {
   return (
     <div>
       <Interaction />
-      <a href="/">Back to home</a>
     </div>
   );
 }

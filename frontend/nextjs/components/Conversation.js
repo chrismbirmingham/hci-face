@@ -39,7 +39,7 @@ const Conversation = ({ classes }) => {
     }
   }
 
-  useEffect(() => {getBotResponse(setLatestSpeech, setBotResponse)}, []);
+  useEffect(() => {getBotResponse(setBotResponse)}, []);
   useEffect(respondToHumanSpeech,[latestSpeech])
   useEffect(respondToBotSpeech,[botResponse])
 
@@ -47,7 +47,6 @@ const Conversation = ({ classes }) => {
   return (
     <div id="divid" className="Conversation">
       <header className="Conversation-header"></header>
-      {/* <Microphone audioPlaying={audioPlaying}/> */}
       <label>Enter the starting prompt: <br></br>
             <textarea 
                 cols={100}

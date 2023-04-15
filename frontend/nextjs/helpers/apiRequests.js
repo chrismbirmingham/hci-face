@@ -45,7 +45,10 @@ function requestSpeech(text, setAudioPlaying, speakerVoice){
         const audio = new Audio(audioUrl)
         setAudioPlaying(true)
         audio.play();
-        audio.addEventListener('ended', () => {setAudioPlaying(false)});
+        audio.addEventListener('ended', () => {
+            setTimeout(()=> {setAudioPlaying(false)}, 100)
+            
+        });
     }).catch(function (err) {
         console.log(err)
         setAudioPlaying(false)

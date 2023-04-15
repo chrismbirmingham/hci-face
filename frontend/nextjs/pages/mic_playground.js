@@ -3,11 +3,12 @@ import Microphone from "@components/Microphone";
 
 const Playground = () => {
   return (
-    <div className="text-3xl font-bold underline">
-      <h1>Microphone Playground</h1>
+    <div className="bg-green-600">
+      <h1 className="text-4xl">Microphone Playground</h1>
+      <br></br>
       <p>Use the playground to fine tune settings for your microphone.</p>
+      <br></br>
       <Microphone />
-      <a href="/">Back to home</a>
     </div>
   );
 };

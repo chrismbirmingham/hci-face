@@ -26,7 +26,7 @@ function HeadDisplay({face, position, eyeAU, browAU, mouthAU}){
     )
 
     return (
-      <div id="head">
+      <div>
           {face==="default" ?
           <svg viewBox={viewBox} xmlns="http://www.w3.org/2000/svg">
             <rect id="face" x="-50" y="-30" width="100" height="59" fill={position.faceColor} stroke="black" strokeWidth="2"/>
@@ -35,7 +35,7 @@ function HeadDisplay({face, position, eyeAU, browAU, mouthAU}){
             <Brow id="leftbrow" position={position.left_brow} browAU={browAU}/>
             <Brow id="rightbrow" position={position.right_brow} browAU={browAU}/>
             <Mouth position={position.mouth} mouthAU={mouthAU} />
-          </svg>:<div></div>
+          </svg>:<></>
           }
           {face==="qt" ?
           <svg viewBox={viewBox} xmlns="http://www.w3.org/2000/svg">
@@ -45,7 +45,7 @@ function HeadDisplay({face, position, eyeAU, browAU, mouthAU}){
             <BrowQT id="leftbrow" position={position.left_brow} browAU={browAU}/>
             <BrowQT id="rightbrow" position={position.right_brow} browAU={browAU}/>
             <MouthQT position={position.mouth} mouthAU={mouthAU} />
-          </svg>:<div></div>
+          </svg>:<></>
           }
           {face==="cordial" ?
           <svg viewBox={viewBox} xmlns="http://www.w3.org/2000/svg">
@@ -55,7 +55,7 @@ function HeadDisplay({face, position, eyeAU, browAU, mouthAU}){
             <BrowCordial id="leftbrow" position={position.left_brow} browAU={browAU}/>
             <BrowCordial id="rightbrow" position={position.right_brow} browAU={browAU}/>
             <MouthCodial position={position.mouth} mouthAU={mouthAU} />
-          </svg>:<div></div>
+          </svg>:<></>
         }
         {face==="qt_head" ?
           <svg viewBox={x_0+" "+-50+" "+width+" "+110} xmlns="http://www.w3.org/2000/svg">
@@ -70,9 +70,9 @@ function HeadDisplay({face, position, eyeAU, browAU, mouthAU}){
             <BrowQT id="leftbrow" position={position.left_brow} browAU={browAU}/>
             <BrowQT id="rightbrow" position={position.right_brow} browAU={browAU}/>
             <MouthQT position={position.mouth} mouthAU={mouthAU} />
-          </svg>:<div></div>
+          </svg>:<></>
           }
-        </div> 
+      </div> 
     )
 }
 

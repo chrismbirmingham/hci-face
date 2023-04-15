@@ -8,7 +8,6 @@ export default function DisplayControlAUs() {
     <div>
       <Face />
       <ControlAUs />
-      <a href="/">Back to home</a>
     </div>
   );
 }

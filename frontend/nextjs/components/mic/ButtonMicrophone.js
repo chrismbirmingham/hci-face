@@ -3,7 +3,6 @@ import useRecorder from "./useRecorder";
 
 
 export default function ButtonMic() {
-  const [audio, setAudio] = useState(null);
   const [recording, setRecording] = useState(0);
   const { recorderState, ...handlers } = useRecorder();
   const { startRecording, cancelRecording, saveRecording } = handlers;
@@ -21,7 +20,7 @@ export default function ButtonMic() {
 
   return (
     <div className="App">
-      <div className="controls">
+      <div className="controls space-x-1.5">
         Manual Mic Controls:
         <button
           onMouseDown={() => setRecording(recording + 1)}

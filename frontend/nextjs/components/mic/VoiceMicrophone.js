@@ -24,6 +24,7 @@ function rms(data) {
 function VoiceRecorder() {
   const animationIdRef = useRef(null);
   const streamRef = useRef(null);
+  const recorderRef = useRef(null);
   const [threshold, setThreshold] = useState(100)
   const [rmswindow, setRmswindow] = useState(15)
 
@@ -42,20 +43,20 @@ function VoiceRecorder() {
 
         source.connect(analyser);
 
-        const recorder = new MediaRecorder(stream);
+        recorderRef.current = new MediaRecorder(stream);
         var rec = false;
         let chunks = [];
 
-        if (recorder && recorder.state === "inactive") {
-          console.log("recorder was innactive, starting")
-          recorder.start();
+        if (recorderRef.current && recorderRef.current.state === "inactive") {
+          console.log("recorderRef.current was innactive, starting")
+          recorderRef.current.start();
         }
-        recorder.ondataavailable = (e) => {
-          console.log("recorder data available, pushing data on chunks")
+        recorderRef.current.ondataavailable = (e) => {
+          console.log("recorderRef.current data available, pushing data on chunks")
           chunks.push(e.data);
         };
   
-        recorder.onstop = () => {
+        recorderRef.current.onstop = () => {
           console.log("Stopping Recording", chunks)
           const audioBlob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
           const audioFile = new File([audioBlob], "audiofile.wav", {
@@ -95,10 +96,14 @@ function VoiceRecorder() {
             if (rec) {
               rec = false
               console.log("stopRecording")
-              recorder.stop();
+              recorderRef.current.stop();
               console.log("startListening", maxrms)
-              if (recorder && recorder.state === "inactive") {
-                recorder.start();
+              if (recorderRef.current && recorderRef.current.state === "inactive") {
+                try {
+                  recorderRef.current.start();
+                } catch (error) {
+                  console.log(error)
+                }
               }
           }
         }
@@ -115,6 +120,10 @@ function VoiceRecorder() {
       });
 
     return () => {
+      console.log("I should stop listening!")
+      if (recorderRef.current) {
+      recorderRef.current.stop()
+      }
       if (streamRef.current) {streamRef.current.getAudioTracks().forEach((track) => track.stop())};
       cancelAnimationFrame(animationIdRef.current);
     };
@@ -130,9 +139,19 @@ function VoiceRecorder() {
 
 
 const VoiceMic = ({audioPlaying}) => {
+  const [localAudio, setLocalAudio] = useState(true)
+
   return (
     <div>
-      {audioPlaying ? <p>Audio is playing</p> : <VoiceRecorder/>}
+      Mute-<input type="checkbox" checked={!localAudio} onChange={() => setLocalAudio(!localAudio)}/>
+      {localAudio ?
+        <div>
+          {audioPlaying ? <p>Audio is playing</p> : <VoiceRecorder/>}
+        </div>
+        :
+        <div>
+          <p>Audio is muted</p>
+        </div>}
     </div>
   )
 }

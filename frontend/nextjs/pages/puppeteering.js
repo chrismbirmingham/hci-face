@@ -8,7 +8,6 @@ export default function Puppeteering() {
     <div>
       <Face />
       <Puppeteer />
-      <a href="/">Back to home</a>
     </div>
   );
 }

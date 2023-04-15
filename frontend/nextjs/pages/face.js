@@ -6,7 +6,6 @@ export default function DisplayFace() {
   return (
     <div>
       <Face />
-      <a href="/">Back to home</a>
     </div>
   );
 }
