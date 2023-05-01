@@ -1,6 +1,5 @@
 import React from "react"
 export default function doBehavior(count, behavior, browUpdater, mouthUpdater, getExpresionAUs, eyeUpdaterWrapper) {
-  // console.log("in do behavior", behavior, count)
   switch (behavior)
   {
       case "bored":
@@ -15,7 +14,6 @@ export default function doBehavior(count, behavior, browUpdater, mouthUpdater, g
       default:
           break;
   }
-  // console.log(count)
   return count
 }
 
@@ -32,7 +30,6 @@ function lookRandom(focus) {
 
 function boredEyes(count, reset_count, eyeUpdater, mouthUpdater){
     count = count + 1
-    // console.log("bored")
     if (count % 4 === 0){
         let eyes = lookRandom(.5)
         eyeUpdater(eyes)
@@ -48,7 +45,7 @@ function boredEyes(count, reset_count, eyeUpdater, mouthUpdater){
 
       // close eyes
       if (count===reset_count){
-        eyeUpdater({au45_blink:.65})
+        eyeUpdater({au45_blink:.85})
       }
       // open eyes
       if (count>reset_count){
@@ -60,8 +57,6 @@ function boredEyes(count, reset_count, eyeUpdater, mouthUpdater){
 
 function focusedEyes(count, reset_count, eyeUpdater, mouthUpdater){
     count = count + 1
-    // console.log("focused")
-
     if (count % 4 === 0){
         let eyes = lookRandom(.85)
         eyeUpdater(eyes)
@@ -77,7 +72,7 @@ function focusedEyes(count, reset_count, eyeUpdater, mouthUpdater){
 
       // close eyes
       if (count===reset_count){
-        eyeUpdater({au45_blink:.65})
+        eyeUpdater({au45_blink:.85})
       }
       // open eyes
       if (count>reset_count){
