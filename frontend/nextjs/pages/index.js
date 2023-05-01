@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className='Front Page'>
       <Head>
-        <title>Create Next App</title>
+        <title>HCI FACE</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -61,6 +61,7 @@ export default function Home() {
         <br></br>Show just the face on <a className="text-blue-600" href="/face">this page!</a>
         <br></br>Play with Action units on <a className="text-blue-600" href="/playfaces">this page!</a>
         <br></br>Fine tune your mic settings with <a className="text-blue-600" href="/mic_playground">this page!</a>
+        <br></br>Use the clock on <a className="text-blue-600" href="/clock">this page!</a>
       </main>
     </div>
   )
