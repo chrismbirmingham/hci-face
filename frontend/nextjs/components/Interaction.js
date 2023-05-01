@@ -7,9 +7,9 @@ import HeadDisplay from './faces/HeadDisplay';
 import getExpresionAUs from '@helpers/AUtransformers/Expressions';
 import doBehavior from '@helpers/AUtransformers/Behaviors';
 import {sourceVisemes, sourceFaceCommands} from "@helpers/apiEventSources";
-import {positions, initialBrowAU, initialEyeAU, initialMouthAU} from "@constants/initialface"
 import { set_dropdown } from "@helpers/controls";
 import { behaviors, faces, expressions } from "@constants/choices";
+import {head_settings, initialBrowAU, initialEyeAU, initialMouthAU} from "@constants/initialface"
 
 const Interaction = ({ classes }) => {
   const [conversationHistory, setConversationHistory] = useState([""]);
@@ -86,7 +86,7 @@ const Interaction = ({ classes }) => {
     <div id="divid" className="Interaction">
       <header className="Interaction-header"></header>
       {/* <Face /> */}
-      <HeadDisplay face={display} position={positions} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
+      <HeadDisplay face={display} head_settings={head_settings} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
       {set_dropdown("Face", display, setDisplay, faces)}
       {set_dropdown("Expression", expression, setExpression, expressions)}
       {set_dropdown("Behavior", behavior, setBehavior, behaviors)}

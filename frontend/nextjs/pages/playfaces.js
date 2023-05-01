@@ -6,7 +6,6 @@ export default function DisplayControlAUs() {
 
   return (
     <div>
-      <Face />
       <ControlAUs />
     </div>
   );

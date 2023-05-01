@@ -1,9 +1,10 @@
 
 const faces = {
+    "mirror_on_the_wall":"mirror_on_the_wall",
     "qt": "qt",
     "default": "default",
     "cordial": "cordial",
-    "qt_head": "qt_head",
+    "yoda": "yoda",
 }
 
 const expressions = {

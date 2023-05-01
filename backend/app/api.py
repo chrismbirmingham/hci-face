@@ -82,7 +82,7 @@ l.log("Setting up STT...")
 stt = Transcriber(service="whisper", model_size="base")
 l.log("...STT Set Up Done")
 l.log("Setting up Bots...")
-chatbot = Responder()
+chatbot = Responder(classifier_backend="gpt")
 l.log("...Setting up Bots Done")
 
 
