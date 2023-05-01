@@ -3,7 +3,7 @@ import HeadDisplay from './faces/HeadDisplay';
 import getExpresionAUs from '@helpers/AUtransformers/Expressions';
 import doBehavior from '@helpers/AUtransformers/Behaviors';
 import {sourceVisemes, sourceFaceCommands} from "@helpers/apiEventSources";
-import {positions, initialBrowAU, initialEyeAU, initialMouthAU} from "@constants/initialface"
+import {head_settings, initialBrowAU, initialEyeAU, initialMouthAU} from "@constants/initialface"
 import { set_dropdown } from "@helpers/controls";
 import { behaviors, faces, expressions } from "@constants/choices";
 
@@ -43,14 +43,14 @@ const Face = ({ classes }) => {
   useEffect(() => {sourceFaceCommands(mouthUpdater, browUpdater, eyeUpdaterWrapper, setBehavior)
   }, [eyeUpdaterWrapper]);
 
-  useEffect(runBehaviors, [behavior, eyeUpdaterWrapper]);
+  useEffect(runBehaviors, [behavior]);
   useEffect(runExpression, [expression]);
 
   return (
     <div className="Face">
       <header className="Face-header"></header>
       <div id="robot-container" className="max-w-4xl">
-          <HeadDisplay face={display} position={positions} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
+          <HeadDisplay face={display} head_settings={head_settings} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
       </div>
     {set_dropdown("Face", display, setDisplay, faces)}
     {set_dropdown("Expression", expression, setExpression, expressions)}
