@@ -32,7 +32,7 @@ function requestBotResponse(human_input, beginConversation, participantSpeaker) 
     }
 }
 
-function requestSpeech(text, setAudioPlaying, speakerVoice){
+function requestSpeech(text, setAudioPlaying, speakerVoice, rate=1.0){
     console.log("requestSpeech called")
     const speaker_id = [speakerVoice]
     const style_wav = ""
@@ -44,6 +44,7 @@ function requestSpeech(text, setAudioPlaying, speakerVoice){
         const audioUrl = URL.createObjectURL(blob)
         const audio = new Audio(audioUrl)
         setAudioPlaying(true)
+        audio.playbackRate = rate
         audio.play();
         audio.addEventListener('ended', () => {
             setTimeout(()=> {setAudioPlaying(false)}, 100)

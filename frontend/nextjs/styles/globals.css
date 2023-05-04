@@ -30,9 +30,9 @@ body {
 
 @layer base {
   a {
-    @apply text-blue underline
+    @apply underline text-sky-600
   }
   button {
-    @apply bg-blue p-1 text-white
+    @apply p-1 text-white bg-cyan-900 rounded-md ml-2
   }
 }

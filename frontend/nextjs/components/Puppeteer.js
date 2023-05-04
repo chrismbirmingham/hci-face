@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import RobotControls from './Forms/robotControls';
 import {requestFaceUpdate, requestSpeech} from "@helpers/apiRequests"
-
+import Face from "./Face";
 
 const Puppeteer = ({ setAudioPlaying=()=>{} }) => {
 
@@ -39,6 +39,7 @@ const Puppeteer = ({ setAudioPlaying=()=>{} }) => {
   return (
     <div className="Face">
       <header className="Face-header"></header>
+      <Face />
       <RobotControls
         showForm={true} 
         do_tts={ttsWrapper} 

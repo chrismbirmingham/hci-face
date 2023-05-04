@@ -11,12 +11,15 @@ export default function StyleHead({face, head_settings}){
     }
     if (face === "default"){
         h.head_shape.shape_name = "default"
-        h.positions.faceColor = h.eye_settings.skin = h.eye_settings.lid = "brown" // "#D7E4F5"
+        h.positions.faceColor = h.eye_settings.skin = h.eye_settings.lid = "#ffcb4c" // "#D7E4F5"
         h.head_shape.image = ""
         h.head_shape.concavity=1.2
         h.head_shape.head_width=45
-        h.head_shape.y_offset=98
+        h.head_shape.y_offset=45
         h.positions.mouth.y = 25
+        h.background_settings.width = 150
+        h.background_settings.height = 150
+        h.background_settings.y_0 = -80
     }
     if (face === "cordial"){
         h.positions.faceColor = h.eye_settings.skin = h.eye_settings.lid = "purple" // "#D7E4F5"
@@ -33,8 +36,8 @@ export default function StyleHead({face, head_settings}){
 
         h.head_shape.image = "qt.png"
         h.background_settings.width = 150
-        h.background_settings.height = 250
-        h.background_settings.y_0 = -130
+        h.background_settings.height = 150
+        h.background_settings.y_0 = -80
 
         h.eye_settings.eye = "gray"
         h.eye_settings.iris_width = 1
@@ -66,6 +69,10 @@ export default function StyleHead({face, head_settings}){
         h.mouth_shape.thickness=2
         h.head_shape.head_width=150
         h.head_shape.head_height=90
+
+        h.background_settings.width = 150
+        h.background_settings.height = 150
+        h.background_settings.y_0 = -80
     }
     return h
 }

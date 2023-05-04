@@ -2,7 +2,6 @@ import React, { useState, useEffect, useReducer, useCallback } from "react";
 import {requestConversationResponse, requestSpeech} from "@helpers/apiRequests"
 import { getTranscribedSpeech } from "@helpers/apiEventSources";
 import Microphone from '@components/Microphone';
-// import Face from '@components/Face';
 import HeadDisplay from './faces/HeadDisplay';
 import getExpresionAUs from '@helpers/AUtransformers/Expressions';
 import doBehavior from '@helpers/AUtransformers/Behaviors';
@@ -10,6 +9,8 @@ import {sourceVisemes, sourceFaceCommands} from "@helpers/apiEventSources";
 import { set_dropdown } from "@helpers/controls";
 import { behaviors, faces, expressions } from "@constants/choices";
 import {head_settings, initialBrowAU, initialEyeAU, initialMouthAU} from "@constants/initialface"
+import { conversationPrompts } from "@constants/prompts";
+import Face from "./Face";
 
 const Interaction = ({ classes }) => {
   const [conversationHistory, setConversationHistory] = useState([""]);
@@ -85,13 +86,13 @@ const Interaction = ({ classes }) => {
   return (
     <div id="divid" className="Interaction">
       <header className="Interaction-header"></header>
-      {/* <Face /> */}
-      <HeadDisplay face={display} head_settings={head_settings} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
+      <Face />
+      {/* <HeadDisplay face={display} head_settings={head_settings} eyeAU={eyeAU} browAU={browAU} mouthAU={mouthAU} />
       {set_dropdown("Face", display, setDisplay, faces)}
       {set_dropdown("Expression", expression, setExpression, expressions)}
-      {set_dropdown("Behavior", behavior, setBehavior, behaviors)}
+      {set_dropdown("Behavior", behavior, setBehavior, behaviors)} */}
       <Microphone audioPlaying={audioPlaying}/>
-      <label>Enter the starting prompt: <br></br>
+      <label>Enter the starting prompt or select from the following preset options: <br></br>
             <textarea 
                 cols={100}
                 rows={3}

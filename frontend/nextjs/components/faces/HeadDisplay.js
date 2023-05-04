@@ -18,6 +18,7 @@ function HeadDisplay({face, head_settings, eyeAU, browAU, mouthAU}){
     )
 
     return (
+      <div className="border-solid border-2 border-black">
       <svg viewBox={viewBox} xmlns="http://www.w3.org/2000/svg">
         <BackgroundDrawing position={positions} shape={head_shape} settings={background_settings}/>
         <EyeDrawing position={positions.right_eye} AU={eyeAU} shape={eye_shape} settings={eye_settings}/>
@@ -26,6 +27,7 @@ function HeadDisplay({face, head_settings, eyeAU, browAU, mouthAU}){
         <BrowDrawing position={positions.left_brow} AU={browAU} shape={brow_shape} settings={brow_settings}/>
         <MouthDrawing position={positions.mouth} AU={mouthAU} shape={mouth_shape} settings={mouth_settings}/>
       </svg>
+      </div>
     )
 }
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Microphone from '@components/Microphone';
 import { getTranscribedSpeech } from "@helpers/apiEventSources";
-
+import GetInput from "./conversation/GetInput";
 
 const Transcriber = ({ classes }) => {
   // The transcriber uses the Microphone component, which can
@@ -9,8 +8,9 @@ const Transcriber = ({ classes }) => {
   // The transcriber takes no arguments, updating the transcript
   // through the use of a transcribed_speech Event Source
   // TODO set text to component for UX management
-  const [transcribedData, setTranscribedData] = useState([]);
+  const [transcribedData, setTranscribedData] = useState([""]);
   const [latestSpeech, setLatestSpeech] = useState("");
+  const [numLines, setNumLines] = useState(0);
 
   function updateTranscription () {
     setTranscribedData(oldData => [oldData+latestSpeech]);
@@ -18,19 +18,32 @@ const Transcriber = ({ classes }) => {
 
   useEffect(() => {getTranscribedSpeech(setLatestSpeech)}, []);
   useEffect(updateTranscription,[latestSpeech])
+  useEffect(() => {
+    let line_counter = 0
+    let lines = transcribedData[0].split("\n")
+    for (let i=0; i<lines.length; i++) {
+      line_counter += Math.floor(lines[i].length/100)
+    }
+    line_counter += lines.length
+    setNumLines(line_counter)
+    console.log("numLines: ", line_counter)
+  },[transcribedData])
+
+  
 
 
   return (
     <div className="Transcriber">
       <header className="Transcriber-header"></header>
-      <Microphone/>
+      <GetInput setLatestSpeech={setLatestSpeech} auto={true}/>
       <label>Editable transcript of what has been said:<br></br>
-            <textarea 
-            cols={100}
-            rows={40}
-            value={transcribedData}
-            onChange={(e) => setTranscribedData(e.target.value)}
-            />
+      <button onClick={() => {navigator.clipboard.writeText(transcribedData)}}>Copy to clipboard</button><br></br>
+          <textarea
+          rows={numLines }
+          cols={100}
+          value={transcribedData}
+          onChange={(e) => setTranscribedData([e.target.value])}
+          />
         </label>
     </div>
   );

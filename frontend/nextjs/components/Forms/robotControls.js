@@ -40,7 +40,7 @@ export default function RobotControls ({
             onChange={(e) => setTextToSay(e.target.value)}
             />
         </label>
-        <br></br><button onClick={() => do_tts(textToSay)}>Say Text From Form: {textToSay}</button><br></br>
+        <br></br><button onClick={() => do_tts(textToSay)}>Speak Text</button><br></br>
     </div>
     )
 }

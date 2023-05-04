@@ -36,11 +36,11 @@ function renderSwitch(param, audioPlaying) {
 }
 
 
-const Microphone = ({ audioPlaying=false, defaultMic="soundwave visual" }) => {
+const Microphone = ({ audioPlaying=false, defaultMic="buttons" }) => {
     const [recording, setRecording] = useState(defaultMic);
 
     return (
-        <div className="Microphone p-6">
+        <div className="max-w-fit p-6 border border-gray-200 rounded-lg">
             <header className="Microphone-header"></header>
             {set_dropdown("Listening Method", recording, setRecording, ["buttons", "voice", "soundwave visual", "show all", "show none"])}
             <div id="renderRecording">
